@@ -71,6 +71,8 @@
 
   .pill { align-self: center; background: var(--card2); border-radius: 999px; padding: 6px 14px; font-size: .95rem; }
   .bigname { font-size: 2.6rem; font-weight: 800; word-break: break-word; }
+  .first { background: var(--card); border-radius: 18px; padding: 14px; }
+  .first .bigname { font-size: 2.2rem; color: #a78bff; }
   .notice { background: var(--card); border-radius: 14px; padding: 12px 14px; color: #cfd3e2; }
 
   .role { border-radius: 26px; padding: 30px 18px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
@@ -268,7 +270,7 @@ function startRound() {
     screen: 'pass', players: getNames(), impostors, word, hint,
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     guessesLeft: Math.min(count, 3), guessMsg: '', judging: false, outcome: null,
-    announce: !!settings.announce, impostorCount: count
+    announce: !!settings.announce, impostorCount: count, first: rand(n)
   };
   save(); render();
 }
@@ -453,6 +455,7 @@ const SCREENS = {
     return `<div class="screen center">
       <div class="pill">${esc(game.emoji)} ${esc(game.category)}</div>
       <h1>Game on! 🎭</h1>
+      <div class="first"><span class="muted small">🎲 Randomly chosen to go first</span><div class="bigname">${esc(game.players[game.first == null ? 0 : game.first])}</div></div>
       <p class="lead">Take turns giving clues about the word. Be vague enough that an impostor can't guess it, but specific enough to prove you know it.</p>
       ${note}
       <button class="btn primary big" data-act="ready">We're ready to vote</button>

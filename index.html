@@ -135,7 +135,7 @@ const FALLBACK = { categories: [
 const defaultSettings = () => ({
   playerCount: 5,
   names: [],
-  category: 'random',
+  categories: [],   // names of selected categories; empty = Random (any category)
   weights: { '1': 70, '2': 20, '3': 7, 'all': 3 },
   announce: false,
   wordsUrl: ''
@@ -166,6 +166,10 @@ function load() {
       settings = Object.assign(base, d.settings, { weights: Object.assign(base.weights, d.settings.weights || {}) });
       settings.playerCount = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, +settings.playerCount || 5));
       if (!Array.isArray(settings.names)) settings.names = [];
+      // Older saves stored a single category string.
+      if (!Array.isArray(settings.categories)) settings.categories = [];
+      if (d.settings.category && d.settings.category !== 'random' && !settings.categories.length) settings.categories = [d.settings.category];
+      delete settings.category;
     }
     game = d.game || null;
     recent = Array.isArray(d.recent) ? d.recent : [];
@@ -217,9 +221,13 @@ async function loadWords() {
     words = cached ? { categories: cached.categories, status: 'cached', source: cached.source, error: String(err.message || err) }
                    : { categories: sanitise(FALLBACK), status: 'fallback', source: '', error: String(err.message || err) };
   }
-  if (settings.category !== 'random' && !words.categories.some((c) => c.name === settings.category)) settings.category = 'random';
+  pruneCategories();
   save();
   refreshWordsUI();
+}
+function pruneCategories() {
+  // Drop any saved selections that don't exist in the current word list (empty = Random).
+  settings.categories = settings.categories.filter((n) => words.categories.some((c) => c.name === n));
 }
 function wordsStatusText() {
   const cats = words.categories.length;
@@ -269,7 +277,8 @@ function getNames() {
 function startRound() {
   const n = settings.playerCount;
   const cats = words.categories;
-  const cat = settings.category === 'random' ? pick(cats) : (cats.find((c) => c.name === settings.category) || pick(cats));
+  const chosen = cats.filter((c) => settings.categories.includes(c.name));
+  const cat = pick(chosen.length ? chosen : cats);
   let pool = cat.words.filter((w) => !recent.includes(w[0]));
   if (!pool.length) pool = cat.words;
   const [word, hint] = pick(pool);
@@ -375,7 +384,8 @@ function renderSetup() {
     </section>
 
     <section class="card">
-      <h3>Category</h3>
+      <h3>Categories</h3>
+      <p class="muted small" id="catnote"></p>
       <div id="cats" class="chips"></div>
     </section>
 
@@ -413,8 +423,12 @@ function renderCats() {
   const box = $('#cats');
   if (!box) return;
   const chip = (key, label, sel) => `<button class="chip${sel ? ' sel' : ''}" data-act="cat" data-cat="${esc(key)}">${label}</button>`;
-  box.innerHTML = chip('random', '🎲 Random (any category)', settings.category === 'random') +
-    words.categories.map((c) => chip(c.name, `${esc(c.emoji)} ${esc(c.name)}`.trim(), settings.category === c.name)).join('');
+  box.innerHTML = chip('random', '🎲 Random (any category)', settings.categories.length === 0) +
+    words.categories.map((c) => chip(c.name, `${esc(c.emoji)} ${esc(c.name)}`.trim(), settings.categories.includes(c.name))).join('');
+  const note = $('#catnote');
+  if (note) note.textContent = settings.categories.length === 0 ? 'A random category is picked each round.'
+    : settings.categories.length === 1 ? 'Only this category will be used.'
+    : `Each round picks at random from your ${settings.categories.length} chosen categories.`;
 }
 function renderWeights() {
   const eff = effective(settings.playerCount);
@@ -576,7 +590,13 @@ function render() {
 /* ---------- events ---------- */
 const ACTIONS = {
   start() { if (words.categories.length) startRound(); },
-  cat(t) { settings.category = t.dataset.cat; renderCats(); save(); },
+  cat(t) {
+    const c = t.dataset.cat;
+    if (c === 'random') settings.categories = [];                       // Random clears every other category
+    else if (settings.categories.includes(c)) settings.categories = settings.categories.filter((x) => x !== c);
+    else settings.categories = settings.categories.concat(c);           // picking any category un-selects Random
+    renderCats(); save();
+  },
   reload() { settings.wordsUrl = ($('#wurl').value || '').trim(); save(); loadWords(); },
   reveal() { game.screen = 'reveal'; save(); render(); },
   hide() {
@@ -650,7 +670,6 @@ window.addEventListener('pagehide', hideSecrets);
 /* ---------- boot ---------- */
 load();
 initWordsSync();
-if (settings.category !== 'random' && !words.categories.some((c) => c.name === settings.category)) settings.category = 'random';
 render();
 loadWords();
 })();

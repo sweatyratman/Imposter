@@ -50,6 +50,7 @@
   .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   @media (max-width: 360px) { .names { grid-template-columns: 1fr; } }
 
+  .catnote { min-height: 2.8em; } /* always reserve two lines so the chips below never jump */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { border: 1px solid var(--line); background: var(--card2); color: var(--text); border-radius: 999px;
     padding: 10px 14px; font: inherit; font-size: .95rem; cursor: pointer; }
@@ -385,7 +386,7 @@ function renderSetup() {
 
     <section class="card">
       <h3>Categories</h3>
-      <p class="muted small" id="catnote"></p>
+      <p class="muted small catnote" id="catnote">&nbsp;</p>
       <div id="cats" class="chips"></div>
     </section>
 
@@ -426,9 +427,9 @@ function renderCats() {
   box.innerHTML = chip('random', '🎲 Random (any category)', settings.categories.length === 0) +
     words.categories.map((c) => chip(c.name, `${esc(c.emoji)} ${esc(c.name)}`.trim(), settings.categories.includes(c.name))).join('');
   const note = $('#catnote');
-  if (note) note.textContent = settings.categories.length === 0 ? 'A random category is picked each round.'
+  if (note) note.textContent = settings.categories.length === 0 ? 'Any category, picked at random each round.'
     : settings.categories.length === 1 ? 'Only this category will be used.'
-    : `Each round picks at random from your ${settings.categories.length} chosen categories.`;
+    : `Picks at random from your ${settings.categories.length} chosen categories.`;
 }
 function renderWeights() {
   const eff = effective(settings.playerCount);

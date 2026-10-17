@@ -1,0 +1,266 @@
+{
+  "categories": [
+    {
+      "name": "Everyday Objects",
+      "emoji": "🔑",
+      "words": [
+        ["umbrella", "handle"], ["toothbrush", "bristles"], ["scissors", "paper"], ["candle", "wax"],
+        ["mirror", "bathroom"], ["pillow", "feathers"], ["key", "ring"], ["clock", "hands"],
+        ["backpack", "straps"], ["kettle", "whistle"], ["broom", "witch"], ["lightbulb", "idea"],
+        ["stapler", "office"], ["towel", "beach"], ["remote control", "batteries"], ["wallet", "leather"],
+        ["spoon", "stir"], ["hammer", "toolbox"], ["ladder", "height"], ["thermometer", "degrees"],
+        ["headphones", "ears"], ["calculator", "digits"], ["suitcase", "airport"], ["torch", "dark"],
+        ["envelope", "stamp"], ["toaster", "crumbs"], ["vacuum cleaner", "dust"], ["duvet", "cover"],
+        ["doormat", "welcome"], ["radiator", "bleed"], ["lamp", "shade"], ["sponge", "squeeze"],
+        ["comb", "teeth"], ["razor", "blades"], ["tape measure", "inches"], ["screwdriver", "twist"],
+        ["padlock", "combination"], ["matches", "strike"], ["notebook", "margins"], ["pen", "cap"],
+        ["lighter", "flick"], ["tin opener", "rim"], ["colander", "holes"], ["whisk", "wire"],
+        ["frying pan", "sizzle"], ["bucket", "sand"], ["mop", "wring"], ["coat hanger", "wardrobe"],
+        ["alarm clock", "snooze"], ["magnet", "fridge"], ["picture frame", "wall"], ["rubber band", "stretch"],
+        ["safety pin", "clasp"], ["peg", "washing line"], ["zip", "stuck"], ["USB stick", "memory"],
+        ["battery", "charge"], ["teapot", "spout"], ["hairdryer", "static"], ["dustpan", "brush"]
+      ]
+    },
+    {
+      "name": "Animals",
+      "emoji": "🐾",
+      "words": [
+        ["penguin", "ice"], ["giraffe", "spots"], ["octopus", "ink"], ["kangaroo", "Australia"],
+        ["owl", "night"], ["elephant", "grey"], ["bee", "buzz"], ["crocodile", "swamp"],
+        ["dolphin", "clever"], ["flamingo", "pink"], ["hedgehog", "spikes"], ["camel", "desert"],
+        ["bat", "cave"], ["snail", "slow"], ["peacock", "display"], ["shark", "fin"],
+        ["rabbit", "burrow"], ["frog", "pond"], ["zebra", "stripes"], ["squirrel", "autumn"],
+        ["lion", "king"], ["whale", "ocean"], ["spider", "corners"], ["parrot", "pirate"],
+        ["cow", "farm"], ["tiger", "Bengal"], ["wolf", "pack"], ["fox", "urban"],
+        ["bear", "hibernate"], ["koala", "eucalyptus"], ["panda", "bamboo"], ["gorilla", "knuckles"],
+        ["monkey", "branch"], ["hippo", "mud"], ["rhino", "horn"], ["cheetah", "sprint"],
+        ["leopard", "prowl"], ["seal", "clap"], ["walrus", "tusks"], ["otter", "hands"],
+        ["beaver", "dam"], ["badger", "sett"], ["mole", "tunnels"], ["hamster", "wheel"],
+        ["goldfish", "memory"], ["tortoise", "centuries"], ["snake", "hiss"], ["lizard", "tail"],
+        ["chameleon", "blend"], ["eagle", "talons"], ["swan", "graceful"], ["duck", "bill"],
+        ["chicken", "road"], ["pigeon", "statue"], ["robin", "garden"], ["seahorse", "dad"],
+        ["jellyfish", "sting"], ["crab", "sideways"], ["lobster", "boil"], ["bull", "red"],
+        ["donkey", "stubborn"], ["sheep", "count"], ["goat", "cliff"], ["horse", "stable"]
+      ]
+    },
+    {
+      "name": "Food & Drink",
+      "emoji": "🍕",
+      "words": [
+        ["pizza", "slice"], ["banana", "peel"], ["sushi", "rice"], ["chocolate", "melts"],
+        ["popcorn", "cinema"], ["pancake", "flip"], ["coffee", "morning"], ["cheese", "mould"],
+        ["avocado", "toast"], ["burger", "grill"], ["spaghetti", "twirl"], ["ice cream", "scoop"],
+        ["watermelon", "seeds"], ["croissant", "France"], ["soup", "bowl"], ["egg", "shell"],
+        ["tea", "mug"], ["honey", "sticky"], ["pretzel", "knot"], ["lemon", "sour"],
+        ["doughnut", "hole"], ["taco", "Tuesday"], ["sandwich", "lunch"], ["steak", "rare"],
+        ["cereal", "milk"], ["noodles", "slurp"], ["curry", "heat"], ["fish and chips", "seaside"],
+        ["porridge", "Goldilocks"], ["sausage", "roll"], ["bacon", "crispy"], ["jam", "spread"],
+        ["peanut butter", "stuck"], ["yoghurt", "culture"], ["butter", "churn"], ["bread", "rise"],
+        ["rice pudding", "skin"], ["trifle", "layers"], ["cupcake", "icing"], ["biscuit", "dunk"],
+        ["crisps", "bag"], ["birthday cake", "candles"], ["milkshake", "straw"], ["lemonade", "stand"],
+        ["orange juice", "pulp"], ["wine", "vineyard"], ["beer", "pint"], ["champagne", "cork"],
+        ["smoothie", "blend"], ["hot chocolate", "marshmallows"], ["pasta", "al dente"], ["lasagne", "oven"],
+        ["pie", "crust"], ["roast dinner", "Sunday"], ["olive", "stone"], ["strawberry", "cream"],
+        ["apple", "core"], ["pineapple", "crown"], ["grapes", "bunch"], ["coconut", "hairy"],
+        ["pumpkin", "carve"], ["carrot", "eyesight"], ["broccoli", "trees"], ["garlic", "vampire"],
+        ["mustard", "yellow"], ["ketchup", "bottle"], ["salt", "pinch"]
+      ]
+    },
+    {
+      "name": "Places",
+      "emoji": "🌍",
+      "words": [
+        ["library", "silence"], ["airport", "queues"], ["hospital", "ward"], ["beach", "sand"],
+        ["supermarket", "trolley"], ["cinema", "screen"], ["museum", "ancient"], ["gym", "mirrors"],
+        ["zoo", "keeper"], ["farm", "tractor"], ["school", "bell"], ["church", "wedding"],
+        ["castle", "moat"], ["lighthouse", "coast"], ["bank", "vault"], ["prison", "uniform"],
+        ["casino", "chips"], ["circus", "tent"], ["park", "bench"], ["volcano", "ash"],
+        ["island", "stranded"], ["hotel", "reception"], ["bakery", "dawn"], ["pub", "quiz"],
+        ["stadium", "roar"], ["launderette", "spin"], ["petrol station", "pump"], ["car park", "ticket"],
+        ["train station", "platform"], ["bus stop", "wait"], ["bridge", "toll"], ["tunnel", "light"],
+        ["mountain", "summit"], ["desert", "mirage"], ["jungle", "vines"], ["swamp", "murky"],
+        ["canal", "narrowboat"], ["market", "stalls"], ["theatre", "curtain"], ["art gallery", "brushstrokes"],
+        ["nightclub", "bouncer"], ["campsite", "pitch"], ["playground", "swings"], ["swimming pool", "deep end"],
+        ["spa", "robe"], ["office", "cubicle"], ["factory", "assembly"], ["garden centre", "pots"],
+        ["graveyard", "quiet"], ["post office", "parcels"], ["police station", "desk"], ["fire station", "pole"],
+        ["theme park", "rides"], ["ski slope", "lift"], ["pyramid", "tomb"], ["palace", "guards"],
+        ["windmill", "sails"], ["observatory", "dome"], ["greenhouse", "glass"], ["attic", "dusty"],
+        ["basement", "damp"], ["cafe", "regulars"]
+      ]
+    },
+    {
+      "name": "Jobs",
+      "emoji": "💼",
+      "words": [
+        ["doctor", "prescription"], ["pilot", "captain"], ["chef", "heat"], ["teacher", "marking"],
+        ["firefighter", "siren"], ["farmer", "seasons"], ["dentist", "waiting room"], ["plumber", "callout"],
+        ["barber", "chair"], ["postman", "doorstep"], ["astronaut", "launch"], ["judge", "robes"],
+        ["lifeguard", "red"], ["magician", "sleeve"], ["photographer", "frame"], ["librarian", "stamp"],
+        ["actor", "script"], ["detective", "coat"], ["carpenter", "sawdust"], ["nurse", "shifts"],
+        ["taxi driver", "meter"], ["mechanic", "overalls"], ["baker", "oven"], ["electrician", "fuse"],
+        ["artist", "palette"], ["vet", "leads"], ["hairdresser", "gossip"], ["butcher", "cleaver"],
+        ["builder", "hard hat"], ["window cleaner", "streaks"], ["bus driver", "timetable"], ["train driver", "signal"],
+        ["soldier", "salute"], ["spy", "undercover"], ["clown", "honk"], ["singer", "encore"],
+        ["dancer", "rehearsal"], ["author", "deadline"], ["journalist", "scoop"], ["politician", "campaign"],
+        ["lawyer", "briefs"], ["accountant", "audit"], ["cashier", "till"], ["waiter", "tip"],
+        ["bartender", "shaker"], ["cleaner", "trolley"], ["security guard", "night shift"], ["scientist", "goggles"],
+        ["programmer", "bugs"], ["architect", "blueprint"], ["gardener", "shears"], ["fisherman", "catch"],
+        ["miner", "canary"], ["lumberjack", "flannel"], ["bin man", "early"], ["paramedic", "blue lights"],
+        ["referee", "cards"], ["coach", "clipboard"], ["translator", "fluent"], ["tailor", "measurements"]
+      ]
+    },
+    {
+      "name": "Sports & Games",
+      "emoji": "⚽",
+      "words": [
+        ["football", "offside"], ["tennis", "love"], ["chess", "queen"], ["golf", "tee"],
+        ["darts", "treble"], ["bowling", "alley"], ["swimming", "lanes"], ["boxing", "ring"],
+        ["basketball", "dribble"], ["snooker", "break"], ["archery", "target"], ["skiing", "powder"],
+        ["cricket", "innings"], ["monopoly", "jail"], ["poker", "bluff"], ["jenga", "tower"],
+        ["rugby", "scrum"], ["surfing", "board"], ["cycling", "peloton"], ["gymnastics", "beam"],
+        ["volleyball", "net"], ["karaoke", "lyrics"], ["dominoes", "tiles"], ["marathon", "endurance"],
+        ["hide and seek", "count"], ["baseball", "diamond"], ["ice hockey", "puck"], ["table tennis", "paddle"],
+        ["badminton", "drift"], ["squash", "walls"], ["curling", "sweep"], ["skateboarding", "ramp"],
+        ["judo", "throw"], ["wrestling", "mat"], ["fencing", "touché"], ["rowing", "stroke"],
+        ["sailing", "tack"], ["diving", "platform"], ["triathlon", "three"], ["high jump", "bar"],
+        ["javelin", "spear"], ["pole vault", "bend"], ["relay", "baton"], ["weightlifting", "clean"],
+        ["yoga", "stretch"], ["climbing", "chalk"], ["horse racing", "odds"], ["bingo", "dabber"],
+        ["scrabble", "triple"], ["cluedo", "mansion"], ["twister", "limbs"], ["playing cards", "deck"],
+        ["snakes and ladders", "dice"], ["hopscotch", "pavement"], ["tug of war", "rope"], ["trampolining", "bounce"],
+        ["paintball", "splat"], ["go-karting", "helmet"], ["roller skating", "disco"], ["bowls", "lawn"],
+        ["rounders", "bat"]
+      ]
+    },
+    {
+      "name": "Clothing & Style",
+      "emoji": "👕",
+      "words": [
+        ["scarf", "winter"], ["jeans", "pockets"], ["trainers", "laces"], ["hat", "brim"],
+        ["sock", "missing"], ["tie", "interview"], ["belt", "buckle"], ["dress", "hem"],
+        ["pyjamas", "bedtime"], ["swimsuit", "pool"], ["raincoat", "puddles"], ["sandals", "toes"],
+        ["earrings", "sparkle"], ["watch", "wrist"], ["apron", "splatters"], ["bow tie", "formal"],
+        ["hoodie", "cosy"], ["beanie", "bobble"], ["wellies", "mud"], ["kilt", "tartan"],
+        ["ring", "engagement"], ["necklace", "pendant"], ["cape", "hero"], ["slippers", "fireside"],
+        ["jumper", "Christmas"], ["boots", "stomp"], ["shorts", "summer"], ["skirt", "pleats"],
+        ["blazer", "lapel"], ["waistcoat", "pocket watch"], ["suit", "tailor"], ["cardigan", "grandma"],
+        ["leggings", "stretch"], ["tracksuit", "sporty"], ["dungarees", "farmer"], ["onesie", "zip"],
+        ["dressing gown", "morning"], ["tutu", "net"], ["kimono", "sash"], ["sari", "drape"],
+        ["poncho", "wrap"], ["lab coat", "stains"], ["wig", "itchy"], ["sunglasses", "lenses"],
+        ["bikini", "tan lines"], ["flip flops", "slap"], ["crown", "jewels"], ["tiara", "princess"],
+        ["bracelet", "charm"], ["handbag", "strap"], ["button", "sew"], ["collar", "starch"],
+        ["cufflinks", "shirt"], ["bandana", "cowboy"], ["cap", "peak"], ["helmet", "chin"],
+        ["mask", "eyes"], ["costume", "party"], ["uniform", "badge"], ["stockings", "ladder"],
+        ["boxer shorts", "elastic"], ["thermals", "layers"]
+      ]
+    },
+    {
+      "name": "Nature & Weather",
+      "emoji": "🌦️",
+      "words": [
+        ["rainbow", "colours"], ["thunder", "rumble"], ["snowman", "buttons"], ["tornado", "funnel"],
+        ["waterfall", "cliff"], ["glacier", "creeping"], ["cactus", "thirsty"], ["rainforest", "canopy"],
+        ["fog", "visibility"], ["sunrise", "horizon"], ["moon", "phases"], ["earthquake", "ground"],
+        ["river", "banks"], ["cave", "echo"], ["meadow", "daisies"], ["iceberg", "tip"],
+        ["puddle", "splash"], ["hurricane", "eye"], ["lightning", "flash"], ["forest", "trail"],
+        ["coral", "bleaching"], ["mushroom", "spores"], ["snowflake", "unique"], ["starfish", "five"],
+        ["sunflower", "turn"], ["snow", "angels"], ["frost", "windscreen"], ["breeze", "gentle"],
+        ["heatwave", "hosepipe"], ["monsoon", "season"], ["drought", "cracked"], ["flood", "sandbags"],
+        ["avalanche", "slope"], ["sunshine", "freckles"], ["sunset", "orange"], ["dew", "grass"],
+        ["hail", "stones"], ["tide", "pull"], ["wave", "crest"], ["pond", "lily"],
+        ["lake", "monster"], ["hill", "roll"], ["valley", "floor"], ["canyon", "carved"],
+        ["oasis", "palm"], ["acorn", "oak"], ["leaf", "veins"], ["petal", "fall"],
+        ["rose", "thorns"], ["tulip", "bulb"], ["daisy", "chain"], ["moss", "north"],
+        ["seaweed", "tangled"], ["pebble", "skim"], ["sand dune", "shift"], ["stalactite", "drip"],
+        ["geyser", "erupt"], ["comet", "tail"], ["shooting star", "wish"], ["northern lights", "green"],
+        ["eclipse", "glasses"]
+      ]
+    },
+    {
+      "name": "Transport",
+      "emoji": "🚗",
+      "words": [
+        ["car", "boot"], ["bicycle", "chain"], ["bus", "upstairs"], ["train", "tracks"],
+        ["aeroplane", "turbulence"], ["helicopter", "blades"], ["boat", "anchor"], ["submarine", "periscope"],
+        ["tractor", "fields"], ["motorbike", "leathers"], ["scooter", "kick"], ["taxi", "fare"],
+        ["tram", "cables"], ["ferry", "crossing"], ["hot air balloon", "basket"], ["canoe", "portage"],
+        ["rocket", "countdown"], ["ambulance", "stretcher"], ["fire engine", "hose"], ["lorry", "haulage"],
+        ["caravan", "towing"], ["sledge", "slope"], ["jet ski", "spray"], ["tuk-tuk", "Bangkok"],
+        ["escalator", "steps"], ["lift", "floors"], ["cable car", "mountain"], ["gondola", "canals"],
+        ["monorail", "single"], ["segway", "balance"], ["pram", "push"], ["unicycle", "one"],
+        ["parachute", "rip cord"], ["limousine", "stretched"], ["bin lorry", "Thursday"], ["steam train", "whistle"]
+      ]
+    },
+    {
+      "name": "Music",
+      "emoji": "🎵",
+      "words": [
+        ["guitar", "strings"], ["piano", "keys"], ["drums", "sticks"], ["violin", "bow"],
+        ["trumpet", "valves"], ["flute", "breath"], ["saxophone", "jazz"], ["harp", "angels"],
+        ["cello", "deep"], ["bagpipes", "drone"], ["accordion", "bellows"], ["ukulele", "Hawaii"],
+        ["tambourine", "jingle"], ["triangle", "ting"], ["xylophone", "mallets"], ["harmonica", "blues"],
+        ["banjo", "bluegrass"], ["church organ", "pedals"], ["choir", "harmony"], ["orchestra", "conductor"],
+        ["band", "gig"], ["DJ", "decks"], ["microphone", "feedback"], ["vinyl record", "scratch"],
+        ["jukebox", "coins"], ["metronome", "tick"], ["opera", "diva"], ["lullaby", "sleep"],
+        ["national anthem", "stand"], ["rap", "bars"], ["symphony", "movements"], ["recorder", "squeak"],
+        ["bongos", "hands"], ["castanets", "Spain"], ["kazoo", "hum"], ["synthesizer", "knobs"]
+      ]
+    },
+    {
+      "name": "Home & Garden",
+      "emoji": "🏡",
+      "words": [
+        ["sofa", "cushions"], ["wardrobe", "Narnia"], ["bookshelf", "spines"], ["fireplace", "mantel"],
+        ["staircase", "banister"], ["bath", "plug"], ["shower", "curtain"], ["oven", "gas mark"],
+        ["fridge", "hum"], ["washing machine", "sock thief"], ["dishwasher", "rinse"], ["microwave", "ping"],
+        ["doorbell", "visitors"], ["letterbox", "flap"], ["curtains", "tie-backs"], ["carpet", "pile"],
+        ["wallpaper", "pattern"], ["shed", "tools"], ["lawnmower", "Sunday"], ["hedge", "trim"],
+        ["flowerbed", "weeds"], ["conservatory", "wicker"], ["compost heap", "worms"], ["fence", "panels"],
+        ["gate", "latch"], ["patio", "barbecue"], ["hammock", "lazy"], ["swing", "chains"],
+        ["sandpit", "castles"], ["garden pond", "koi"], ["scarecrow", "crows"], ["watering can", "rose"],
+        ["birdhouse", "tit"], ["garden gnome", "fishing rod"], ["chandelier", "crystals"], ["bunk beds", "top"]
+      ]
+    },
+    {
+      "name": "Science & Space",
+      "emoji": "🔭",
+      "words": [
+        ["Mars", "rovers"], ["Saturn", "rings"], ["Jupiter", "storm"], ["Venus", "morning star"],
+        ["black hole", "event"], ["telescope", "lens"], ["microscope", "slide"], ["satellite", "signal"],
+        ["gravity", "apple"], ["atom", "split"], ["electricity", "current"], ["fossil", "layers"],
+        ["dinosaur", "extinct"], ["DNA", "helix"], ["bacteria", "culture"], ["vaccine", "jab"],
+        ["laboratory", "beaker"], ["periodic table", "symbols"], ["experiment", "hypothesis"], ["solar system", "eight"],
+        ["galaxy", "Milky"], ["meteor", "streak"], ["asteroid", "impact"], ["robot", "circuits"],
+        ["computer", "mouse"], ["internet", "web"], ["laser", "beam"], ["radio", "dial"],
+        ["x-ray", "shadow"], ["UFO", "sightings"], ["space station", "orbit"], ["magnifying glass", "clues"]
+      ]
+    },
+    {
+      "name": "Fantasy & Fairytales",
+      "emoji": "🐉",
+      "words": [
+        ["dragon", "hoard"], ["wizard", "staff"], ["witch", "cauldron"], ["fairy", "dust"],
+        ["unicorn", "mythical"], ["mermaid", "shells"], ["giant", "beanstalk"], ["troll", "bridge"],
+        ["dwarf", "mine"], ["elf", "ears"], ["ghost", "haunt"], ["vampire", "coffin"],
+        ["zombie", "shuffle"], ["werewolf", "howl"], ["princess", "pea"], ["prince", "charming"],
+        ["knight", "armour"], ["king", "throne"], ["pirate", "plank"], ["treasure map", "X"],
+        ["magic wand", "spell"], ["crystal ball", "future"], ["potion", "bubbling"], ["genie", "wishes"],
+        ["pixie", "mischief"], ["goblin", "gold"], ["phoenix", "ashes"], ["Cinderella", "midnight"],
+        ["Rapunzel", "braid"], ["gingerbread man", "run"], ["Little Red Riding Hood", "basket"], ["Hansel and Gretel", "breadcrumbs"]
+      ]
+    },
+    {
+      "name": "Celebrations",
+      "emoji": "🎉",
+      "words": [
+        ["Christmas", "advent"], ["Halloween", "trick"], ["Easter", "hunt"], ["Bonfire Night", "sparklers"],
+        ["birthday", "wish"], ["wedding", "confetti"], ["New Year's Eve", "resolutions"], ["Valentine's Day", "roses"],
+        ["Mother's Day", "breakfast in bed"], ["Diwali", "lamps"], ["Eid", "crescent"], ["Thanksgiving", "gratitude"],
+        ["Pancake Day", "lemon and sugar"], ["carnival", "floats"], ["fireworks", "bang"], ["party", "balloons"],
+        ["picnic", "blanket"], ["graduation", "gown"], ["baby shower", "gifts"], ["anniversary", "years"],
+        ["honeymoon", "getaway"], ["school reunion", "faces"], ["christening", "font"], ["prom", "limo"],
+        ["stag do", "weekend"], ["hen party", "L plates"], ["music festival", "wristbands"], ["parade", "marching"],
+        ["Santa", "chimney"], ["Burns Night", "address"]
+      ]
+    }
+  ]
+}

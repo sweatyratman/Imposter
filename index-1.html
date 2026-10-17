@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1016">
+<title>Impostor</title>
+<style>
+  :root {
+    --bg: #0e1016; --card: #171a23; --card2: #1f2330; --line: #2c3142;
+    --text: #eef0f6; --muted: #8d93a7;
+    --accent: #7c5cff; --danger: #ff4d6d; --ok: #2ecf8f; --warn: #ff9f43;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.4; }
+  body { min-height: 100vh; min-height: 100dvh; }
+  #app { max-width: 520px; margin: 0 auto;
+    padding: calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom)); }
+  h1 { margin: 0; font-size: 2rem; letter-spacing: .04em; }
+  h2 { margin: 0; font-size: 1.6rem; }
+  h3 { margin: 0; font-size: 1.05rem; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .small { font-size: .88rem; }
+  .lead { font-size: 1.08rem; color: #cfd3e2; }
+
+  .screen { display: flex; flex-direction: column; gap: 14px; }
+  .screen.center { min-height: calc(100dvh - 60px); justify-content: center; text-align: center; }
+  header { text-align: center; padding: 8px 0 4px; }
+  header h1 { background: linear-gradient(90deg, #a78bff, #ff4d6d); -webkit-background-clip: text;
+    background-clip: text; color: transparent; }
+
+  .card { background: var(--card); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .row b { font-size: 1.15rem; }
+
+  input[type=range] { width: 100%; accent-color: var(--accent); height: 32px; margin: 0; }
+  input[type=text], input[type=url] { width: 100%; background: var(--card2); border: 1px solid var(--line);
+    color: var(--text); border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 1rem; }
+  input[type=text]:focus, input[type=url]:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 360px) { .names { grid-template-columns: 1fr; } }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--card2); color: var(--text); border-radius: 999px;
+    padding: 10px 14px; font: inherit; font-size: .95rem; cursor: pointer; }
+  .chip.sel { background: var(--accent); border-color: var(--accent); font-weight: 700; }
+
+  .bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--card2); }
+  .bar span { display: block; height: 100%; transition: flex-basis .15s; }
+  .wrow { display: flex; flex-direction: column; gap: 2px; }
+  .whead { display: flex; justify-content: space-between; align-items: center; font-size: .95rem; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+  .check { display: flex; gap: 10px; align-items: center; font-size: .95rem; }
+  .check input { width: 22px; height: 22px; accent-color: var(--accent); }
+  details summary { cursor: pointer; font-weight: 700; }
+  details[open] summary { margin-bottom: 12px; }
+
+  .btn { appearance: none; border: 0; border-radius: 16px; min-height: 54px; padding: 0 20px; font: inherit;
+    font-weight: 700; font-size: 1.05rem; color: #fff; background: var(--card2); width: 100%; cursor: pointer; }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .35; pointer-events: none; }
+  .btn.primary { background: var(--accent); }
+  .btn.danger { background: var(--danger); }
+  .btn.ok { background: var(--ok); color: #06281c; }
+  .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); font-weight: 600; }
+  .btn.big { min-height: 62px; font-size: 1.2rem; }
+  .btn.small { min-height: 42px; font-size: .95rem; }
+
+  .pill { align-self: center; background: var(--card2); border-radius: 999px; padding: 6px 14px; font-size: .95rem; }
+  .bigname { font-size: 2.6rem; font-weight: 800; word-break: break-word; }
+  .notice { background: var(--card); border-radius: 14px; padding: 12px 14px; color: #cfd3e2; }
+
+  .role { border-radius: 26px; padding: 30px 18px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .role.imp { background: linear-gradient(160deg, #5a1224, #2b0a14); border: 1px solid #ff4d6d55; }
+  .role.crew { background: linear-gradient(160deg, #12404a, #0b2229); border: 1px solid #2ecf8f55; }
+  .role .tag { font-weight: 800; letter-spacing: .08em; font-size: 1.15rem; }
+  .role.imp .tag { color: #ff8da1; }
+  .role.crew .tag { color: #6ee7b7; }
+  .role .label { color: var(--muted); font-size: .9rem; margin-top: 8px; text-transform: uppercase; letter-spacing: .1em; }
+  .role .secret { font-size: 2.4rem; font-weight: 800; word-break: break-word; }
+
+  .pick { text-align: left; display: flex; justify-content: space-between; align-items: center; }
+  .pick.sel { background: var(--danger); }
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .rrow { display: flex; justify-content: space-between; align-items: center; background: var(--card); border-radius: 12px; padding: 10px 14px; }
+  .badge { font-size: .8rem; font-weight: 800; padding: 3px 10px; border-radius: 99px; }
+  .badge.imp { background: #ff4d6d33; color: #ff8da1; }
+  .badge.crew { background: #2ecf8f33; color: #6ee7b7; }
+  .badge.win { background: #ffd16633; color: #ffd166; }
+  .out { color: var(--muted); font-size: .85rem; margin-right: 8px; }
+  .win-imp { color: #ff8da1; }
+  .win-crew { color: #6ee7b7; }
+  .msg { color: var(--warn); min-height: 1.4em; }
+  .secretbox { background: var(--card); border-radius: 18px; padding: 18px; font-size: 2.2rem; font-weight: 800; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- constants & fallback data ---------- */
+const KEY = 'impostor-party-v1';
+const WORDS_CACHE_KEY = 'impostor-party-words-v1';
+const DEFAULT_WORDS_URL = 'words.json';
+const MIN_PLAYERS = 3, MAX_PLAYERS = 20;
+const SEG_COLOURS = { '1': '#7c5cff', '2': '#ff9f43', '3': '#ff4d6d', 'all': '#2ecf8f' };
+
+// Only used if words.json can't be loaded and nothing is cached.
+const FALLBACK = { categories: [
+  { name: 'Animals', emoji: '🐾', words: [['penguin','ice'],['giraffe','spots'],['octopus','ink'],['owl','night'],['camel','desert'],['frog','pond'],['shark','fin'],['zebra','stripes']] },
+  { name: 'Food & Drink', emoji: '🍕', words: [['pizza','slice'],['banana','peel'],['sushi','rice'],['popcorn','cinema'],['pancake','flip'],['lemon','sour'],['egg','shell'],['honey','sticky']] }
+] };
+
+/* ---------- state ---------- */
+const defaultSettings = () => ({
+  playerCount: 5,
+  names: [],
+  category: 'random',
+  weights: { '1': 70, '2': 20, '3': 7, 'all': 3 },
+  announce: false,
+  wordsUrl: ''
+});
+let settings = defaultSettings();
+let game = null;          // current round, or null when on the setup screen
+let recent = [];          // recently used words, so rounds don't repeat
+let words = { categories: [], status: 'fallback', source: '' };
+
+const $app = document.getElementById('app');
+const $ = (sel) => $app.querySelector(sel);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const rand = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[rand(arr.length)];
+const shuffle = (arr) => { for (let i = arr.length - 1; i > 0; i--) { const j = rand(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+const plural = (n, one, many) => n === 1 ? one : many;
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ settings, game, recent })); } catch (e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    const base = defaultSettings();
+    if (d.settings) {
+      settings = Object.assign(base, d.settings, { weights: Object.assign(base.weights, d.settings.weights || {}) });
+      settings.playerCount = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, +settings.playerCount || 5));
+      if (!Array.isArray(settings.names)) settings.names = [];
+    }
+    game = d.game || null;
+    recent = Array.isArray(d.recent) ? d.recent : [];
+    // If the phone was locked or the page was closed mid-reveal, never leave a role on screen.
+    if (game && game.screen === 'reveal') game.screen = 'pass';
+    if (game && game.judging) game.judging = false;
+  } catch (e) { game = null; }
+}
+
+/* ---------- word list (fetched from the web, with cache + fallback) ---------- */
+function sanitise(data) {
+  const out = [];
+  const list = data && Array.isArray(data.categories) ? data.categories : [];
+  for (const c of list) {
+    if (!c || typeof c.name !== 'string' || !Array.isArray(c.words)) continue;
+    const ws = c.words
+      .map((w) => Array.isArray(w) ? w : [w && w.word, w && w.hint])
+      .filter((w) => typeof w[0] === 'string' && typeof w[1] === 'string' && w[0].trim() && w[1].trim())
+      .map((w) => [w[0].trim(), w[1].trim()]);
+    if (ws.length) out.push({ name: c.name.trim(), emoji: typeof c.emoji === 'string' ? c.emoji : '', words: ws });
+  }
+  return out;
+}
+function readWordsCache() {
+  try {
+    const d = JSON.parse(localStorage.getItem(WORDS_CACHE_KEY));
+    const cats = sanitise(d);
+    return cats.length ? { categories: cats, source: d.url || '' } : null;
+  } catch (e) { return null; }
+}
+function initWordsSync() {
+  const cached = readWordsCache();
+  words = cached ? { categories: cached.categories, status: 'cached', source: cached.source }
+                 : { categories: sanitise(FALLBACK), status: 'fallback', source: '' };
+}
+async function loadWords() {
+  const url = (settings.wordsUrl || '').trim() || DEFAULT_WORDS_URL;
+  words.status = 'loading'; refreshWordsUI();
+  try {
+    const res = await fetch(url, { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const cats = sanitise(data);
+    if (!cats.length) throw new Error('no valid categories');
+    words = { categories: cats, status: 'online', source: url };
+    try { localStorage.setItem(WORDS_CACHE_KEY, JSON.stringify({ url, categories: cats })); } catch (e) {}
+  } catch (err) {
+    const cached = readWordsCache();
+    words = cached ? { categories: cached.categories, status: 'cached', source: cached.source, error: String(err.message || err) }
+                   : { categories: sanitise(FALLBACK), status: 'fallback', source: '', error: String(err.message || err) };
+  }
+  if (settings.category !== 'random' && !words.categories.some((c) => c.name === settings.category)) settings.category = 'random';
+  save();
+  refreshWordsUI();
+}
+function wordsStatusText() {
+  const cats = words.categories.length;
+  const total = words.categories.reduce((s, c) => s + c.words.length, 0);
+  if (words.status === 'loading') return 'Loading words…';
+  if (words.status === 'online') return `✓ ${cats} categories, ${total} words loaded from ${words.source}`;
+  if (words.status === 'cached') return `Couldn't reach the word list, so using the last saved copy (${cats} categories).`;
+  return `Couldn't load the word list, so using a small built-in one (${cats} categories).`;
+}
+function refreshWordsUI() {
+  if (game) return;
+  if ($('#cats')) renderCats();
+  if ($('#wstatus')) $('#wstatus').textContent = wordsStatusText();
+}
+
+/* ---------- impostor-count chances ---------- */
+function validOptions(n) {
+  const o = [];
+  for (const c of [1, 2, 3]) if (c < n) o.push({ key: String(c), count: c, label: c === 1 ? '1 impostor' : c + ' impostors' });
+  o.push({ key: 'all', count: n, label: 'Everyone is an impostor' });
+  return o;
+}
+function effective(n) {
+  const opts = validOptions(n);
+  const total = opts.reduce((s, o) => s + (+settings.weights[o.key] || 0), 0);
+  return opts.map((o) => ({ ...o, pct: total ? (+settings.weights[o.key] || 0) / total * 100 : (o.key === '1' ? 100 : 0) }));
+}
+function chooseOption(n) {
+  const eff = effective(n);
+  let r = Math.random() * 100, acc = 0;
+  for (const o of eff) { acc += o.pct; if (r < acc && o.pct > 0) return o; }
+  return eff.filter((o) => o.pct > 0).pop() || eff[0];
+}
+
+/* ---------- round logic ---------- */
+function getNames() {
+  const seen = {}, out = [];
+  for (let i = 0; i < settings.playerCount; i++) {
+    let nm = (settings.names[i] || '').trim() || `Player ${i + 1}`;
+    const k = nm.toLowerCase();
+    seen[k] = (seen[k] || 0) + 1;
+    if (seen[k] > 1) nm += ` (${seen[k]})`;
+    out.push(nm);
+  }
+  return out;
+}
+function startRound() {
+  const n = settings.playerCount;
+  const cats = words.categories;
+  const cat = settings.category === 'random' ? pick(cats) : (cats.find((c) => c.name === settings.category) || pick(cats));
+  let pool = cat.words.filter((w) => !recent.includes(w[0]));
+  if (!pool.length) pool = cat.words;
+  const [word, hint] = pick(pool);
+  recent.push(word); if (recent.length > 60) recent.shift();
+  const count = chooseOption(n).count;
+  const impostors = Array(n).fill(false);
+  shuffle([...Array(n).keys()]).slice(0, count).forEach((i) => { impostors[i] = true; });
+  game = {
+    screen: 'pass', players: getNames(), impostors, word, hint,
+    category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
+    guessesLeft: Math.min(count, 3), guessMsg: '', judging: false, outcome: null,
+    announce: !!settings.announce, impostorCount: count
+  };
+  save(); render();
+}
+const activeIdx = () => game.players.map((_, i) => i).filter((i) => !game.out.includes(i));
+const remainingImpostors = () => game.impostors.reduce((s, v, i) => s + (v && !game.out.includes(i) ? 1 : 0), 0);
+const crewCount = () => game.players.length - game.impostorCount;
+
+function finish(winner, reason, winners) {
+  game.outcome = { winner, reason, winners: winners || null };
+  game.screen = 'result';
+  game.judging = false;
+  save(); render();
+}
+function confirmVote() {
+  const i = game.voteSel;
+  if (i == null) return;
+  game.out.push(i); game.lastOut = i; game.voteSel = null;
+  if (!game.impostors[i]) {
+    finish('impostors', `${game.players[i]} was a crewmate. The crew voted out the wrong person.`);
+    return;
+  }
+  // Last-two rule (only reachable when there were n-1 impostors, or everyone was one):
+  //  - 1 crewmate + 1 impostor left: the crewmate wins automatically, unless the last impostor guesses the word.
+  //  - 2 impostors left (no crew at all): both remaining impostors win.
+  const left = activeIdx();
+  if (left.length === 2) {
+    const rem = remainingImpostors();
+    if (rem === 2) {
+      const names = left.map((k) => game.players[k]);
+      finish('impostors', `Only two players are left and both are impostors, so ${names[0]} and ${names[1]} both win.`, left);
+      return;
+    }
+    if (rem === 1) {
+      game.lastTwo = true; game.guessesLeft = 1;
+      game.screen = 'guess'; game.guessMsg = ''; game.judging = false; save(); render();
+      return;
+    }
+  }
+  game.screen = 'found'; save(); render();
+}
+function stopVoting() {
+  const rem = remainingImpostors();
+  if (rem > 0) {
+    finish('impostors', `The crew stopped voting while ${rem === 1 ? 'an impostor was' : rem + ' impostors were'} still hiding.`);
+  } else {
+    game.screen = 'guess'; game.guessMsg = ''; game.judging = false; save(); render();
+  }
+}
+
+/* guessing */
+const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  if (Math.abs(m - n) > 1) return 2;
+  const d = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[m][n];
+}
+function guessMatches(guess, word) {
+  const g = norm(guess), w = norm(word);
+  if (!g) return false;
+  if (g === w || g === w + 's' || g + 's' === w) return true;
+  return w.length >= 5 && lev(g, w) <= 1;
+}
+function submitGuess() {
+  const el = $('#guessInput');
+  const val = el ? el.value : '';
+  if (!norm(val)) { game.guessMsg = 'Type a guess first.'; render(); return; }
+  if (guessMatches(val, game.word)) {
+    finish('impostors', `An impostor correctly guessed the word: “${game.word}”.`);
+    return;
+  }
+  game.guessesLeft--;
+  if (game.guessesLeft <= 0) finish('crew', 'The impostors failed to guess the word.');
+  else { game.guessMsg = `Nope! ${game.guessesLeft} ${plural(game.guessesLeft, 'guess', 'guesses')} left.`; save(); render(); }
+}
+
+/* ---------- setup screen ---------- */
+function renderSetup() {
+  const n = settings.playerCount;
+  $app.innerHTML = `
+  <div class="screen">
+    <header><h1>IMPOSTOR</h1><p class="muted">Pass the phone round. Find the faker.</p></header>
+
+    <section class="card">
+      <div class="row"><h3>Players</h3><b id="countVal">${n}</b></div>
+      <input type="range" id="count" min="${MIN_PLAYERS}" max="${MAX_PLAYERS}" value="${n}" aria-label="Number of players">
+      <div id="names" class="names"></div>
+    </section>
+
+    <section class="card">
+      <h3>Category</h3>
+      <div id="cats" class="chips"></div>
+    </section>
+
+    <section class="card">
+      <h3>Impostors per round</h3>
+      <p class="muted small">Set how likely each number of impostors is. The sliders are rebalanced so the chances always add up to 100%.</p>
+      <div id="split" class="bar"></div>
+      <div id="weights" class="stack"></div>
+      <label class="check"><input type="checkbox" id="announce" ${settings.announce ? 'checked' : ''}> Tell everyone how many impostors there are</label>
+    </section>
+
+    <details class="card">
+      <summary>Word list</summary>
+      <div class="stack">
+        <p class="muted small">Words and hints are fetched from <b>words.json</b> on the site. To use your own list, paste a link to a JSON file in the same format (a raw GitHub or Gist link works).</p>
+        <input type="url" id="wurl" placeholder="Custom word list URL (optional)" value="${esc(settings.wordsUrl || '')}" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn small" data-act="reload">Reload words</button>
+        <p class="muted small" id="wstatus"></p>
+      </div>
+    </details>
+
+    <button class="btn primary big" data-act="start">Start game</button>
+  </div>`;
+  renderNames(); renderCats(); renderWeights();
+  $('#wstatus').textContent = wordsStatusText();
+}
+function renderNames() {
+  const box = $('#names');
+  let html = '';
+  for (let i = 0; i < settings.playerCount; i++)
+    html += `<input type="text" data-name="${i}" maxlength="20" placeholder="Player ${i + 1}" value="${esc(settings.names[i] || '')}" autocomplete="off" autocapitalize="words" aria-label="Player ${i + 1} name">`;
+  box.innerHTML = html;
+}
+function renderCats() {
+  const box = $('#cats');
+  if (!box) return;
+  const chip = (key, label, sel) => `<button class="chip${sel ? ' sel' : ''}" data-act="cat" data-cat="${esc(key)}">${label}</button>`;
+  box.innerHTML = chip('random', '🎲 Random (any category)', settings.category === 'random') +
+    words.categories.map((c) => chip(c.name, `${esc(c.emoji)} ${esc(c.name)}`.trim(), settings.category === c.name)).join('');
+}
+function renderWeights() {
+  const eff = effective(settings.playerCount);
+  $('#weights').innerHTML = eff.map((o) => `
+    <div class="wrow">
+      <div class="whead"><span><i class="dot" style="background:${SEG_COLOURS[o.key]}"></i>${o.label}</span><b data-pct="${o.key}">${Math.round(o.pct)}%</b></div>
+      <input type="range" min="0" max="100" step="1" value="${+settings.weights[o.key] || 0}" data-weight="${o.key}" aria-label="Chance of ${o.label}">
+    </div>`).join('');
+  updateSplit();
+}
+function updateSplit() {
+  const eff = effective(settings.playerCount);
+  $('#split').innerHTML = eff.map((o) => `<span style="flex-basis:${o.pct}%;flex-grow:0;flex-shrink:0;background:${SEG_COLOURS[o.key]}"></span>`).join('');
+  eff.forEach((o) => { const el = $(`[data-pct="${o.key}"]`); if (el) el.textContent = Math.round(o.pct) + '%'; });
+}
+
+/* ---------- game screens ---------- */
+const SCREENS = {
+  pass: () => `
+    <div class="screen center">
+      <p class="muted">Player ${game.idx + 1} of ${game.players.length}</p>
+      <h2>Pass the phone to</h2>
+      <div class="bigname">${esc(game.players[game.idx])}</div>
+      <p class="muted">Make sure nobody else can see the screen.</p>
+      <button class="btn primary big" data-act="reveal">Tap to reveal my role</button>
+    </div>`,
+
+  reveal: () => {
+    const imp = game.impostors[game.idx];
+    const last = game.idx === game.players.length - 1;
+    const cat = `${esc(game.emoji)} ${esc(game.category)}`.trim();
+    const body = imp
+      ? `<div class="role imp"><div class="tag">YOU ARE THE IMPOSTOR 🕵️</div>
+           <div class="label">Category</div><div>${cat}</div>
+           <div class="label">Your hint</div><div class="secret">${esc(game.hint)}</div>
+           <p class="muted small">Blend in. Don't give yourself away.</p></div>`
+      : `<div class="role crew"><div class="tag">YOU ARE CREW ✅</div>
+           <div class="label">Category</div><div>${cat}</div>
+           <div class="label">The secret word</div><div class="secret">${esc(game.word)}</div>
+           <p class="muted small">Prove you know it, without making it too easy.</p></div>`;
+    return `<div class="screen center">${body}
+      <button class="btn big" data-act="hide">${last ? 'Hide and start the game' : 'Hide and pass it on'}</button></div>`;
+  },
+
+  playing: () => {
+    const c = game.impostorCount, n = game.players.length;
+    const note = game.announce
+      ? `<p class="notice">${c === n ? 'Everyone is an impostor this round 😈' : `${c} ${plural(c, 'impostor is', 'impostors are')} among you.`}</p>` : '';
+    return `<div class="screen center">
+      <div class="pill">${esc(game.emoji)} ${esc(game.category)}</div>
+      <h1>Game on! 🎭</h1>
+      <p class="lead">Take turns giving clues about the word. Be vague enough that an impostor can't guess it, but specific enough to prove you know it.</p>
+      ${note}
+      <button class="btn primary big" data-act="ready">We're ready to vote</button>
+      <button class="btn ghost small" data-act="quit">End game</button>
+    </div>`;
+  },
+
+  vote: () => {
+    const sel = game.voteSel;
+    const out = game.out.map((i) => esc(game.players[i]));
+    const buttons = activeIdx().map((i) =>
+      `<button class="btn pick${sel === i ? ' sel' : ''}" data-act="pickvote" data-i="${i}"><span>${esc(game.players[i])}</span><span>${sel === i ? '✔' : ''}</span></button>`).join('');
+    return `<div class="screen">
+      <header><h2>Who is the impostor?</h2>
+        <p class="muted">Discuss, agree on one person, then pick them.</p></header>
+      ${out.length ? `<p class="muted small">Already voted out: ${out.join(', ')}</p>` : ''}
+      <div class="list">${buttons}</div>
+      <button class="btn danger big" data-act="confirm" ${sel == null ? 'disabled' : ''}>${sel == null ? 'Vote out…' : 'Vote out ' + esc(game.players[sel])}</button>
+      <button class="btn ghost small" data-act="back">Back to discussion</button>
+    </div>`;
+  },
+
+  found: () => {
+    const rem = remainingImpostors();
+    const canVote = activeIdx().length > 1;
+    const noCrew = crewCount() === 0;
+    const hint = game.announce
+      ? `<p class="notice">${rem === 0 ? 'That was the last impostor.' : `${rem} ${plural(rem, 'impostor is', 'impostors are')} still hiding.`}</p>` : '';
+    return `<div class="screen center">
+      <div style="font-size:3rem">✅</div>
+      <h1>Correct!</h1>
+      <p class="lead"><b>${esc(game.players[game.lastOut])}</b> was an impostor.</p>
+      ${hint}
+      ${noCrew
+        ? `<p class="lead">There's no crew this round, so keep voting until only two players are left.</p>
+           <button class="btn danger big" data-act="again" ${canVote ? '' : 'disabled'}>Vote again</button>`
+        : `<h3>Does the crew want to vote someone else out?</h3>
+           <button class="btn danger big" data-act="again" ${canVote ? '' : 'disabled'}>Yes, vote again</button>
+           <button class="btn big" data-act="stop">No, we're done</button>`}
+    </div>`;
+  },
+
+  guess: () => {
+    const s = game.impostorCount > 1 ? 's' : '';
+    if (game.judging) {
+      return `<div class="screen center">
+        <p class="muted">Category: ${esc(game.emoji)} ${esc(game.category)}</p>
+        <h3>The secret word was</h3>
+        <div class="secretbox">${esc(game.word)}</div>
+        <p class="lead">Did an impostor say it?</p>
+        <button class="btn ok big" data-act="judgeYes">Yes, they got it</button>
+        <button class="btn danger big" data-act="judgeNo">No, they didn't</button>
+      </div>`;
+    }
+    const intro = game.lastTwo
+      ? `<h1>Crew wins… almost!</h1>
+         <p class="lead">Only the crewmate and one impostor are left, so the crew wins automatically. But the last impostor gets one guess at the secret word to steal it.</p>`
+      : `<h1>🎉 All impostors found!</h1>
+         <p class="lead">But the impostor${s} can still steal the win. Hand the phone to an impostor and let them guess the secret word.</p>`;
+    return `<div class="screen center">
+      ${intro}
+      <p class="muted">Category: ${esc(game.emoji)} ${esc(game.category)}</p>
+      <input type="text" id="guessInput" placeholder="Type the secret word" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Guess the word">
+      <p class="msg">${esc(game.guessMsg || '')}</p>
+      <button class="btn primary big" data-act="guess">Lock in guess</button>
+      <button class="btn small" data-act="judge">Say it out loud instead</button>
+      <button class="btn ghost small" data-act="giveup">Impostors give up</button>
+    </div>`;
+  },
+
+  result: () => {
+    const o = game.outcome;
+    const noCrew = crewCount() === 0;
+    const winners = o.winners || [];
+    let title, cls;
+    if (o.winner === 'impostors') { title = 'Impostors win! 😈'; cls = 'win-imp'; }
+    else if (noCrew) { title = 'Everyone was an impostor!'; cls = 'win-imp'; }
+    else { title = 'Crew wins! 🎉'; cls = 'win-crew'; }
+    const reason = (o.winner === 'crew' && noCrew)
+      ? 'There was no crew this round, so nobody really wins. Nice bluffing.' : o.reason;
+    const rows = game.players.map((nm, i) => {
+      const pos = game.out.indexOf(i);
+      const won = winners.includes(i) ? '<span class="badge win">🏆 WINS</span> ' : '';
+      return `<div class="rrow"><span>${esc(nm)}</span><span>${pos >= 0 ? `<span class="out">voted out #${pos + 1}</span>` : ''}${won}<span class="badge ${game.impostors[i] ? 'imp' : 'crew'}">${game.impostors[i] ? 'IMPOSTOR' : 'CREW'}</span></span></div>`;
+    }).join('');
+    return `<div class="screen">
+      <header><h1 class="${cls}" style="font-size:1.8rem">${title}</h1><p class="lead" style="margin-top:8px">${esc(reason)}</p></header>
+      <div class="card">
+        <div class="row"><span class="muted">Category</span><b>${esc(game.emoji)} ${esc(game.category)}</b></div>
+        <div class="row"><span class="muted">Secret word</span><b>${esc(game.word)}</b></div>
+        <div class="row"><span class="muted">Impostor hint</span><b>${esc(game.hint)}</b></div>
+      </div>
+      <div class="list">${rows}</div>
+      <button class="btn primary big" data-act="replay">Play again</button>
+      <button class="btn small" data-act="settings">Change settings</button>
+    </div>`;
+  }
+};
+
+function render() {
+  if (!game) { renderSetup(); window.scrollTo(0, 0); return; }
+  $app.innerHTML = SCREENS[game.screen]();
+  window.scrollTo(0, 0);
+  const g = $('#guessInput'); if (g) g.focus({ preventScroll: true });
+}
+
+/* ---------- events ---------- */
+const ACTIONS = {
+  start() { if (words.categories.length) startRound(); },
+  cat(t) { settings.category = t.dataset.cat; renderCats(); save(); },
+  reload() { settings.wordsUrl = ($('#wurl').value || '').trim(); save(); loadWords(); },
+  reveal() { game.screen = 'reveal'; save(); render(); },
+  hide() {
+    if (game.idx < game.players.length - 1) { game.idx++; game.screen = 'pass'; }
+    else game.screen = 'playing';
+    save(); render();
+  },
+  ready() { game.screen = 'vote'; game.voteSel = null; save(); render(); },
+  back() { game.screen = 'playing'; game.voteSel = null; save(); render(); },
+  pickvote(t) { game.voteSel = +t.dataset.i; save(); render(); },
+  confirm() { confirmVote(); },
+  again() { game.screen = 'vote'; game.voteSel = null; save(); render(); },
+  stop() { stopVoting(); },
+  guess() { submitGuess(); },
+  judge() { game.judging = true; save(); render(); },
+  judgeYes() { finish('impostors', 'An impostor said the word out loud and got it right.'); },
+  judgeNo() { finish('crew', 'The impostors failed to guess the word.'); },
+  giveup() { finish('crew', 'The impostors gave up on guessing.'); },
+  replay() { startRound(); },
+  settings() { game = null; save(); render(); },
+  quit() { if (confirm('End this game and go back to setup?')) { game = null; save(); render(); } }
+};
+$app.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (t && ACTIONS[t.dataset.act]) ACTIONS[t.dataset.act](t);
+});
+$app.addEventListener('input', (e) => {
+  const t = e.target;
+  if (game) return;
+  if (t.id === 'count') {
+    settings.playerCount = +t.value; $('#countVal').textContent = t.value;
+    renderNames(); renderWeights(); save();
+  } else if (t.dataset.name !== undefined) {
+    settings.names[+t.dataset.name] = t.value; save();
+  } else if (t.dataset.weight) {
+    settings.weights[t.dataset.weight] = +t.value; updateSplit(); save();
+  } else if (t.id === 'announce') {
+    settings.announce = t.checked; save();
+  } else if (t.id === 'wurl') {
+    settings.wordsUrl = t.value; save();
+  }
+});
+$app.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.id === 'guessInput') { e.preventDefault(); submitGuess(); }
+});
+
+/* Phone locked or tab switched: never leave a role or the secret word on screen.
+   No wake lock is requested, so the phone is free to sleep; the game state is saved and resumes. */
+function hideSecrets() {
+  if (!game) return;
+  if (game.screen === 'reveal') { game.screen = 'pass'; save(); render(); }
+  else if (game.screen === 'guess' && game.judging) { game.judging = false; save(); render(); }
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) hideSecrets(); });
+window.addEventListener('pagehide', hideSecrets);
+
+/* ---------- boot ---------- */
+load();
+initWordsSync();
+if (settings.category !== 'random' && !words.categories.some((c) => c.name === settings.category)) settings.category = 'random';
+render();
+loadWords();
+})();
+</script>
+</body>
+</html>

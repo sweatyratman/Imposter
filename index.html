@@ -16,8 +16,15 @@
   html, body { margin: 0; background: var(--bg); color: var(--text);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.4; }
   body { min-height: 100vh; min-height: 100dvh; }
+  #bar { position: sticky; top: 0; z-index: 10; display: flex; gap: 8px; justify-content: center;
+    max-width: 520px; margin: 0 auto; padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+    background: rgba(14,16,22,.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .barbtn { flex: 1; min-height: 44px; border: 1px solid var(--line); border-radius: 14px; background: var(--card2);
+    color: var(--text); font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; }
+  .barbtn.primary { background: var(--accent); border-color: var(--accent); }
+  .barbtn:active { transform: scale(.98); }
   #app { max-width: 520px; margin: 0 auto;
-    padding: calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom)); }
+    padding: 8px 16px calc(28px + env(safe-area-inset-bottom)); }
   h1 { margin: 0; font-size: 2rem; letter-spacing: .04em; }
   h2 { margin: 0; font-size: 1.6rem; }
   h3 { margin: 0; font-size: 1.05rem; }
@@ -27,7 +34,7 @@
   .lead { font-size: 1.08rem; color: #cfd3e2; }
 
   .screen { display: flex; flex-direction: column; gap: 14px; }
-  .screen.center { min-height: calc(100dvh - 60px); justify-content: center; text-align: center; }
+  .screen.center { min-height: calc(100dvh - 130px); justify-content: center; text-align: center; }
   header { text-align: center; padding: 8px 0 4px; }
   header h1 { background: linear-gradient(90deg, #a78bff, #ff4d6d); -webkit-background-clip: text;
     background-clip: text; color: transparent; }
@@ -101,6 +108,10 @@
 </style>
 </head>
 <body>
+<nav id="bar" aria-label="Game controls">
+  <button class="barbtn" data-nav="home">🏠 Home</button>
+  <button class="barbtn primary" data-nav="new">🔄 New game</button>
+</nav>
 <main id="app"></main>
 
 <script>
@@ -591,6 +602,20 @@ const ACTIONS = {
 $app.addEventListener('click', (e) => {
   const t = e.target.closest('[data-act]');
   if (t && ACTIONS[t.dataset.act]) ACTIONS[t.dataset.act](t);
+});
+/* Always-visible top bar: Home returns to setup, New game deals a fresh round with the current settings. */
+const inProgress = () => game && game.screen !== 'result';
+document.getElementById('bar').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-nav]');
+  if (!t) return;
+  if (t.dataset.nav === 'home') {
+    if (!game) { window.scrollTo(0, 0); return; }
+    if (inProgress() && !confirm('Leave this game and go back to setup?')) return;
+    game = null; save(); render();
+  } else {
+    if (inProgress() && !confirm('Abandon this game and start a new one?')) return;
+    if (words.categories.length) startRound();
+  }
 });
 $app.addEventListener('input', (e) => {
   const t = e.target;

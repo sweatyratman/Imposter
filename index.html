@@ -31,6 +31,7 @@
     color-scheme: dark;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  .fit { overflow-wrap: normal; word-break: normal; hyphens: manual; }
   html, body { margin: 0; background: var(--table); color: var(--paper); font-family: var(--body);
     font-size: 17px; line-height: 1.45; }
   body { min-height: 100vh; min-height: 100dvh; overflow-x: hidden;
@@ -57,10 +58,14 @@
   .barbtn svg { width: 18px; height: 18px; }
   .barbtn[data-nav="new"] { margin-left: auto; border-color: var(--brass); color: var(--brass); }
   .barbtn:active { transform: translateY(1px); }
+  #bar { flex-wrap: wrap; }
+  .barcat { flex-basis: 100%; order: 3; display: flex; justify-content: center; }
+  .barcat[hidden] { display: none; }
+  .barcat span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; font-size: .92rem; color: #d9def0; }
 
   #app { max-width: 520px; margin: 0 auto; padding: 12px 16px calc(32px + env(safe-area-inset-bottom)); }
   .screen { display: flex; flex-direction: column; gap: 16px; }
-  .screen.center { min-height: calc(100dvh - 110px); justify-content: center; align-items: stretch; text-align: center; }
+  .screen.center { min-height: calc(100dvh - 150px); justify-content: center; align-items: stretch; text-align: center; }
 
   /* ---------- setup ---------- */
   .masthead { display: flex; align-items: center; gap: 14px; padding: 18px 0 6px; }
@@ -140,7 +145,7 @@
 
   /* ---------- cards ---------- */
   .c3d { position: relative; width: var(--cw); aspect-ratio: 5 / 7; margin: 0 auto; perspective: 1200px;
-    display: block; border: 0; padding: 0; background: none; }
+    display: block; border: 0; padding: 0; background: none; font-size: calc(var(--cw) * .068); }
   .c3d[data-act] { cursor: pointer; }
   .c3d-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,.9,.3,1); }
   .c3d.flipped .c3d-inner { transform: rotateY(180deg); }
@@ -159,20 +164,31 @@
 
   /* faces */
   .cface { transform: rotateY(180deg); background: var(--paper); color: var(--ink); }
-  .cface::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .6s;
+  .cface::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    transition: opacity 1.5s ease-in 1.1s;  /* starts once the tape is off */
+    box-shadow: inset 0 0 34px rgba(55,14,8,.45), inset 0 0 6px rgba(40,10,5,.5);
     background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0 0.15 3 0 0 0 -2.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
+      radial-gradient(circle at 72% 24%, transparent 0 8.5%, rgba(105,22,14,.30) 9% 10.5%, rgba(105,22,14,.10) 11% 12.5%, transparent 13%),
+      radial-gradient(circle at 72% 24%, rgba(105,22,14,.10), transparent 9%),
+      radial-gradient(ellipse 24% 13% at 24% 80%, rgba(80,18,10,.34), transparent 70%),
+      radial-gradient(ellipse 12% 30% at 88% 70%, rgba(60,15,8,.22), transparent 72%),
+      radial-gradient(circle at 63% 72%, rgba(125,20,14,.55) 0 1.3%, transparent 1.6%),
+      radial-gradient(circle at 67.5% 75.5%, rgba(125,20,14,.5) 0 .8%, transparent 1.1%),
+      radial-gradient(circle at 58.5% 77%, rgba(125,20,14,.45) 0 .6%, transparent .9%),
+      radial-gradient(circle at 65% 68%, rgba(125,20,14,.4) 0 .5%, transparent .8%),
+      radial-gradient(ellipse at center, transparent 52%, rgba(70,30,12,.38) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.22 0 0 0 0 0.12 0 0 0 0 0.08 3.2 0 0 0 -2.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
       linear-gradient(118deg, transparent 36%, rgba(90,70,40,.07) 36.6%, rgba(255,255,255,.38) 37.4%, transparent 38.6%),
       linear-gradient(32deg, transparent 63%, rgba(90,70,40,.06) 63.5%, rgba(255,255,255,.3) 64.2%, transparent 65.4%),
       radial-gradient(ellipse 30% 18% at 78% 22%, rgba(120,90,50,.10), transparent 70%),
       radial-gradient(ellipse 26% 20% at 18% 80%, rgba(120,90,50,.09), transparent 70%);
   }
   .cface.imp::before { opacity: 1; }   /* the impostor's card is scuffed and creased */
-  .corner { position: absolute; width: 28px; display: grid; place-items: center; z-index: 1; }
-  .corner.tl { top: 12px; left: 12px; }
-  .corner.br { bottom: 12px; right: 12px; transform: rotate(180deg); }
-  .corner .mask { width: 28px; color: var(--red); --eye: var(--paper); }
-  .corner .peace { width: 20px; color: var(--teal-deep); --eye: var(--paper); }
+  .corner { position: absolute; width: 1.65em; display: grid; place-items: center; z-index: 1; }
+  .corner.tl { top: .7em; left: .7em; }
+  .corner.br { bottom: .7em; right: .7em; transform: rotate(180deg); }
+  .corner .mask { width: 1.65em; color: var(--red); --eye: var(--paper); }
+  .corner .peace { width: 1.2em; color: var(--teal-deep); --eye: var(--paper); }
   .cbody { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 4px; padding: 36px 20px; text-align: center; z-index: 1; }
   .role-title { font-family: var(--display); font-weight: 800; font-size: 1.15rem; line-height: 1.15; margin-bottom: 12px; }
@@ -180,11 +196,12 @@
   .crew .role-title, .idrole.crew { color: var(--teal-deep); }
   .flabel { color: var(--ink-soft); font-size: .82rem; margin-top: 6px; }
   .fvalue { font-weight: 700; }
-  .secret { font-family: var(--display); font-weight: 800; font-size: clamp(1.4rem, 7.5vw, 1.9rem); line-height: 1.1; overflow-wrap: anywhere; }
+  .secret { font-family: var(--display); font-weight: 800; font-size: clamp(1.4rem, 7.5vw, 1.9rem); line-height: 1.1; max-width: 100%; }
   .fnote { color: var(--ink-soft); font-size: .82rem; margin-top: 12px; max-width: 22ch; }
-  .idname { font-family: var(--display); font-weight: 800; font-size: clamp(1.35rem, 7vw, 1.75rem); line-height: 1.1; overflow-wrap: anywhere; }
-  .idrole { display: block; width: 100%; position: relative; margin-top: 18px; font-family: var(--display); font-weight: 800;
-    font-size: 1.25rem; min-height: 1.6em; }
+  .idname { display: block; width: 100%; font-family: var(--display); font-weight: 800; font-size: max(1.6em, 11px); line-height: 1.1; }
+  .idrole { display: block; width: 100%; position: relative; margin-top: 1em; font-family: var(--display); font-weight: 800;
+    font-size: 1.25em; min-height: 1.6em; }
+  .idbody { padding: 2em 1.1em; }
   .idsym { display: grid; place-items: center; height: 54px; margin-bottom: 6px; }
   .idsym .mask { width: 64px; color: var(--red); --eye: var(--paper); }
   .idsym .peace { width: 36px; color: var(--teal-deep); --eye: var(--paper); }
@@ -193,14 +210,14 @@
   .tape { position: absolute; z-index: 2; color: var(--paper); display: flex; align-items: center; justify-content: center;
     background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%, rgba(0,0,0,.35)), var(--tape);
     box-shadow: 0 2px 3px rgba(0,0,0,.35); transform-origin: left center; transform: rotate(var(--rot, 0deg)); }
-  .tape::after { content: ""; position: absolute; top: 0; bottom: 0; right: -12px; width: 16px; border-radius: 0 10px 10px 0;
+  .tape::after { content: ""; position: absolute; top: 0; bottom: 0; right: -.7em; width: .95em; border-radius: 0 .6em .6em 0;
     background: linear-gradient(90deg, #070707, #4a4a4a 45%, #1b1b1b 70%, #000);
     transform-origin: left center; transform: perspective(90px) rotateY(-58deg); }
-  .tape-role { left: -10px; right: 6px; top: -10px; bottom: -10px; --rot: -3deg; }
-  .tape-role span { font-family: var(--display); font-weight: 700; font-size: .9rem; letter-spacing: .06em; opacity: .9; }
-  .tape-corner { width: 70px; height: 24px; --rot: -45deg; }
-  .tape-corner.tl { top: 40px; left: -2px; }
-  .tape-corner.br { top: calc(100% - 8px); left: calc(100% - 52px); }
+  .tape-role { left: -.6em; right: .35em; top: -.6em; bottom: -.6em; --rot: -3deg; }
+  .tape-role span { font-family: var(--display); font-weight: 700; font-size: .68em; letter-spacing: .06em; opacity: .9; }
+  .tape-corner { width: 28%; height: 6.9%; --rot: -45deg; }
+  .tape-corner.tl { top: 11.4%; left: -.8%; }
+  .tape-corner.br { top: calc(100% - 2.3%); left: calc(100% - 20.8%); }
   .c3d.bounce .tape::after { animation: coil 1s .55s ease-out both; }
   @keyframes coil { 0% { transform: perspective(90px) rotateY(-58deg); } 25% { transform: perspective(90px) rotateY(-88deg); }
     50% { transform: perspective(90px) rotateY(-40deg); } 72% { transform: perspective(90px) rotateY(-66deg); }
@@ -228,11 +245,15 @@
   .kicker { color: var(--mute); }
   .passto { font-family: var(--body); font-weight: 400; font-size: 1.1rem; color: #d9def0; margin-top: 4px; }
   .bigname { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 11vw, 2.8rem); line-height: 1.05;
-    letter-spacing: -.02em; overflow-wrap: anywhere; }
+    letter-spacing: -.02em; }
   .tapnote { color: var(--mute); font-size: .95rem; min-height: 2.9em; }
 
   /* ---------- shuffle ---------- */
-  .shuffle-screen { --cw: min(54vw, 210px); }
+  .shuffle-screen { --cw: min(54vw, 210px); text-align: center; padding-top: 14px; }
+  .shufnote { min-height: 1.45em; }
+  .after-slot { min-height: 40px; }
+  .gameon-stack { gap: 14px; }
+  .table-area.landed .drawn { animation: none; }
   .table-area { position: relative; height: calc(var(--cw) * 1.4 + 40px); }
   .table-area .mini, .table-area .drawn { position: absolute; left: 50%; top: 20px; margin-left: calc(var(--cw) / -2); }
   .mini { width: var(--cw); aspect-ratio: 5 / 7; border-radius: 18px; overflow: hidden;
@@ -260,7 +281,7 @@
   .notice { background: var(--raised); border-left: 3px solid var(--brass); border-radius: 0 12px 12px 0; padding: 12px 14px; text-align: left; }
   .vote-head { text-align: left; padding-top: 8px; }
   .vote-head p { margin-top: 8px; }
-  .vote-title { font-size: clamp(2.1rem, 11vw, 2.7rem); font-weight: 800; letter-spacing: -.03em; }
+  .vote-title { font-size: clamp(1.7rem, 8.6vw, 2.3rem); font-weight: 800; letter-spacing: -.03em; }
   .suspects { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px 10px; }
   .suspect { position: relative; min-height: 108px; border: 0; border-radius: 14px; cursor: pointer; padding: 12px 8px;
     background: var(--paper); color: var(--ink); display: flex; flex-direction: column; align-items: center;
@@ -288,6 +309,35 @@
   .autobar span { display: block; height: 100%; background: var(--brass); transform-origin: left; animation: fill 4s linear both; }
   @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
+  /* voting: every suspect as a taped card */
+  .suspect-grid { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .grow { display: flex; justify-content: center; gap: 12px; }
+  .gcard { margin: 0; transition: transform .38s cubic-bezier(.5,0,.75,.3), opacity .38s; }
+  .gcard:active { transform: scale(.96); }
+  .gcard .tape::after { animation: twitch 1.9s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .gcard .tape-corner.br::after { animation-duration: 2.3s; }
+  .gcard .tape-corner.tl::after { animation-duration: 1.6s; }
+  @keyframes twitch {
+    0%, 62%, 100% { transform: perspective(90px) rotateY(-58deg); }
+    68% { transform: perspective(90px) rotateY(-86deg); }
+    74% { transform: perspective(90px) rotateY(-40deg); }
+    80% { transform: perspective(90px) rotateY(-70deg); }
+    86% { transform: perspective(90px) rotateY(-50deg); }
+    92% { transform: perspective(90px) rotateY(-61deg); } }
+  .gcard.away { transform: translateX(var(--dx)) rotate(calc(var(--dx) / 30)); opacity: 0; }
+  .gcard.chosen { transform: scale(1.06); transition: transform .25s ease-out; z-index: 2; }
+  .gcard.back-in { animation: backIn .4s cubic-bezier(.2,.8,.25,1) both; }
+  @keyframes backIn { from { transform: translateY(14px) scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
+  .fade { opacity: 0; transition: opacity .25s; }
+  .vote-head p { min-height: 1.45em; }
+
+  /* the stage: chosen card and reveal share one layout so the card never moves between them */
+  .stage { --cw: min(60vw, 236px); text-align: center; padding-top: 10px; }
+  .stage-head { min-height: 92px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .stage-foot { min-height: 120px; display: flex; flex-direction: column; gap: 14px; }
+  .stage-foot.rise, .vote-stage .stage-head { animation: rise .35s ease-out both; }
+  .stage .countdown { margin-top: 6px; }
+
   /* unmask: a pile of impostor cards that fans out */
   .unmask { --cw: min(54vw, 210px); }
   .unmask.n3 { --cw: min(40vw, 160px); --spread: 60%; }
@@ -297,7 +347,6 @@
     transform: translate(calc(var(--k) * 3px), calc(var(--k) * -3px)); transition: transform .55s cubic-bezier(.25,.9,.3,1); }
   .stack-area.fanned .c3d { transform: translateX(calc((var(--k) - (var(--n) - 1) / 2) * var(--spread, 60%))) rotate(calc((var(--k) - (var(--n) - 1) / 2) * 7deg)); }
   .stack-area .c3d.enter { animation: slideIn .45s cubic-bezier(.2,.8,.25,1) both; animation-delay: calc(var(--k) * 90ms); }
-  .unmask .idname { font-size: clamp(1rem, 5.5vw, 1.4rem); }
   .unmask.n3 .idsym .mask { width: 44px; }
 
   /* ---------- guess + results ---------- */
@@ -334,7 +383,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .c3d.enter, .c3d.exit, .c3d.suspense .c3d-inner, .c3d.bounce .tape::after, .tape.peel, .countdown.tick, .after,
-    .suspect .stamp, .autobar span, .table-area.draw .drawn, .stack-area .c3d.enter { animation: none !important; }
+    .suspect .stamp, .autobar span, .table-area.draw .drawn, .stack-area .c3d.enter, .gcard .tape::after, .gcard.back-in,
+    .stage-foot.rise, .vote-stage .stage-head { animation: none !important; }
     .c3d-inner, .mini, .stack-area .c3d, .bar span, .suspect, .btn, .cface::before { transition: none !important; }
   }
 </style>
@@ -342,6 +392,7 @@
 <body>
 <nav id="bar" aria-label="Game controls">
   <button class="barbtn" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home</button>
+  <div class="barcat" id="barcat" hidden></div>
   <button class="barbtn" data-nav="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>New game</button>
 </nav>
 <main id="app"></main>
@@ -370,7 +421,8 @@ const ICON = {
   check: svg('<path d="M4 12.5l5 5L20 6.5"/>'),
   x: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
   stop: svg('<rect x="6" y="6" width="12" height="12" rx="2"/>'),
-  next: svg('<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>')
+  next: svg('<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>'),
+  back: svg('<path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/>')
 };
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -678,14 +730,11 @@ const TAPES = `<span class="tape tape-corner tl"></span><span class="tape tape-c
 const ROLE_TAPE = `<span class="tape tape-role"><span>[REDACTED]</span></span>`;
 // The card dealt to each player: their role, the category and the word or hint.
 function roleFace(imp) {
-  const cat = catLabel();
   const body = imp
     ? `<div class="role-title">You're the impostor</div>
-       <div class="flabel">Category</div><div class="fvalue">${cat}</div>
        <div class="flabel">Your hint</div><div class="secret">${esc(game.hint)}</div>
        <p class="fnote">Blend in. Don't give yourself away.</p>`
     : `<div class="role-title">You're crew</div>
-       <div class="flabel">Category</div><div class="fvalue">${cat}</div>
        <div class="flabel">The secret word</div><div class="secret">${esc(game.word)}</div>
        <p class="fnote">Prove you know it, without making it too easy.</p>`;
   return `<div class="cside cface ${imp ? 'imp' : 'crew'}">${corners(symbol(imp))}<div class="cbody">${body}</div></div>`;
@@ -694,11 +743,10 @@ function roleFace(imp) {
 function idFace(name, role, { redacted = false, nameId = '' } = {}) {
   const known = role !== null && !redacted;
   const cls = known ? (role ? 'imp' : 'crew') : 'neutral';
-  const sym = role === null ? '' : `<span class="idsym">${symbol(role)}</span>`;
   const roleText = role === null ? '&nbsp;' : role ? 'Impostor' : 'Crew';
   return `<div class="cside cface ${cls}">
     ${known ? corners(symbol(role)) : ''}
-    <div class="cbody">${redacted || role === null ? '<span class="idsym"></span>' : sym}
+    <div class="cbody idbody">
       <span class="idname"${nameId ? ` id="${nameId}"` : ''}>${esc(name)}</span>
       <span class="idrole ${role === null ? '' : role ? 'imp' : 'crew'}">${roleText}${redacted ? ROLE_TAPE : ''}</span>
     </div>${redacted ? TAPES : ''}</div>`;
@@ -826,44 +874,43 @@ const SCREENS = {
         const sx = (rand(2) ? 1 : -1) * (40 + rand(60)) + 'vw', sy = (rand(160) - 80) + 'px', sr = (rand(70) - 35) + 'deg';
         minis += `<div class="mini ${k % 2 ? 'b' : 'a'}" style="--k:${k};--sx:${sx};--sy:${sy};--sr:${sr}">${backHTML()}</div>`;
       }
-      return `<div class="screen center shuffle-screen">
-        <p class="kicker" id="shufnote">Shuffling the cards…</p>
+      return `<div class="screen shuffle-screen">
+        <p class="kicker shufnote" id="shufnote">Shuffling the cards…</p>
         <div class="table-area" data-act="skipShuffle">${minis}${drawn}</div>
-        <p class="muted small">Tap to skip</p>
+        <div class="after-slot" id="afterSlot"><p class="muted small">Tap the cards to skip</p></div>
       </div>`;
     }
-    const note = game.announce
-      ? `<p class="notice">${c === n ? 'Everyone is an impostor this round.' : `${c} ${plural(c, 'impostor is', 'impostors are')} among you.`}</p>` : '';
-    return `<div class="screen center shuffle-screen">
-      <div class="pill">${catLabel()}</div>
+    return `<div class="screen shuffle-screen">
+      <p class="kicker shufnote" id="shufnote">And going first is…</p>
       <div class="table-area starter landed">${drawn}</div>
-      <div class="after">
-        <h1 class="gameon">Game on</h1>
-        <p class="starter">${esc(firstName)} goes first</p>
-        <p class="lead">Take turns giving clues about the word. Be vague enough that an impostor can't guess it, but specific enough to prove you know it.</p>
-        ${note}
-        <button class="btn primary big" data-act="ready">${ICON.gavel}We're ready to vote</button>
-        <button class="btn ghost small" data-act="quit">End game</button>
-      </div>
+      <div class="after-slot" id="afterSlot">${gameOnHTML(false)}</div>
     </div>`;
   },
 
   vote: () => {
     const sel = game.voteSel;
-    const out = game.out.map((i) => esc(game.players[i]));
+    if (sel != null) {
+      // The chosen card, in exactly the spot the reveal will use.
+      const name = game.players[sel];
+      return `<div class="screen stage vote-stage">
+        <div class="stage-head"><p class="kicker">Vote out</p><div class="bigname">${esc(name)}?</div></div>
+        <div class="c3d stage-card flipped"><div class="c3d-inner">${backHTML()}${idFace(name, game.impostors[sel], { redacted: true })}</div></div>
+        <div class="stage-foot rise"><div class="split">
+          <button class="btn" data-act="unpick">${ICON.back}Pick again</button>
+          <button class="btn danger" data-act="confirm">${ICON.gavel}Vote out</button>
+        </div></div>
+      </div>`;
+    }
     const left = activeIdx();
-    const cards = left.map((i) => {
-      const nm = game.players[i];
-      return `<button class="suspect${sel === i ? ' sel' : ''}" data-act="pickvote" data-i="${i}" aria-pressed="${sel === i}">
-        <span class="initial">${esc(Array.from(nm.trim())[0] || '?').toUpperCase()}</span><span class="sname">${esc(nm)}</span>
-        ${sel === i ? `<span class="stamp">${MASK()}</span>` : ''}</button>`;
-    }).join('');
-    return `<div class="screen">
+    const out = game.out.map((i) => esc(game.players[i]));
+    const fit = gridFit(left.length);
+    const cards = left.map((i, k) => `<div class="c3d flipped gcard${game.regrid ? ' back-in' : ''}" data-act="pickvote" data-i="${i}" role="button" tabindex="0"
+        aria-label="Choose ${esc(game.players[i])}" style="--d:${((k * 0.53) % 1.9).toFixed(2)}s">
+        <div class="c3d-inner">${backHTML()}${idFace(game.players[i], null, { redacted: true })}</div></div>`).join('');
+    return `<div class="screen vote">
       <header class="vote-head"><h1 class="vote-title">Who's the impostor?</h1>
-        <p class="muted">${left.length} suspects. Talk it over, agree on one person, then tap their card.</p></header>
-      ${out.length ? `<p class="muted small">Already voted out: ${out.join(', ')}</p>` : ''}
-      <div class="suspects">${cards}</div>
-      <button class="btn danger big" data-act="confirm" ${sel == null ? 'disabled' : ''}>${sel == null ? 'Tap a card to choose' : ICON.gavel + 'Vote out ' + esc(game.players[sel])}</button>
+        <p class="muted">${left.length} suspects. Agree on one, then tap their card.${out.length ? ` Already out: ${out.join(', ')}.` : ''}</p></header>
+      <div class="suspect-grid" style="--cw:${fit.w}px">${cards}</div>
       <button class="btn ghost small" data-act="back">Back to discussion</button>
     </div>`;
   },
@@ -898,12 +945,12 @@ const SCREENS = {
       }
     }
     const card = v.shown
-      ? `<div class="c3d verdict-card flipped" aria-label="${v.imp ? 'Impostor' : 'Crew'}"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp)}</div></div>`
-      : `<div class="c3d verdict-card enter" data-act="flipVerdict" role="button" tabindex="0" aria-label="Reveal their role"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp, { redacted: true })}</div></div>`;
-    return `<div class="screen center verdict"${auto ? ' data-act="verdictNext" role="button" aria-label="Move on"' : ''}>
-      <div><p class="kicker">The group has voted out</p><div class="bigname">${esc(name)}</div></div>
+      ? `<div class="c3d verdict-card stage-card flipped" aria-label="${v.imp ? 'Impostor' : 'Crew'}"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp)}</div></div>`
+      : `<div class="c3d verdict-card stage-card flipped" data-act="flipVerdict" role="button" tabindex="0" aria-label="Reveal their role"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp, { redacted: true })}</div></div>`;
+    return `<div class="screen stage verdict"${auto ? ' data-act="verdictNext" role="button" aria-label="Move on"' : ''}>
+      <div class="stage-head"><p class="kicker">The group has voted out</p><div class="bigname">${esc(name)}</div></div>
       ${card}
-      ${v.shown ? `<div class="after">${after}</div>` : `<div class="countdown" id="countdown" aria-live="polite"></div>`}
+      <div class="stage-foot">${v.shown ? `<div class="after">${after}</div>` : `<div class="countdown" id="countdown" aria-live="polite"></div>`}</div>
     </div>`;
   },
 
@@ -938,7 +985,7 @@ const SCREENS = {
     return `<div class="screen center">
       ${intro}
       ${how}
-      <p class="muted">Category: ${catLabel()}. ${stake}</p>
+      <p class="muted">${stake}</p>
       <h3>Did they say the secret word?</h3>
       <div class="split">
         <button class="btn danger" data-act="judgeYes">${ICON.check}Guessed it</button>
@@ -976,23 +1023,96 @@ const SCREENS = {
     </div>`;
   }
 };
+function gameOnHTML(animate) {
+  const c = game.impostorCount, n = game.players.length;
+  const note = game.announce
+    ? `<p class="notice">${c === n ? 'Everyone is an impostor this round.' : `${c} ${plural(c, 'impostor is', 'impostors are')} among you.`}</p>` : '';
+  return `<div class="${animate ? 'after' : 'stack gameon-stack'}">
+    <h1 class="gameon">Game on</h1>
+    <p class="lead">Take turns giving clues about the word. Be vague enough that an impostor can't guess it, but specific enough to prove you know it.</p>
+    ${note}
+    <button class="btn primary big" data-act="ready">${ICON.gavel}We're ready to vote</button>
+    <button class="btn ghost small" data-act="quit">End game</button>
+  </div>`;
+}
+// Shrink big words until every whole word fits its box (they never break mid-word).
+const FIT = '.secret, .idname, .bigname, .gameon, .vote-title, .role-title, .wordmark, .result-head h1, .after h1, .verdict-role';
+function fitText(root) {
+  (root || document).querySelectorAll(FIT).forEach((el) => {
+    el.classList.add('fit');
+    el.style.fontSize = '';
+    if (!el.clientWidth) return;
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    const min = el.closest('.gcard') ? 6 : Math.max(9, size * 0.4);   // names on small vote cards may go smaller
+    for (let guard = 0; guard < 40 && el.scrollWidth > el.clientWidth + 1 && size > min; guard++) {
+      size *= 0.93; el.style.fontSize = size.toFixed(1) + 'px';
+    }
+  });
+}
+// Size the vote cards to the space actually left on screen, in balanced, centred rows.
+function fitGrid() {
+  const grid = $('.suspect-grid'); if (!grid) return;
+  const cards = Array.from(grid.querySelectorAll('.gcard'));
+  const top = grid.getBoundingClientRect().top;
+  const fit = gridFit(cards.length, grid.clientWidth, window.innerHeight - top - 70);
+  grid.style.setProperty('--cw', fit.w + 'px');
+  grid.innerHTML = '';
+  let k = 0;
+  fit.rows.forEach((size) => {
+    const row = document.createElement('div'); row.className = 'grow';
+    for (let j = 0; j < size; j++) row.appendChild(cards[k++]);
+    grid.appendChild(row);
+  });
+}
+// Try every row count; spread the cards as evenly as possible (e.g. 5 -> 3 + 2, 10 -> 4 + 3 + 3)
+// and keep the layout that allows the biggest cards.
+function gridFit(n, width, height) {
+  const W = width || Math.min(window.innerWidth, 520) - 32, H = Math.max(200, height || window.innerHeight - 330), gap = 12;
+  let best = { rows: [n], w: 0 };
+  for (let r = 1; r <= n; r++) {
+    const per = Math.ceil(n / r);
+    const w = Math.floor(Math.min((W - (per - 1) * gap) / per, (H - (r - 1) * gap) / r / 1.4, 170));
+    const rows = [], base = Math.floor(n / r), extra = n % r;
+    for (let i = 0; i < r; i++) rows.push(base + (i < extra ? 1 : 0));   // bigger rows on top
+    // A single card stranded on its own row looks lopsided, so only accept it if it's clearly bigger.
+    const score = w * (r > 2 && rows[r - 1] === 1 ? 0.8 : 1);
+    if (score > (best.score || 0)) best = { rows, w, score };
+  }
+  return best;
+}
 const autoAdvance = (v) => !v.imp || v.next === 'bothwin';   // the impostors have won: move on by itself
 
 function render() {
   clearTimers();
-  if (!game) { renderSetup(); window.scrollTo(0, 0); return; }
+  const bc = document.getElementById('barcat');
+  if (game) { bc.innerHTML = `<span>${catLabel()}</span>`; bc.hidden = false; } else { bc.hidden = true; bc.innerHTML = ''; }
+  if (!game) { renderSetup(); window.scrollTo(0, 0); fitText($app); return; }
   $app.innerHTML = SCREENS[game.screen]();
   window.scrollTo(0, 0);
+  fitGrid(); fitText($app);
   if (game.screen === 'playing' && !game.starterShown) runShuffle();
   if (game.screen === 'verdict' && !game.verdict.shown) runVerdict(false);
   if (game.screen === 'verdict' && game.verdict.shown && autoAdvance(game.verdict)) later(() => ACTIONS.verdictNext(), AUTO_MS);
 }
 
 /* ---------- animated sequences ---------- */
+// Finish the shuffle in place: the drawn card stays exactly where it is and the rest fades in below it.
+function landShuffle() {
+  if (!game || game.screen !== 'playing') return;
+  clearTimers();
+  game.starterShown = true; save();
+  const area = $('.table-area'), d = $('.drawn'), slot = $('#afterSlot'), note = $('#shufnote');
+  if (!area || REDUCED) { render(); return; }
+  area.classList.add('spent', 'draw', 'landed', 'starter'); area.removeAttribute('data-act');
+  if (!d.classList.contains('flipped')) d.classList.add('flipped', 'bounce');
+  note.textContent = 'And going first is…';
+  later(() => $$('.table-area .mini').forEach((m) => m.remove()), 450);
+  slot.innerHTML = gameOnHTML(true);
+  fitText(slot);
+}
 function runShuffle() {
   const area = $('.table-area');
-  const land = () => { game.starterShown = true; save(); render(); };
-  if (REDUCED || !area) { land(); return; }
+  if (REDUCED || !area) { landShuffle(); return; }
   const note = $('#shufnote');
   later(() => area.classList.add('gather'), 30);
   later(() => area.classList.add('split'), 950);
@@ -1001,7 +1121,7 @@ function runShuffle() {
   later(() => area.classList.remove('split'), 2350);
   later(() => { area.classList.add('spent', 'draw'); note.textContent = 'And going first is…'; }, 3000);
   later(() => { const d = $('.drawn'); d.classList.add('flipped', 'bounce'); buzz(40); }, 3500);
-  later(land, 5000);
+  later(landShuffle, 4800);
 }
 
 function runVerdict(skipCountdown) {
@@ -1009,24 +1129,24 @@ function runVerdict(skipCountdown) {
   const done = () => { game.verdict.shown = true; save(); render(); };
   if (REDUCED || !card) { done(); return; }
   busy = true;
-  let t = 450;   // let the card slide in first
+  let t = 250;
   if (!skipCountdown) {
-    card.classList.add('suspense');
+    later(() => card.classList.add('bounce'), 0);   // the tape ends wobble as the card lands
+    later(() => card.classList.add('suspense'), t);
     [3, 2, 1].forEach((n, k) => later(() => {
       cd.textContent = n; cd.classList.remove('tick'); void cd.offsetWidth; cd.classList.add('tick'); buzz(15);
     }, t + k * 750));
     t += 3 * 750;
   } else t = 0;
-  later(() => { card.classList.remove('suspense'); card.removeAttribute('data-act'); cd.textContent = ''; card.classList.add('flipped', 'bounce'); }, t);
   later(() => {   // peel the tape off, starting from the curled end
+    card.classList.remove('suspense', 'enter'); card.removeAttribute('data-act'); cd.textContent = '';
     const face = card.querySelector('.cface');
     face.classList.remove('neutral'); face.classList.add(game.verdict.imp ? 'imp' : 'crew');
-    face.querySelector('.idsym').innerHTML = symbol(game.verdict.imp);
     face.insertAdjacentHTML('afterbegin', corners(symbol(game.verdict.imp)));
     card.querySelectorAll('.tape').forEach((tp, k) => later(() => tp.classList.add('peel'), k * 200));
     buzz(game.verdict.imp ? [80, 60, 160] : 200);
-  }, t + 1500);
-  later(done, t + 1500 + 1500);
+  }, t + 150);
+  later(done, t + 150 + 2900);   // leave time for the stains to soak in on an impostor's card
 }
 
 /* ---------- events ---------- */
@@ -1065,11 +1185,40 @@ const ACTIONS = {
     later(() => t.classList.add('exit'), 520);
     later(next, 900);
   },
-  skipShuffle() { game.starterShown = true; save(); render(); },
+  skipShuffle() { landShuffle(); },
 
-  ready() { game.starterShown = true; game.screen = 'vote'; game.voteSel = null; save(); render(); },
+  ready() { game.starterShown = true; game.screen = 'vote'; game.voteSel = null; game.regrid = true; save(); render(); },
   back() { game.screen = 'playing'; game.voteSel = null; save(); render(); },
-  pickvote(t) { game.voteSel = +t.dataset.i; save(); render(); },
+  // Slide the other cards away, then grow the chosen one into the stage spot.
+  pickvote(t) {
+    if (busy) return;
+    const i = +t.dataset.i;
+    const choose = () => { game.voteSel = i; game.regrid = false; save(); render(); };
+    if (REDUCED) { choose(); return; }
+    busy = true;
+    const from = t.getBoundingClientRect();
+    $$('.suspect-grid .gcard').forEach((c) => {
+      if (c === t) return;
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--dx', ((r.left + r.width / 2) < from.left + from.width / 2 ? -1 : 1) * 110 + 'vw');
+      c.classList.add('away');
+    });
+    t.classList.add('chosen'); buzz(20);
+    $$('.vote-head, .vote > .btn').forEach((e) => e.classList.add('fade'));
+    later(() => {
+      choose();
+      const big = $('.stage-card'); if (!big) return;
+      const to = big.getBoundingClientRect();
+      big.style.transformOrigin = 'top left';
+      big.style.transition = 'none';
+      big.style.transform = `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width})`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        big.style.transition = 'transform .55s cubic-bezier(.25,.85,.3,1)';
+        big.style.transform = '';
+      }));
+    }, 360);
+  },
+  unpick() { game.voteSel = null; game.regrid = true; save(); render(); },
   confirm() { confirmVote(); },
   flipVerdict() { if (game.verdict && !game.verdict.shown) { clearTimers(); runVerdict(true); } },
   verdictNext() { if (game.screen === 'verdict' && game.verdict && game.verdict.shown) resolveVerdict(); },
@@ -1085,7 +1234,7 @@ const ACTIONS = {
     later(done, n > 1 ? 1500 : 900);
   },
   toResults() { const p = game.pending || { winner: 'impostors', reason: '' }; finish(p.winner, p.reason); },
-  again() { game.screen = 'vote'; game.voteSel = null; save(); render(); },
+  again() { game.screen = 'vote'; game.voteSel = null; game.regrid = true; save(); render(); },
   stop() { stopVoting(); },
   judgeYes() { judgeGuess(true); },
   judgeNo() { judgeGuess(false); },
@@ -1146,6 +1295,9 @@ load();
 initWordsSync();
 render();
 loadWords();
+// Re-fit once the web fonts arrive (they are wider than the fallback) and when the screen size changes.
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitGrid(); fitText($app); });
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitGrid(); fitText($app); }, 150); });
 })();
 </script>
 </body>

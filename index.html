@@ -27,7 +27,7 @@
     --tape: #151515;
     --display: "Unbounded", "Arial Black", system-ui, sans-serif;
     --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --cw: min(64vw, 250px);  /* card width */
+    --cw: min(64vw, 250px, 36vh);  /* card width: never so tall that buttons fall off the screen */
     color-scheme: dark;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -58,18 +58,40 @@
   .barbtn svg { width: 18px; height: 18px; }
   .barbtn[data-nav="new"] { margin-left: auto; border-color: var(--brass); color: var(--brass); }
   .barbtn:active { transform: translateY(1px); }
-  #bar { flex-wrap: wrap; }
-  .barcat { flex-basis: 100%; order: 3; display: flex; justify-content: center; }
-  .barcat[hidden] { display: none; }
-  .barcat span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; font-size: .92rem; color: #d9def0; }
+  body.on-setup #bar { display: none; }
+  .barbtn.icon { width: 44px; padding: 0; flex: none; }
+  @media (max-width: 400px) { .barbtn[data-nav="new"] { width: 44px; padding: 0; } .barbtn .lbl { display: none; } }
+  .barbtn[data-nav="new"] { margin-left: 0; flex: none; }
+  .barcat { flex: 1; min-width: 0; display: flex; justify-content: center; }
+  .barcat span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: .9rem; color: #d9def0; }
 
   #app { max-width: 520px; margin: 0 auto; padding: 12px 16px calc(32px + env(safe-area-inset-bottom)); }
   .screen { display: flex; flex-direction: column; gap: 16px; }
-  .screen.center { min-height: calc(100dvh - 150px); justify-content: center; align-items: stretch; text-align: center; }
+  .screen.center { min-height: calc(100dvh - 100px); justify-content: center; align-items: stretch; text-align: center; }
 
   /* ---------- setup ---------- */
-  .masthead { display: flex; align-items: center; gap: 14px; padding: 18px 0 6px; }
-  .masthead .mask { width: 58px; color: var(--brass); --eye: var(--table); flex: none; }
+  .masthead { display: flex; align-items: center; gap: 18px; padding: 26px 0 10px; }
+  .logo-card { position: relative; flex: none; width: 62px; aspect-ratio: 5 / 7; border-radius: 10px; overflow: hidden;
+    transform: rotate(-9deg); box-shadow: 0 10px 22px rgba(5,9,22,.55), 0 0 0 2px rgba(244,238,227,.08); }
+  .logo-card .cback { position: absolute; inset: 0; }
+  .logo-card .cframe { inset: 5px; border-radius: 6px; }
+  .logo-card .cframe .mask { width: 64%; }
+  .logo-words { min-width: 0; }
+  .tagline { margin-top: 12px; }
+  .tape-tag { position: relative; display: inline-flex; padding: 6px 14px 6px 12px; font-size: .86rem; font-weight: 700;
+    letter-spacing: .01em; --rot: -2deg; transform-origin: center; }
+  .tape-tag::after { right: -.75em; }
+  .rules summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .rules summary::-webkit-details-marker { display: none; }
+  .rules summary > span { font-family: var(--display); font-weight: 700; font-size: 1.35rem; display: flex; flex-direction: column; gap: 4px; }
+  .rules summary::after { content: "+"; font-size: 1.6rem; color: var(--mute); flex: none; }
+  .rules[open] summary::after { content: "–"; }
+  .rulesum { font-family: var(--body); font-weight: 400; font-size: .88rem; color: var(--mute); }
+  .rules-body { gap: 22px; padding-top: 18px; }
+  .sub { display: flex; flex-direction: column; gap: 12px; }
+  .dock { position: sticky; bottom: 0; z-index: 5; margin: 0 -16px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(rgba(22,32,58,0), var(--table) 28%); }
   .wordmark { font-family: var(--display); font-weight: 800; font-size: 2.6rem; letter-spacing: -.03em; line-height: 1; }
   .masthead p { color: var(--mute); margin-top: 6px; }
   .block { display: flex; flex-direction: column; gap: 14px; padding: 22px 0; border-top: 1px solid var(--line); }
@@ -92,7 +114,7 @@
   input::placeholder { color: #7480a3; }
   input[type=text]:focus, input[type=url]:focus { outline: 2px solid var(--brass); outline-offset: 0; border-color: transparent; }
   .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  @media (max-width: 360px) { .names { grid-template-columns: 1fr; } }
+  @media (max-width: 300px) { .names { grid-template-columns: 1fr; } }
 
   .catnote { min-height: 2.9em; color: var(--mute); font-size: .9rem; } /* reserve two lines so chips never jump */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -237,11 +259,15 @@
   .c3d.exit { animation: slideOut .38s cubic-bezier(.5,0,.8,.3) forwards; }
   @keyframes slideIn { from { transform: translateX(75vw) rotate(14deg); } to { transform: none; } }
   @keyframes slideOut { to { transform: translateX(-85vw) rotate(-14deg); } }
-  .c3d.suspense .c3d-inner { animation: tremble .7s ease-in-out infinite; }
+  .c3d.suspense { animation: tremble .7s ease-in-out infinite; }   /* on the wrapper, so it never undoes the flip */
   @keyframes tremble { 0%,100% { transform: rotate(0) scale(1); } 25% { transform: rotate(-1.5deg) scale(1.02); } 75% { transform: rotate(1.5deg) scale(1.02); } }
 
   /* ---------- deal ---------- */
   .dealhead .bigname { margin-top: 2px; }
+  .pips { display: flex; justify-content: center; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+  .pips i { width: 9px; height: 13px; border-radius: 2.5px; border: 1.5px solid var(--line); }
+  .pips i.done { background: var(--line); }
+  .pips i.now { background: var(--brass); border-color: var(--brass); transform: translateY(-2px); }
   .kicker { color: var(--mute); }
   .passto { font-family: var(--body); font-weight: 400; font-size: 1.1rem; color: #d9def0; margin-top: 4px; }
   .bigname { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 11vw, 2.8rem); line-height: 1.05;
@@ -249,7 +275,7 @@
   .tapnote { color: var(--mute); font-size: .95rem; min-height: 2.9em; }
 
   /* ---------- shuffle ---------- */
-  .shuffle-screen { --cw: min(54vw, 210px); text-align: center; padding-top: 14px; }
+  .shuffle-screen { --cw: min(54vw, 210px, 27vh); text-align: center; padding-top: 14px; }
   .shufnote { min-height: 1.45em; }
   .after-slot { min-height: 40px; }
   .gameon-stack { gap: 14px; }
@@ -302,6 +328,8 @@
   .countdown.tick { animation: tick .7s ease-out both; }
   @keyframes tick { from { transform: scale(1.8); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); opacity: .9; } }
   .after h1.bad { color: var(--red); }
+  .fadein { animation: fadeUp .28s ease-out both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   .after h1.good { color: var(--teal); }
   .quip { font-family: var(--display); font-weight: 500; font-size: 1.05rem; line-height: 1.3; color: var(--paper); max-width: 30ch; margin-inline: auto; }
   .verdict[data-act] { cursor: pointer; }
@@ -332,14 +360,17 @@
   .vote-head p { min-height: 1.45em; }
 
   /* the stage: chosen card and reveal share one layout so the card never moves between them */
-  .stage { --cw: min(60vw, 236px); text-align: center; padding-top: 10px; }
-  .stage-head { min-height: 92px; display: flex; flex-direction: column; justify-content: flex-end; }
-  .stage-foot { min-height: 120px; display: flex; flex-direction: column; gap: 14px; }
+  .stage { --cw: min(60vw, 236px, 27vh); text-align: center; padding-top: 10px; }
+  .stage-head { min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .stage-foot { min-height: 120px; display: flex; flex-direction: column; gap: 12px; }
+  .stage-foot .after { gap: 10px; }
+  .stage-foot h1 { font-size: 1.8rem; }
+  .stage-foot .split .btn { min-height: 80px; }
   .stage-foot.rise, .vote-stage .stage-head { animation: rise .35s ease-out both; }
   .stage .countdown { margin-top: 6px; }
 
   /* unmask: a pile of impostor cards that fans out */
-  .unmask { --cw: min(54vw, 210px); }
+  .unmask { --cw: min(54vw, 210px, 34vh); }
   .unmask.n3 { --cw: min(40vw, 160px); --spread: 60%; }
   .unmask.n2 { --cw: min(46vw, 180px); --spread: 76%; }
   .stack-area { position: relative; height: calc(var(--cw) * 1.4 + 30px); cursor: pointer; }
@@ -372,9 +403,25 @@
   .ledger .row span { color: var(--ink-soft); }
   .ledger .row b { text-align: right; }
   .ledger .row b.secretword { font-family: var(--display); font-size: 1.2rem; }
+  .scores { border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .scores .row { margin-bottom: 4px; }
+  .srow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .srow b { font-family: var(--display); font-size: 1.1rem; min-width: 1.6em; text-align: right; font-variant-numeric: tabular-nums; }
+  .srow em { font-style: normal; color: var(--brass); font-weight: 700; font-size: .85rem; margin-right: 10px; }
+  .srow.lead-player span:first-child::after { content: " 👑"; }
+  .linkbtn { border: 0; background: none; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: .9rem; }
   .rule { background: var(--raised); border-radius: 14px; padding: 14px 16px; text-align: left; }
   .rule b { color: var(--brass); }
 
+  .sheet-wrap { position: fixed; inset: 0; z-index: 50; background: rgba(6,10,22,.6); display: flex; align-items: flex-end; justify-content: center;
+    animation: fadeIn .2s ease-out both; }
+  .sheet { width: 100%; max-width: 520px; background: var(--raised); border-radius: 22px 22px 0 0; border-top: 1px solid var(--line);
+    padding: 22px 16px calc(18px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 16px;
+    animation: sheetUp .25s cubic-bezier(.2,.8,.25,1) both; }
+  .sheet-q { font-family: var(--display); font-weight: 700; font-size: 1.15rem; text-align: center; }
+  .sheet-wrap.closing { animation: fadeOut .2s forwards; }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   .mask path { fill: currentColor; }
   .mask .eye { fill: var(--eye, var(--table)); }
   .peace .p { fill: currentColor; }
@@ -382,18 +429,18 @@
   .peace .crease { fill: none; stroke: var(--eye, var(--paper)); stroke-width: 1.3; stroke-linecap: round; }
 
   @media (prefers-reduced-motion: reduce) {
-    .c3d.enter, .c3d.exit, .c3d.suspense .c3d-inner, .c3d.bounce .tape::after, .tape.peel, .countdown.tick, .after,
+    .c3d.enter, .c3d.exit, .c3d.suspense, .c3d.bounce .tape::after, .tape.peel, .countdown.tick, .after,
     .suspect .stamp, .autobar span, .table-area.draw .drawn, .stack-area .c3d.enter, .gcard .tape::after, .gcard.back-in,
-    .stage-foot.rise, .vote-stage .stage-head { animation: none !important; }
+    .stage-foot.rise, .vote-stage .stage-head, .fadein, .sheet, .sheet-wrap { animation: none !important; }
     .c3d-inner, .mini, .stack-area .c3d, .bar span, .suspect, .btn, .cface::before { transition: none !important; }
   }
 </style>
 </head>
 <body>
 <nav id="bar" aria-label="Game controls">
-  <button class="barbtn" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home</button>
-  <div class="barcat" id="barcat" hidden></div>
-  <button class="barbtn" data-nav="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>New game</button>
+  <button class="barbtn icon" data-nav="home" aria-label="Home" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></button>
+  <div class="barcat" id="barcat"></div>
+  <button class="barbtn" data-nav="new" aria-label="New game" title="New game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><span class="lbl">New game</span></button>
 </nav>
 <main id="app"></main>
 
@@ -499,6 +546,7 @@ const defaultSettings = () => ({
   categories: [],          // names of selected categories; empty = Random (any category)
   weights: { '1': 70, '2': 20, '3': 7, 'all': 3 },
   announce: false,
+  showHint: true,          // give impostors a clue word
   guessRule: 'impostors',  // caught impostors guess the word: 'impostors' win | 'nobody' wins | 'crew' still win
   wordsUrl: ''
 });
@@ -650,7 +698,10 @@ function startRound() {
   const n = settings.playerCount;
   const cats = words.categories;
   const chosen = cats.filter((c) => settings.categories.includes(c.name));
-  const cat = pick(chosen.length ? chosen : cats);
+  // Pick by word, not by category: bigger categories come up more often, so small ones don't repeat.
+  const from = chosen.length ? chosen : cats;
+  let r = rand(from.reduce((n, c) => n + c.words.length, 0)), cat = from[0];
+  for (const c of from) { if (r < c.words.length) { cat = c; break; } r -= c.words.length; }
   let pool = cat.words.filter((w) => !recent.includes(w[0]));
   if (!pool.length) pool = cat.words;
   const [word, hint] = pick(pool);
@@ -662,6 +713,7 @@ function startRound() {
     screen: 'pass', players: getNames(), impostors, word, hint,
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     outcome: null, announce: !!settings.announce, guessRule: settings.guessRule,
+    showHint: settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
     impostorCount: count, first: rand(n), starterShown: false
   };
   save(); render();
@@ -675,6 +727,12 @@ const caughtImpostors = () => game.out.filter((i) => game.impostors[i]).length;
 function finish(winner, reason, winners) {
   const kind = winner === 'impostors' ? 'impWin' : winner === 'crew' ? 'crewWin' : 'draw';
   game.outcome = { winner, reason, winners: winners || null, quip: quip(kind) };
+  // Score: a point for everyone on the winning side (only the named winners when the last two impostors win).
+  const pts = winner === 'impostors' ? (winners || game.players.map((_, i) => i).filter((i) => game.impostors[i]))
+    : winner === 'crew' ? game.players.map((_, i) => i).filter((i) => !game.impostors[i]) : [];
+  game.outcome.scored = pts;
+  settings.scores = settings.scores || {};
+  pts.forEach((i) => { const nm = game.players[i]; settings.scores[nm] = (settings.scores[nm] || 0) + 1; });
   game.screen = 'result';
   save(); render();
 }
@@ -731,9 +789,13 @@ const ROLE_TAPE = `<span class="tape tape-role"><span>[REDACTED]</span></span>`;
 // The card dealt to each player: their role, the category and the word or hint.
 function roleFace(imp) {
   const body = imp
-    ? `<div class="role-title">You're the impostor</div>
-       <div class="flabel">Your hint</div><div class="secret">${esc(game.hint)}</div>
-       <p class="fnote">Blend in. Don't give yourself away.</p>`
+    ? (game.showHint === false
+      ? `<div class="role-title">You're the impostor</div>
+         <div class="flabel">No clue this game</div><div class="secret">Wing it</div>
+         <p class="fnote">Listen to the others, work out the word, and blend in.</p>`
+      : `<div class="role-title">You're the impostor</div>
+         <div class="flabel">Your hint</div><div class="secret">${esc(game.hint)}</div>
+         <p class="fnote">Blend in. Don't give yourself away.</p>`)
     : `<div class="role-title">You're crew</div>
        <div class="flabel">The secret word</div><div class="secret">${esc(game.word)}</div>
        <p class="fnote">Prove you know it, without making it too easy.</p>`;
@@ -757,10 +819,11 @@ const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], 
 function renderSetup() {
   const n = settings.playerCount;
   $app.innerHTML = `
-  <div class="screen">
+  <div class="screen fadein">
     <header class="masthead">
-      ${MASK()}
-      <div><h1 class="wordmark">Impostor</h1><p>Pass the phone round. Find the faker.</p></div>
+      <span class="logo-card" aria-hidden="true"><span class="cback"></span><span class="cframe">${MASK()}</span></span>
+      <div class="logo-words"><h1 class="wordmark">Impostor</h1>
+        <p class="tagline"><span class="tape tape-tag">Pass the phone. Find the faker.</span></p></div>
     </header>
 
     <section class="block">
@@ -775,36 +838,49 @@ function renderSetup() {
       <div id="cats" class="chips"></div>
     </section>
 
-    <section class="block">
-      <h2>Impostors per round</h2>
+    <details class="block rules" id="rules">
+      <summary><span>House rules<small class="rulesum" id="rulesum"></small></span></summary>
+      <div class="stack rules-body">
+    <section class="sub">
+      <h3>Impostors per round</h3>
       <p class="muted small">How likely each number of impostors is. The chances always add up to 100%.</p>
       <div id="split" class="bar"></div>
       <div id="weights" class="stack"></div>
       <label class="check"><input type="checkbox" id="announce" ${settings.announce ? 'checked' : ''}> Tell everyone how many impostors there are</label>
+      <label class="check"><input type="checkbox" id="showhint" ${settings.showHint !== false ? 'checked' : ''}> Give impostors a clue word</label>
     </section>
 
-    <section class="block">
-      <h2>Caught impostors guess the word</h2>
+    <section class="sub">
+      <h3>Caught impostors guess the word</h3>
       <p class="muted small">Once every impostor has been voted out, they get one shot at saying the secret word. If they get it right:</p>
       <div class="seg" id="guessrule" role="group" aria-label="If the caught impostors guess the word">
         ${GUESS_RULES.map(([v, l]) => `<button data-act="guessrule" data-v="${v}" class="${settings.guessRule === v ? 'sel' : ''}" aria-pressed="${settings.guessRule === v}">${l}</button>`).join('')}
       </div>
     </section>
 
-    <details class="block">
-      <summary>Word list</summary>
+    <section class="sub">
+      <h3>Word list</h3>
       <div class="stack">
         <p class="muted small">Words and hints come from <b>words.json</b> on the site. To use your own list, paste a link to a JSON file in the same format (a raw GitHub or Gist link works).</p>
         <input type="url" id="wurl" placeholder="Custom word list URL (optional)" value="${esc(settings.wordsUrl || '')}" autocomplete="off" autocapitalize="off" spellcheck="false">
         <button class="btn small" data-act="reload">Reload words</button>
         <p class="muted small" id="wstatus"></p>
       </div>
+    </section>
+      </div>
     </details>
 
-    <button class="btn primary big" data-act="start">${ICON.play}Start game</button>
+    <div class="dock"><button class="btn primary big" data-act="start">${ICON.play}Start game</button></div>
   </div>`;
-  renderNames(); renderCats(); renderWeights();
+  renderNames(); renderCats(); renderWeights(); ruleSummary();
   $('#wstatus').textContent = wordsStatusText();
+}
+// One line under "House rules" so you know what's set without opening it.
+function ruleSummary() {
+  const el = $('#rulesum'); if (!el) return;
+  const top = effective(settings.playerCount).slice().sort((a, b) => b.pct - a.pct)[0];
+  const rule = { impostors: 'a correct guess steals the win', nobody: 'a correct guess makes it a draw', crew: 'guessing is for bragging rights' }[settings.guessRule];
+  el.textContent = `Usually ${top.label.toLowerCase()}${settings.showHint === false ? ', with no clue' : ''}. If caught, ${rule}.`;
 }
 function renderNames() {
   const box = $('#names');
@@ -847,7 +923,8 @@ const dealNote = (up) => !up ? 'Make sure nobody else can see, then tap the card
 
 function dealScreen(up) {
   return `<div class="screen center deal">
-    <div class="dealhead"><p class="kicker">Player ${game.idx + 1} of ${game.players.length}</p>
+    <div class="dealhead"><div class="pips" aria-hidden="true">${game.players.map((_, k) => `<i class="${k < game.idx ? 'done' : k === game.idx ? 'now' : ''}"></i>`).join('')}</div>
+      <p class="kicker">Player ${game.idx + 1} of ${game.players.length}</p>
       <h2 class="passto">Pass the phone to</h2>
       <div class="bigname">${esc(game.players[game.idx])}</div></div>
     <div class="c3d deal-card${up ? ' flipped' : ' enter'}" data-act="${up ? 'hide' : 'reveal'}" role="button" tabindex="0"
@@ -928,17 +1005,15 @@ const SCREENS = {
         after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p><p class="lead">But the last two players are both impostors.</p>
           <div class="autobar" aria-hidden="true"><span></span></div><p class="muted small">Moving on in 4 seconds. Tap anywhere to skip.</p>`;
       } else if (v.next === 'found') {
-        const rem = remainingImpostors(), noCrew = crewCount() === 0, canVote = activeIdx().length > 1;
+        // Same choice every time, so nothing hints at how many impostors or crew are left.
+        const rem = remainingImpostors(), canVote = activeIdx().length > 1;
         const hint = game.announce
           ? `<p class="notice">${rem === 0 ? 'That was the last impostor.' : `${rem} ${plural(rem, 'impostor is', 'impostors are')} still hiding.`}</p>` : '';
-        after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p>${hint}` + (noCrew
-          ? `<p class="lead">There's no crew this round, so keep voting until only two players are left.</p>
-             <button class="btn danger big" data-act="again" ${canVote ? '' : 'disabled'}>${ICON.gavel}Vote again</button>`
-          : `<h3>Vote someone else out?</h3>
-             <div class="split">
-               <button class="btn danger" data-act="again" ${canVote ? '' : 'disabled'}>${ICON.gavel}Yes, vote again</button>
-               <button class="btn" data-act="stop">${ICON.stop}No, we're done</button>
-             </div>`);
+        after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p>${hint}
+          <div class="split" role="group" aria-label="Vote someone else out?">
+            <button class="btn danger" data-act="again" ${canVote ? '' : 'disabled'}>${ICON.gavel}Vote again</button>
+            <button class="btn" data-act="stop">${ICON.stop}We're done</button>
+          </div>`;
       } else {
         after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p><p class="lead">Only two players are left.</p>
           <button class="btn primary big" data-act="verdictNext">${ICON.next}Continue</button>`;
@@ -970,23 +1045,21 @@ const SCREENS = {
     const who = multi ? 'the impostors' : 'the impostor';
     let intro, stake;
     if (game.lastTwo) {
-      intro = `<h1>Crew wins… almost</h1>
-        <p class="lead">Only the crewmate and one impostor are left, so the crew wins. Unless the last impostor can say the secret word.</p>`;
-      stake = 'If they get it, the impostor steals the win.';
+      intro = `<h1>Crew wins… almost</h1>`;
+      stake = 'Say the secret word and the last impostor steals the win.';
     } else {
-      intro = `<h1>All impostors found!</h1><p class="lead">Now ${who} get${multi ? '' : 's'} one shot at the secret word.</p>`;
+      intro = `<h1>All impostors found!</h1>`;
       stake = game.guessRule === 'nobody' ? 'If they get it, nobody wins.'
         : game.guessRule === 'crew' ? 'If they get it, the crew still win. It\'s for bragging rights.'
-        : 'If they get it, the impostors steal the win.';
+        : `If they get it, ${who} steal${multi ? '' : 's'} the win.`;
     }
     const how = multi
-      ? `<p class="rule"><b>${caughtImpostors()} impostors, one guess.</b> They must agree on a single word between them, then say it out loud.</p>`
-      : `<p class="rule"><b>One guess.</b> The impostor says it out loud.</p>`;
-    return `<div class="screen center">
+      ? `<p class="rule"><b>${caughtImpostors()} impostors, one guess.</b> They must agree on a single word, then say it out loud.</p>`
+      : `<p class="rule"><b>One guess.</b> The impostor says the word out loud.</p>`;
+    return `<div class="screen center fadein">
       ${intro}
       ${how}
       <p class="muted">${stake}</p>
-      <h3>Did they say the secret word?</h3>
       <div class="split">
         <button class="btn danger" data-act="judgeYes">${ICON.check}Guessed it</button>
         <button class="btn ok" data-act="judgeNo">${ICON.x}Didn't get it</button>
@@ -1010,28 +1083,38 @@ const SCREENS = {
       const won = winners.includes(i) ? '<span class="badge win">Winner</span>' : '';
       return `<div class="rrow"><span>${esc(nm)}</span><span class="tags">${pos >= 0 ? `<span class="out">voted out #${pos + 1}</span>` : ''}${won}<span class="badge ${game.impostors[i] ? 'imp' : 'crew'}">${game.impostors[i] ? 'Impostor' : 'Crew'}</span></span></div>`;
     }).join('');
-    return `<div class="screen">
+    return `<div class="screen fadein">
       <header class="result-head"><h1 class="${cls}">${title}</h1>${o.quip ? `<p class="quip">${esc(o.quip)}</p>` : ''}<p>${esc(reason)}</p></header>
       <div class="ledger">
         <div class="row"><span>Category</span><b>${catLabel()}</b></div>
         <div class="row"><span>Secret word</span><b class="secretword">${esc(game.word)}</b></div>
-        <div class="row"><span>Impostor hint</span><b>${esc(game.hint)}</b></div>
+        <div class="row"><span>Impostor hint</span><b>${game.showHint === false ? 'None (clues off)' : esc(game.hint)}</b></div>
       </div>
       <div class="roster">${rows}</div>
-      <button class="btn primary big" data-act="replay">${ICON.play}Play again</button>
-      <button class="btn small" data-act="settings">Change settings</button>
+      ${scoreHTML(o.scored || [])}
+      <div class="dock"><button class="btn primary big" data-act="replay">${ICON.play}Play again</button></div>
+      <button class="btn ghost small" data-act="settings">Change players or settings</button>
     </div>`;
   }
 };
+function scoreHTML(scored) {
+  const sc = settings.scores || {};
+  const names = game.players.slice().sort((a, b) => (sc[b] || 0) - (sc[a] || 0) || game.players.indexOf(a) - game.players.indexOf(b));
+  if (!names.some((n) => sc[n])) return '';
+  const top = sc[names[0]] || 0;
+  return `<section class="scores"><div class="row"><h3>Scores</h3><button class="linkbtn" data-act="resetScores">Reset</button></div>
+    ${names.map((n) => { const i = game.players.indexOf(n); return `<div class="srow${(sc[n] || 0) === top && top > 0 ? ' lead-player' : ''}">
+      <span>${esc(n)}</span><span>${scored.includes(i) ? '<em>+1</em>' : ''}<b>${sc[n] || 0}</b></span></div>`; }).join('')}</section>`;
+}
 function gameOnHTML(animate) {
   const c = game.impostorCount, n = game.players.length;
   const note = game.announce
     ? `<p class="notice">${c === n ? 'Everyone is an impostor this round.' : `${c} ${plural(c, 'impostor is', 'impostors are')} among you.`}</p>` : '';
   return `<div class="${animate ? 'after' : 'stack gameon-stack'}">
     <h1 class="gameon">Game on</h1>
-    <p class="lead">Take turns giving clues about the word. Be vague enough that an impostor can't guess it, but specific enough to prove you know it.</p>
+    <p class="lead">Take turns giving a clue. Vague enough to fool the impostor, clear enough to prove you know the word.</p>
     ${note}
-    <button class="btn primary big" data-act="ready">${ICON.gavel}We're ready to vote</button>
+    <div class="dock"><button class="btn primary big" data-act="ready">${ICON.gavel}We're ready to vote</button></div>
     <button class="btn ghost small" data-act="quit">End game</button>
   </div>`;
 }
@@ -1085,7 +1168,8 @@ const autoAdvance = (v) => !v.imp || v.next === 'bothwin';   // the impostors ha
 function render() {
   clearTimers();
   const bc = document.getElementById('barcat');
-  if (game) { bc.innerHTML = `<span>${catLabel()}</span>`; bc.hidden = false; } else { bc.hidden = true; bc.innerHTML = ''; }
+  document.body.classList.toggle('on-setup', !game);
+  bc.innerHTML = game ? `<span>${catLabel()}</span>` : '';
   if (!game) { renderSetup(); window.scrollTo(0, 0); fitText($app); return; }
   $app.innerHTML = SCREENS[game.screen]();
   window.scrollTo(0, 0);
@@ -1160,7 +1244,7 @@ const ACTIONS = {
     renderCats(); save();
   },
   guessrule(t) {
-    settings.guessRule = t.dataset.v; save();
+    settings.guessRule = t.dataset.v; save(); ruleSummary();
     $$('#guessrule button').forEach((b) => { const on = b.dataset.v === settings.guessRule; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
   },
   reload() { settings.wordsUrl = ($('#wurl').value || '').trim(); save(); loadWords(); },
@@ -1240,12 +1324,30 @@ const ACTIONS = {
   judgeNo() { judgeGuess(false); },
   replay() { startRound(); },
   settings() { game = null; save(); render(); },
-  quit() { if (confirm('End this game and go back to setup?')) { game = null; save(); render(); } }
+  quit() { ask('End this game and go back to setup?', 'End game', () => { game = null; save(); render(); }); },
+  resetScores() { ask('Reset everyone\'s score to zero?', 'Reset scores', () => { settings.scores = {}; save(); render(); }); }
 };
 $app.addEventListener('click', (e) => {
   const t = e.target.closest('[data-act]');
   if (t && ACTIONS[t.dataset.act]) ACTIONS[t.dataset.act](t);
 });
+/* A small sheet that slides up for "are you sure?" questions, instead of the browser's own pop-up. */
+function ask(text, yesLabel, onYes) {
+  document.querySelectorAll('.sheet-wrap').forEach((n) => n.remove());
+  const wrap = document.createElement('div');
+  wrap.className = 'sheet-wrap';
+  wrap.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(text)}">
+    <p class="sheet-q">${esc(text)}</p>
+    <div class="split"><button class="btn" data-sheet="no">Keep playing</button><button class="btn danger" data-sheet="yes">${esc(yesLabel)}</button></div></div>`;
+  const close = () => { wrap.classList.add('closing'); setTimeout(() => wrap.remove(), REDUCED ? 0 : 200); };
+  wrap.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-sheet]');
+    if (b && b.dataset.sheet === 'yes') { wrap.remove(); onYes(); }
+    else if (b || e.target === wrap) close();
+  });
+  document.body.appendChild(wrap);
+  wrap.querySelector('[data-sheet="no"]').focus({ preventScroll: true });
+}
 /* Always-visible top bar: Home returns to setup, New game deals a fresh round with the current settings. */
 const inProgress = () => game && game.screen !== 'result';
 document.getElementById('bar').addEventListener('click', (e) => {
@@ -1253,11 +1355,11 @@ document.getElementById('bar').addEventListener('click', (e) => {
   if (!t) return;
   if (t.dataset.nav === 'home') {
     if (!game) { window.scrollTo(0, 0); return; }
-    if (inProgress() && !confirm('Leave this game and go back to setup?')) return;
-    game = null; save(); render();
+    const go = () => { game = null; save(); render(); };
+    if (inProgress()) ask('Leave this game and go back to setup?', 'Leave game', go); else go();
   } else {
-    if (inProgress() && !confirm('Abandon this game and start a new one?')) return;
-    if (words.categories.length) startRound();
+    const go = () => { if (words.categories.length) startRound(); };
+    if (inProgress()) ask('Abandon this round and deal a new one?', 'New game', go); else go();
   }
 });
 $app.addEventListener('input', (e) => {
@@ -1265,13 +1367,15 @@ $app.addEventListener('input', (e) => {
   if (game) return;
   if (t.id === 'count') {
     settings.playerCount = +t.value; $('#countVal').textContent = t.value;
-    renderNames(); renderWeights(); save();
+    renderNames(); renderWeights(); ruleSummary(); save();
   } else if (t.dataset.name !== undefined) {
     settings.names[+t.dataset.name] = t.value; save();
   } else if (t.dataset.weight) {
-    settings.weights[t.dataset.weight] = +t.value; updateSplit(); save();
+    settings.weights[t.dataset.weight] = +t.value; updateSplit(); ruleSummary(); save();
   } else if (t.id === 'announce') {
     settings.announce = t.checked; save();
+  } else if (t.id === 'showhint') {
+    settings.showHint = t.checked; ruleSummary(); save();
   } else if (t.id === 'wurl') {
     settings.wordsUrl = t.value; save();
   }

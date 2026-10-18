@@ -17,7 +17,10 @@ A pass-the-phone social deduction game. Pick players, categories and the odds of
   - Crew stop with an impostor still hiding: **impostors win**.
   - Crew stop with every impostor caught: **crew win**, but the caught impostors get one shot at saying the secret word. If more than one was caught, they must agree on a single word. What a correct guess does is set on the setup screen: impostors win, nobody wins, or the crew still win.
 - **Last two:** if only 1 crewmate and 1 impostor are left, the crew win unless that impostor guesses the word.
-- **Everyone is an impostor:** voting continues until two players are left, and both of them win.
+- **Everyone is an impostor:** the round plays exactly like any other, so nobody can tell. If the group votes until two are left, both of them win; if they stop early, the impostors still hiding win.
+- **Scores** carry over between rounds: everyone on the winning side gets a point. Reset them from the results screen.
+- Rarely changed settings (impostor odds, the guess rule, whether impostors get a clue word, the word list) live under **House rules** on the setup screen.
+- **No-clue mode:** switch off "Give impostors a clue word" and impostors only see the category. They have to pick the word up from everyone else's clues, which makes them much harder to hide and their final guess much harder. In an everyone-is-an-impostor round with no clues, nobody knows anything and it becomes pure bluffing.
 - Locking the phone is fine. The game is saved and picks up where it left off, and a role on screen is hidden again when the phone locks.
 
 ## Words and hints

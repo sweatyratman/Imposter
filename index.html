@@ -60,11 +60,31 @@
   .barbtn:active { transform: translateY(1px); }
   body.on-setup #bar { display: none; }
   .barbtn.icon { width: 44px; padding: 0; flex: none; }
-  @media (max-width: 400px) { .barbtn[data-nav="new"] { width: 44px; padding: 0; } .barbtn .lbl { display: none; } }
+  @media (max-width: 329px) { .barbtn[data-nav="new"] { width: 44px; padding: 0; } .barbtn .lbl { display: none; } }
   .barbtn[data-nav="new"] { margin-left: 0; flex: none; }
-  .barcat { flex: 1; min-width: 0; display: flex; justify-content: center; }
+  #bar { flex-wrap: wrap; row-gap: 0; }
+  #bar [data-nav="board"] { margin-left: auto; }
+  /* The category gets its own centred row under the buttons, with room to breathe. */
+  .barcat { order: 10; flex-basis: 100%; min-width: 0; display: flex; justify-content: center; padding-top: 7px; }
+  body:not(.on-setup) #bar { padding-top: calc(7px + env(safe-area-inset-top)); padding-bottom: 7px; }
+  #bar .barbtn { min-height: 40px; }
+  #bar .barbtn.icon { width: 42px; }
+  /* Short phones: the extra category row comes out of the stage card, so the buttons stay on screen. */
+  @media (max-height: 700px) { body .stage { --cw: min(60vw, 236px, 27vh); }
+    body .stage .split .btn { min-height: 78px; } }   /* body: beats the base .stage rule further down */
+  .barcat:empty { display: none; }
+  /* Hidden category: a paper tag with the same black [REDACTED] tape as the cards */
+  .barcat .redcat { position: relative; overflow: visible; border: 0; border-radius: 6px; background: var(--paper); color: var(--ink-soft);
+    padding: 4px 18px 4px 11px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  .barcat .redcat.shown { overflow: hidden; padding-right: 12px; }
+  .redcat .catval { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink);
+    font-family: var(--display); font-weight: 700; font-size: .8rem; line-height: 1.3; }
+  .redcat i { flex: none; font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+  .redcat .tape { position: relative; z-index: 1; --rot: -2deg; padding: 3px 11px 3px 10px; margin-right: -8px; font-family: var(--display);
+    font-weight: 700; font-size: .72rem; letter-spacing: .07em; line-height: 1.2; white-space: nowrap; }
+  .redcat .tape::after { animation: twitch 2.1s ease-in-out infinite; }
   .barcat span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: .9rem; color: #d9def0; }
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: #d9def0; }
 
   #app { max-width: 520px; margin: 0 auto; padding: 12px 16px calc(32px + env(safe-area-inset-bottom)); }
   .screen { display: flex; flex-direction: column; gap: 16px; }
@@ -121,6 +141,9 @@
   .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   @media (max-width: 300px) { .names { grid-template-columns: 1fr; } }
 
+  .cathead { align-items: baseline; flex-wrap: wrap; row-gap: 4px; column-gap: 10px; }
+  .catflavour { margin-left: auto; font-size: .78rem; font-style: italic; color: var(--brass); white-space: nowrap; }
+  @media (max-width: 349px) { .catflavour { flex-basis: 100%; margin-left: 0; } }
   .catnote { min-height: 2.9em; color: var(--mute); font-size: .9rem; } /* reserve two lines so chips never jump */
   /* Category cards: a justified grid of chunky square tiles, each with its own colour and pattern. */
   .catgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
@@ -158,6 +181,9 @@
 
   .bar { display: flex; height: 10px; border-radius: 99px; overflow: hidden; background: var(--raised); }
   .bar span { display: block; height: 100%; transition: flex-basis .15s; }
+  [hidden] { display: none !important; }
+  .check.greyed { opacity: .42; cursor: not-allowed; }
+  .check.greyed input { cursor: not-allowed; }
   .wrow { display: flex; flex-direction: column; }
   .whead { display: flex; justify-content: space-between; align-items: center; font-size: .95rem; }
   .whead b { font-variant-numeric: tabular-nums; }
@@ -186,6 +212,7 @@
   .btn.big { min-height: 64px; font-size: 1.15rem; border-radius: 18px; }
   .btn.small { min-height: 46px; font-size: .95rem; }
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .split.one { grid-template-columns: 1fr; }   /* a lone button takes the whole row */
   .split .btn { flex-direction: column; gap: 6px; min-height: 96px; padding: 10px; font-size: 1.02rem; line-height: 1.2; }
   .split .btn svg { width: 26px; height: 26px; }
 
@@ -210,7 +237,7 @@
 
   /* faces */
   .cface { transform: rotateY(180deg); background: var(--paper); color: var(--ink); }
-  .cface::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  .cface::before, .inkface::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
     transition: opacity 1.5s ease-in 1.1s;  /* starts once the tape is off */
     box-shadow: inset 0 0 34px rgba(55,14,8,.45), inset 0 0 6px rgba(40,10,5,.5);
     background:
@@ -230,11 +257,18 @@
       radial-gradient(ellipse 26% 20% at 18% 80%, rgba(120,90,50,.09), transparent 70%);
   }
   .cface.imp::before { opacity: 1; }   /* the impostor's card is scuffed and creased */
-  .corner { position: absolute; width: 1.65em; display: grid; place-items: center; z-index: 1; }
+  /* The ink ripple: a second, impostor-looking face laid over the crew card and revealed through a growing, ragged
+     blot (a mask animated from script), with a faint ring riding the leading edge. */
+  .inkwrap { position: absolute; inset: 0; z-index: 3; pointer-events: none; filter: url(#inkEdge); }
+  .ink { position: absolute; inset: 0; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+  .inkface { position: absolute; inset: 0; border-radius: 18px; background: var(--paper); color: var(--ink); }
+  .inkface::before { opacity: 1; transition: none; }
+  .inkring { position: absolute; inset: 0; }
+  .corner { position: absolute; width: 2.3em; display: grid; place-items: center; z-index: 1; }
   .corner.tl { top: .7em; left: .7em; }
   .corner.br { bottom: .7em; right: .7em; transform: rotate(180deg); }
-  .corner .mask { width: 1.65em; color: var(--red); --eye: var(--paper); }
-  .corner .peace { width: 1.2em; color: var(--teal-deep); --eye: var(--paper); }
+  .corner .mask { width: 2.3em; color: var(--red); --eye: var(--paper); }
+  .corner .peace { width: 1.75em; color: var(--teal-deep); --eye: var(--paper); }
   .cbody { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 4px; padding: 36px 20px; text-align: center; z-index: 1; }
   .role-title { font-family: var(--display); font-weight: 800; font-size: 1.15rem; line-height: 1.15; margin-bottom: 12px; }
@@ -244,10 +278,19 @@
   .fvalue { font-weight: 700; }
   .secret { font-family: var(--display); font-weight: 800; font-size: clamp(1.4rem, 7.5vw, 1.9rem); line-height: 1.1; max-width: 100%; }
   .fnote { color: var(--ink-soft); font-size: .82rem; margin-top: 12px; max-width: 22ch; }
-  .idname { display: block; width: 100%; font-family: var(--display); font-weight: 800; font-size: max(1.6em, 11px); line-height: 1.1; }
-  .idrole { display: block; width: 100%; position: relative; margin-top: 1em; font-family: var(--display); font-weight: 800;
-    font-size: 1.25em; min-height: 1.6em; }
-  .idbody { padding: 2em 1.1em; }
+  .idbody { justify-content: flex-start; gap: 0; padding: 2.1em 1em 0; }
+  .idkick { font-size: .62em; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+  .idnamebox { flex: 1; width: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .idname { display: block; width: 100%; font-family: var(--display); font-weight: 800; font-size: max(2.5em, 11px); line-height: 1.04;
+    letter-spacing: -.02em; text-wrap: balance; }
+  /* The role has its own section under a light perforated line, with a "Role" label. */
+  .idstub { position: relative; align-self: stretch; margin: .4em -1em 0; padding: 1.15em 1em 2.2em;
+    display: flex; flex-direction: column; align-items: center; }
+  .idstub::before { content: ""; position: absolute; left: .9em; right: .9em; top: -1px; height: 3px;
+    background: radial-gradient(circle, rgba(28,32,51,.2) 0 1px, transparent 1.3px) 0 50% / .5em 3px repeat-x; }
+  .idstub-label { font-size: .58em; font-weight: 700; letter-spacing: .26em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: .75em; }
+  .idrole { display: block; width: 100%; position: relative; font-family: var(--display); font-weight: 800;
+    font-size: 1.3em; min-height: 1.6em; line-height: 1.6em; }
   .idsym { display: grid; place-items: center; height: 54px; margin-bottom: 6px; }
   .idsym .mask { width: 64px; color: var(--red); --eye: var(--paper); }
   .idsym .peace { width: 36px; color: var(--teal-deep); --eye: var(--paper); }
@@ -260,6 +303,7 @@
     background: linear-gradient(90deg, #070707, #4a4a4a 45%, #1b1b1b 70%, #000);
     transform-origin: left center; transform: perspective(90px) rotateY(-58deg); }
   .tape-role { left: -.6em; right: .35em; top: -.6em; bottom: -.6em; --rot: -3deg; }
+  .idstub .tape-role { top: -.22em; bottom: -.3em; --rot: -2deg; }   /* leaves the "Role" label above it showing */
   .tape-role span { font-family: var(--display); font-weight: 700; font-size: .68em; letter-spacing: .06em; opacity: .9; }
   .tape-corner { width: 28%; height: 6.9%; --rot: -45deg; }
   .tape-corner.tl { top: 11.4%; left: -.8%; }
@@ -283,8 +327,45 @@
   .c3d.exit { animation: slideOut .38s cubic-bezier(.5,0,.8,.3) forwards; }
   @keyframes slideIn { from { transform: translateX(75vw) rotate(14deg); } to { transform: none; } }
   @keyframes slideOut { to { transform: translateX(-85vw) rotate(-14deg); } }
-  .c3d.suspense { animation: tremble .7s ease-in-out infinite; }   /* on the wrapper, so it never undoes the flip */
-  @keyframes tremble { 0%,100% { transform: rotate(0) scale(1); } 25% { transform: rotate(-1.5deg) scale(1.02); } 75% { transform: rotate(1.5deg) scale(1.02); } }
+  /* The reveal strobe: every card, crew or not, flickers faintly towards the impostor's stained look while the
+     countdown runs and the tape comes off, so the flicker itself gives nothing away. Real card colours only,
+     and under 3 flickers a second. */
+  .c3d.strobe .cface::before { animation: strobeStain 2.4s ease-in-out infinite; }
+  .c3d.strobe.hard .cface::before { animation-duration: 1.6s; }
+  @keyframes strobeStain { 0%, 100% { opacity: 0; } 50% { opacity: .42; } }   /* a slow breath, well under 1 a second */
+  /* The card trembles harder on every beat. rotate/scale are separate properties, so this never undoes the card's own transform. */
+  .c3d.suspense { animation: tremble var(--trd, .7s) ease-in-out infinite; }
+  @keyframes tremble { 0%,100% { rotate: 0deg; scale: 1; } 25% { rotate: calc(var(--tr, 1.5) * -1deg); scale: calc(1 + var(--tr, 1.5) * .014); }
+    75% { rotate: calc(var(--tr, 1.5) * 1deg); scale: calc(1 + var(--tr, 1.5) * .014); } }
+  /* The moment the tape goes: a thump, a lift, and the corner symbols stamp in. */
+  .c3d.slam { animation: slam .55s cubic-bezier(.2,.9,.3,1.3) both; }
+  @keyframes slam { 0% { scale: 1; } 18% { scale: 1.13; rotate: -1.2deg; } 45% { scale: .985; rotate: .6deg; } 100% { scale: 1; rotate: 0deg; } }
+  .c3d.hit { animation: hit .62s linear both; }   /* an impostor, found: the whole card takes a punch */
+  @keyframes hit { 0% { translate: 0 0; } 10% { translate: -9px 3px; rotate: -2deg; } 22% { translate: 8px -4px; rotate: 1.8deg; }
+    36% { translate: -6px 2px; rotate: -1.2deg; } 52% { translate: 4px -1px; rotate: .7deg; } 70% { translate: -2px 0; rotate: -.3deg; } 100% { translate: 0 0; rotate: 0deg; } }
+  .c3d.sigh { animation: sigh 1.1s ease-in-out both; }   /* a crewmate, wrongly accused: a slow, heavy settle */
+  @keyframes sigh { 0% { scale: 1; translate: 0 0; } 35% { scale: 1.035; translate: 0 -4px; } 100% { scale: 1; translate: 0 0; } }
+  .c3d.revealed .corner { animation: cornerStamp .5s .3s cubic-bezier(.2,1.5,.4,1) both; }
+  @keyframes cornerStamp { from { scale: 2.6; rotate: -18deg; opacity: 0; } to { scale: 1; rotate: 0deg; opacity: 1; } }
+  .c3d.revealed .rtext { display: inline-block; animation: rolePop .6s .45s cubic-bezier(.2,1.4,.4,1) both; }   /* the text only: the tape is a sibling and must stay put */
+  @keyframes rolePop { from { scale: 1.5; opacity: 0; letter-spacing: .25em; } to { scale: 1; opacity: 1; letter-spacing: 0; } }
+
+  /* Lights down: a dark vignette closes in on the card, a single flash lands as the tape goes, and a faint
+     wash of the winning colour (the real palette) rolls out once the role is known. */
+  .spot { position: fixed; inset: 0; z-index: 30; pointer-events: none; opacity: var(--dim, 0); transition: opacity .7s ease;
+    background: radial-gradient(ellipse var(--rx, 55vw) var(--ry, 36vh) at 50% var(--sy, 45%), rgba(4,7,16,0) 52%, rgba(4,7,16,.78) 82%, rgba(3,5,12,.97) 100%); }
+  .spot::before, .spot::after { content: ""; position: absolute; inset: 0; opacity: 0; }
+  .spot::before { background: radial-gradient(ellipse var(--rx, 55vw) var(--ry, 36vh) at 50% var(--sy, 45%), rgba(255,244,222,.8), rgba(255,244,222,0) 70%); }
+  .spot.flash::before { animation: flashBurst .75s ease-out both; }
+  @keyframes flashBurst { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
+  .spot::after { background: radial-gradient(ellipse 120% 90% at 50% var(--sy, 45%), transparent 40%, var(--tint, transparent) 100%); }
+  .spot.imp { --tint: rgba(224,69,58,.34); }
+  .spot.crew { --tint: rgba(43,179,154,.3); }
+  .spot.imp::after, .spot.crew::after { animation: tintRoll 2.2s ease-in-out both; }
+  @keyframes tintRoll { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+  .spot.on-top { opacity: 1; }
+  /* keep the count bright above the dimming */
+  .stage.verdict .countdown { position: relative; z-index: 40; }
 
   /* ---------- deal ---------- */
   .dealhead .bigname { margin-top: 2px; }
@@ -296,7 +377,7 @@
   .passto { font-family: var(--body); font-weight: 400; font-size: 1.1rem; color: #d9def0; margin-top: 4px; }
   .bigname { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 11vw, 2.8rem); line-height: 1.05;
     letter-spacing: -.02em; }
-  .tapnote { color: var(--mute); font-size: .95rem; min-height: 2.9em; }
+  .tapnote { color: var(--mute); font-size: .95rem; min-height: 2.9em; position: relative; z-index: 40; }   /* stays bright under the spotlight */
 
   /* ---------- shuffle ---------- */
   .shuffle-screen { --cw: min(54vw, 210px, 27vh); text-align: center; padding-top: 14px; }
@@ -348,9 +429,12 @@
   @keyframes stamp { from { transform: scale(2.2) rotate(-25deg); opacity: 0; } to { transform: none; opacity: 1; } }
 
   .verdict .kicker { font-size: 1.05rem; }
-  .countdown { font-family: var(--display); font-weight: 800; font-size: 3rem; line-height: 1; color: var(--brass); min-height: 1em; }
+  .countdown { font-family: var(--display); font-weight: 800; font-size: 3.6rem; line-height: 1; color: var(--brass); min-height: 1em; position: relative; }
   .countdown.tick { animation: tick .7s ease-out both; }
-  @keyframes tick { from { transform: scale(1.8); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); opacity: .9; } }
+  @keyframes tick { from { transform: scale(2.3); opacity: 0; } 22% { opacity: 1; } to { transform: scale(1); opacity: .95; } }
+  .countdown.tick::after { content: ""; position: absolute; left: 50%; top: 50%; width: 1.5em; height: 1.5em; margin: -.75em 0 0 -.75em;
+    border-radius: 50%; border: 2px solid var(--brass); animation: ring .7s ease-out both; }
+  @keyframes ring { from { transform: scale(.4); opacity: .8; } to { transform: scale(1.45); opacity: 0; } }
   .after h1.bad { color: var(--red); }
   .fadein { animation: fadeUp .28s ease-out both; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -384,8 +468,9 @@
   .vote-head p { min-height: 1.45em; }
 
   /* the stage: chosen card and reveal share one layout so the card never moves between them */
-  .stage { --cw: min(60vw, 236px, 27vh); text-align: center; padding-top: 10px; }
-  .stage-head { min-height: 84px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .stage { --cw: min(64vw, 256px, 31vh); text-align: center; padding-top: 10px; }
+  .stage-head { min-height: 52px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .stage-head .kicker { font-family: var(--display); font-weight: 700; font-size: 1.3rem; color: var(--paper); }   /* the name lives on the card */
   .stage-foot { min-height: 120px; display: flex; flex-direction: column; gap: 12px; }
   .stage-foot .after { gap: 10px; }
   .stage-foot h1 { font-size: 1.8rem; }
@@ -452,7 +537,10 @@
   .bname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
   .brow b { font-family: var(--display); font-size: 1.2rem; font-variant-numeric: tabular-nums; }
   .board-empty { text-align: center; padding: 18px 0; font-size: 1.1rem; }
-  .masthead .trophy { margin-left: auto; align-self: flex-start; margin-top: 4px; color: var(--brass); border-color: rgba(233,185,73,.5); }
+  .masthead { position: relative; }
+  .masthead .wordmark { margin-right: 52px; }   /* room for the trophy button */
+  @media (min-width: 360px) { .tape-tag { white-space: nowrap; } }   /* one line wherever it fits */
+  .masthead .trophy { position: absolute; top: 22px; right: 0; color: var(--brass); border-color: rgba(233,185,73,.5); }
   .cluelist { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; }
   .rules > .row h2 { flex: 1; min-width: 0; white-space: nowrap; }
   .resetrules { width: auto; flex: none; min-height: 40px; padding: 0 11px; gap: 6px; font-size: .82rem; margin-bottom: 0; white-space: nowrap; }
@@ -484,14 +572,15 @@
   .mask path { fill: currentColor; }
   .mask .eye { fill: var(--eye, var(--table)); }
   .peace .p { fill: currentColor; }
-  .peace .thumb { fill: currentColor; stroke: var(--eye, var(--paper)); stroke-width: 1.4; }
-  .peace .crease { fill: none; stroke: var(--eye, var(--paper)); stroke-width: 1.3; stroke-linecap: round; }
+  .peace .thumb { fill: currentColor; stroke: var(--eye, var(--paper)); stroke-width: 1.3; stroke-linejoin: round; }
+  .peace .crease { fill: none; stroke: var(--eye, var(--paper)); stroke-width: 1.1; stroke-linecap: round; }
 
   @media (prefers-reduced-motion: reduce) {
     .c3d.enter, .c3d.exit, .c3d.suspense, .c3d.bounce .tape::after, .tape.peel, .countdown.tick, .after,
-    .suspect .stamp, .autobar span, .table-area.draw .drawn, .stack-area .c3d.enter, .gcard .tape::after, .gcard.back-in,
-    .stage-foot.rise, .vote-stage .stage-head, .fadein, .sheet, .sheet-wrap { animation: none !important; }
-    .unmask-title .pl, .unmask-title .sg,
+    .suspect .stamp, .autobar span, .redcat .tape::after, .c3d.slam, .c3d.hit, .c3d.sigh, .c3d.revealed .corner, .c3d.revealed .rtext, .countdown.tick::after, .spot.flash::before, .spot.imp::after, .spot.crew::after, .table-area.draw .drawn, .stack-area .c3d.enter, .gcard .tape::after, .gcard.back-in,
+    .stage-foot.rise, .vote-stage .stage-head, .fadein, .sheet, .sheet-wrap,
+    .c3d.strobe .cface::before { animation: none !important; }
+    .unmask-title .pl, .unmask-title .sg, .spot,
     .c3d-inner, .mini, .stack-area .c3d, .bar span, .suspect, .btn, .cface::before { transition: none !important; }
   }
 </style>
@@ -504,6 +593,10 @@
   <button class="barbtn" data-nav="new" aria-label="New game" title="New game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><span class="lbl">New game</span></button>
 </nav>
 <main id="app"></main>
+<div class="spot" id="spot" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkEdge" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="2" seed="5" result="n"/>
+  <feDisplacementMap id="inkDisp" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 
 <script>
 (() => {
@@ -522,7 +615,7 @@ const MAX_HINTS = 4;    // clues stored per word; extra impostors cycle back thr
 // The impostor emblem: a domino mask. Eye colour comes from the --eye CSS variable.
 const MASK = (extra = '') => `<svg class="mask ${extra}" viewBox="0 0 64 34" aria-hidden="true"><path d="M3 9C11 2 24 2 32 8c8-6 21-6 29 1 2 11-3 21-13 23-6 1-11-3-16-8-5 5-10 9-16 8C6 30 1 20 3 9z"/><ellipse class="eye" cx="18" cy="15" rx="6.5" ry="4.2"/><ellipse class="eye" cx="46" cy="15" rx="6.5" ry="4.2"/></svg>`;
 // The crew emblem: a hand throwing a peace sign.
-const PEACE = () => `<svg class="peace" viewBox="0 0 24 32" aria-hidden="true"><rect class="p" x="5" y="1.5" width="5" height="15" rx="2.5" transform="rotate(-14 7.5 15)"/><rect class="p" x="13" y="1" width="5" height="15.5" rx="2.5" transform="rotate(12 15.5 15)"/><rect class="p" x="4" y="13" width="16" height="13" rx="5"/><rect class="p" x="7" y="24" width="10" height="7" rx="2"/><path class="crease" d="M10.5 15.5c2.2-.9 4.7-.9 7.2.3"/><rect class="thumb" x="2.4" y="17.6" width="11.5" height="4.8" rx="2.4" transform="rotate(-24 8 20)"/></svg>`;
+const PEACE = () => `<svg class="peace" viewBox="0 0 28 36" aria-hidden="true"><rect class="p" x="8.7" y="2.2" width="4.8" height="17" rx="2.4" transform="rotate(-15 11.1 18.5)"/><rect class="p" x="14.5" y="1" width="4.8" height="18" rx="2.4" transform="rotate(13 16.9 18.5)"/><rect class="p" x="6.5" y="15.5" width="16" height="13.5" rx="5"/><rect class="p" x="9.5" y="27" width="10" height="8" rx="2"/><path class="crease" d="M15.3 19.2c2.4-.9 4.7-.8 6.6.4"/><rect class="thumb" x="4.4" y="20.6" width="13.4" height="5.2" rx="2.6" transform="rotate(-16 11 23.2)"/></svg>`;
 
 const svg = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const ICON = {
@@ -614,6 +707,8 @@ const defaultSettings = () => ({
   announce: false,
   showHint: true,          // give impostors a clue word
   showCategory: true,      // show the category to everyone during the round
+  unaware: false,          // impostors can be fooled into thinking they're crew (they get a different word)
+  unawareChance: 100,      // % chance that each impostor is fooled, when the option is on
   guessRule: 'impostors',  // caught impostors guess the word: 'impostors' win | 'nobody' wins | 'crew' still win
   wordsUrl: ''
 });
@@ -633,9 +728,10 @@ const plural = (n, one, many) => n === 1 ? one : many;
 
 // Animation timers belong to the current screen and are cleared whenever the screen is redrawn.
 let timers = [];
+let inkRaf = 0;     // the ink-ripple animation frame, if one is running
 let busy = false;   // a card animation is running; ignore extra taps
 const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
-const clearTimers = () => { timers.forEach(clearTimeout); timers = []; busy = false; };
+const clearTimers = () => { timers.forEach(clearTimeout); timers = []; busy = false; cancelAnimationFrame(inkRaf); };
 const buzz = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
 
 function save() {
@@ -656,6 +752,8 @@ function load() {
       delete settings.category;
       if (!['impostors', 'nobody', 'crew'].includes(settings.guessRule)) settings.guessRule = 'impostors';
       settings.maxImpostors = Math.max(1, Math.min(MAX_PLAYERS, Math.round(+settings.maxImpostors) || 3));
+      settings.unaware = settings.unaware === true;
+      const uc = Math.round(+settings.unawareChance); settings.unawareChance = Number.isFinite(uc) ? Math.max(0, Math.min(100, uc)) : 100;
     }
     game = d.game || null;
     recent = Array.isArray(d.recent) ? d.recent : [];
@@ -736,6 +834,9 @@ function refreshWordsUI() {
 /* ---------- impostor-count chances ---------- */
 // At most everyone but one ("everyone" is its own option), and never more than 10: past that it's just noise.
 const IMPOSTOR_CEILING = 10;
+// While impostors can be fooled the category is shown to everyone; if every impostor is fooled there are no clues at all.
+const fooling = () => !!settings.unaware && settings.unawareChance > 0;
+const allFooled = () => !!settings.unaware && settings.unawareChance >= 100;   // then nobody is left to get a clue
 const impostorCap = (n) => Math.max(1, Math.min(n - 1, IMPOSTOR_CEILING));
 const maxImpostors = (n) => Math.min(settings.maxImpostors || 3, impostorCap(n));
 // Fresh odds for a count the first time the slider reaches it: rarer the more impostors there are.
@@ -784,22 +885,37 @@ function startRound() {
   const [word, ...hints] = pick(pool);
   recent.push(word); if (recent.length > 60) recent.shift();
   const count = chooseOption(n).count;
+  const maxPossible = Math.max(...effective(n).filter((o) => o.pct > 0).map((o) => o.count), count);   // the most impostors these odds allow
   const impostors = Array(n).fill(false);
   shuffle([...Array(n).keys()]).slice(0, count).forEach((i) => { impostors[i] = true; });
   // Clue 1 goes to the first impostor in deal order, clue 2 to the next, and so on, cycling 1,2,3,4,1,2…
+  // "Impostors think they're crew": some impostors are dealt a crew card with a different word from the same category.
+  // Every fooled impostor gets a word of their own, different from the crew's and from each other's.
+  const alts = Array(n).fill(null);
+  if (settings.unaware) {
+    const seen = new Set([word.toLowerCase()]), others = [];
+    cat.words.forEach((w) => { const k = w[0].toLowerCase(); if (!seen.has(k)) { seen.add(k); others.push(w[0]); } });
+    shuffle(others);
+    impostors.forEach((imp, i) => { if (imp && others.length && Math.random() * 100 < settings.unawareChance) alts[i] = others.pop(); });
+  }
+  const fooled = alts.map((a) => a != null);
+  // Clue 1 goes to the first knowing impostor in deal order, clue 2 to the next, and so on, cycling 1,2,3,4,1,2…
   const clue = Array(n).fill(null);
   let k = 0;
-  impostors.forEach((imp, i) => { if (imp) clue[i] = hints[k++ % hints.length]; });
+  impostors.forEach((imp, i) => { if (imp && !fooled[i]) clue[i] = hints[k++ % hints.length]; });
   game = {
-    screen: 'pass', players: getNames(), impostors, word, hints, clue,
+    screen: 'pass', players: getNames(), impostors, word, hints, clue, alts, fooled,
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     outcome: null, announce: !!settings.announce, guessRule: settings.guessRule,
-    showHint: settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
-    showCategory: settings.showCategory !== false,
-    impostorCount: count, first: rand(n), starterShown: false
+    showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
+    showCategory: fooling() || settings.showCategory !== false,
+    impostorCount: count, maxPossible, first: rand(n), starterShown: false
   };
   save(); render();
 }
+const altOf = (i) => (game.alts ? game.alts[i] : isFooled(i) ? game.alt : null);   // the word a fooled impostor was dealt
+const isFooled = (i) => !!(game.fooled && game.fooled[i]);          // an impostor who was dealt a crew card
+const looksImpostor = (i) => !!game.impostors[i] && !isFooled(i);   // what their own card told them
 const activeIdx = () => game.players.map((_, i) => i).filter((i) => !game.out.includes(i));
 const remainingImpostors = () => game.impostors.reduce((s, v, i) => s + (v && !game.out.includes(i) ? 1 : 0), 0);
 const hiddenImpostors = () => game.impostors.map((v, i) => (v && !game.out.includes(i) ? i : -1)).filter((i) => i >= 0);
@@ -832,7 +948,7 @@ function confirmVote() {
   let next = 'found';
   if (!game.impostors[i]) next = 'crew';
   else if (activeIdx().length === 2) next = remainingImpostors() === 2 ? 'bothwin' : remainingImpostors() === 1 ? 'lasttwo' : 'found';
-  game.verdict = { i, imp: !!game.impostors[i], next, shown: false, quip: quip(game.impostors[i] ? 'caught' : 'wrong', game.players[i]) };
+  game.verdict = { i, imp: !!game.impostors[i], fooled: isFooled(i), next, shown: false, quip: quip(game.impostors[i] ? 'caught' : 'wrong', game.players[i]) };
   game.screen = 'verdict'; save(); render();
 }
 function resolveVerdict() {
@@ -875,7 +991,7 @@ const ROLE_TAPE = `<span class="tape tape-role"><span>[REDACTED]</span></span>`;
 // The card dealt to each player: their role, the category and the word or hint.
 const clueFor = (i) => (game.clue && game.clue[i]) || (game.hints && game.hints[0]) || game.hint || '';
 function roleFace(i) {
-  const imp = game.impostors[i];
+  const imp = looksImpostor(i);   // a fooled impostor gets exactly the crew card, with their own word
   const body = imp
     ? (game.showHint === false
       ? `<div class="role-title">You're the impostor</div>
@@ -885,7 +1001,7 @@ function roleFace(i) {
          <div class="flabel">Your clue</div><div class="secret">${esc(clueFor(i))}</div>
          <p class="fnote">Blend in. Don't give yourself away.</p>`)
     : `<div class="role-title">You're crew</div>
-       <div class="flabel">The secret word</div><div class="secret">${esc(game.word)}</div>
+       <div class="flabel">The secret word</div><div class="secret">${esc(isFooled(i) ? altOf(i) : game.word)}</div>
        <p class="fnote">Prove you know it, without making it too easy.</p>`;
   return `<div class="cside cface ${imp ? 'imp' : 'crew'}">${corners(symbol(imp))}<div class="cbody">${body}</div></div>`;
 }
@@ -897,8 +1013,10 @@ function idFace(name, role, { redacted = false, nameId = '' } = {}) {
   return `<div class="cside cface ${cls}">
     ${known ? corners(symbol(role)) : ''}
     <div class="cbody idbody">
-      <span class="idname"${nameId ? ` id="${nameId}"` : ''}>${esc(name)}</span>
-      <span class="idrole ${role === null ? '' : role ? 'imp' : 'crew'}">${roleText}${redacted ? ROLE_TAPE : ''}</span>
+      <span class="idkick">Suspect file</span>
+      <span class="idnamebox"><span class="idname"${nameId ? ` id="${nameId}"` : ''}>${esc(name)}</span></span>
+      <span class="idstub"><span class="idstub-label">Role</span>
+        <span class="idrole ${role === null ? '' : role ? 'imp' : 'crew'}"><span class="rtext">${roleText}</span>${redacted ? ROLE_TAPE : ''}</span></span>
     </div>${redacted ? TAPES : ''}</div>`;
 }
 
@@ -925,7 +1043,8 @@ function fracToValue(input, f) {
     let best = min; for (let k = min; k <= max; k++) if (Math.abs(COUNT_POS[k] - f) < Math.abs(COUNT_POS[best] - f)) best = k;
     return best;
   }
-  return Math.round(min + f * (max - min));
+  const step = +input.step || 1;
+  return Math.min(max, Math.max(min, Math.round((min + f * (max - min)) / step) * step));
 }
 function syncSlider(input) {
   const w = input && input.closest('.slider'); if (!w) return;
@@ -987,7 +1106,7 @@ function renderSetup() {
     </section>
 
     <section class="block">
-      <h2>Categories</h2>
+      <div class="row cathead"><h2>Categories</h2><span class="catflavour">Choose as many as you want</span></div>
       <p class="catnote" id="catnote">&nbsp;</p>
       <div id="cats" class="catgrid"></div>
     </section>
@@ -1009,10 +1128,16 @@ function renderSetup() {
     </section>
 
     <section class="sub">
-      <h3>Category and impostor clues</h3>
-      <label class="check"><input type="checkbox" id="showcat" ${settings.showCategory !== false ? 'checked' : ''}> Show the category during gameplay</label>
-      <label class="check"><input type="checkbox" id="showhint" ${settings.showHint !== false ? 'checked' : ''}> Give impostors a clue word</label>
+      <h3>Impostor clues</h3>
+      <label class="check" id="showcatRow"><input type="checkbox" id="showcat"> Show the category during gameplay</label>
+      <label class="check" id="showhintRow"><input type="checkbox" id="showhint"> Give impostors a clue word</label>
       <p class="muted small" id="infoNote"></p>
+      <label class="check"><input type="checkbox" id="unaware" ${settings.unaware ? 'checked' : ''}> Impostors think they're crew</label>
+      <div class="wrow" id="unawareBox"${settings.unaware ? '' : ' hidden'}>
+        <div class="whead"><span>Chance each impostor is fooled</span><b id="unawareVal">${settings.unawareChance}%</b></div>
+        ${slider(`<input type="range" id="unawareChance" min="0" max="100" step="5" value="${settings.unawareChance}" aria-label="Chance each impostor is fooled">`)}
+      </div>
+      <p class="muted small" id="unawareNote"></p>
     </section>
 
     <section class="sub">
@@ -1036,12 +1161,12 @@ function renderSetup() {
 
     <div class="dock"><button class="btn primary big" data-act="start">${ICON.play}Start game</button></div>
   </div>`;
-  renderNames(); renderCats(); renderWeights(); infoNote();
+  renderNames(); renderCats(); renderWeights(); unawareNote();
   $$('.slider input').forEach(syncSlider);
   $('#wstatus').textContent = wordsStatusText();
 }
 // The settings under House rules, and whether they're all back at their defaults.
-const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'guessRule', 'wordsUrl'];
+const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'unaware', 'unawareChance', 'guessRule', 'wordsUrl'];
 function rulesAreDefault() {
   const d = defaultSettings();
   return RULE_KEYS.every((k) => k === 'weights'
@@ -1052,13 +1177,35 @@ function syncResetRules() { const b = $('[data-act="resetRules"]'); if (b) b.dis
 // Spell out what the impostors will be working with, especially when they'd get nothing at all.
 function infoNote() {
   const el = $('#infoNote'); if (!el) return;
-  const clue = settings.showHint !== false, cat = settings.showCategory !== false;
+  const forced = fooling(), noClues = allFooled();
+  const clue = !noClues && settings.showHint !== false, cat = forced || settings.showCategory !== false;
   const one = settings.categories.length === 1;
+  if (noClues) { el.textContent = 'Every impostor is fooled, so nobody gets a clue and the category is shown to everyone. Your own choices come back if you lower the chance or switch this off.'; return; }
   el.textContent = clue && cat ? 'Impostors see the category and a clue. With several impostors, each gets a different clue.'
     : clue ? `Impostors get a clue but not the category${one ? ' (though with one category picked, everyone knows it anyway)' : ''}. Harder for them.`
     : cat ? 'Impostors only see the category. They must pick the word up from everyone else.'
     : one ? 'Impostors get no clue, but with one category picked everyone knows it anyway.'
     : 'Impostors get nothing at all: no clue, no category. They must bluff purely from what others say. Very hard for them.';
+  if (forced) el.textContent += ' The category is always shown while impostors can be fooled, and a fooled impostor sees a crew card instead.';
+}
+// Reflect the two toggles: greyed out and fixed while impostors can be fooled, otherwise showing the saved choice.
+function syncClueToggles() {
+  const forced = fooling();
+  const noClues = allFooled();
+  [['showcat', 'showcatRow', forced, forced ? true : settings.showCategory !== false], ['showhint', 'showhintRow', noClues, noClues ? false : settings.showHint !== false]]
+    .forEach(([id, row, lock, val]) => { const el = $('#' + id), r = $('#' + row); if (!el) return; el.checked = val; el.disabled = lock; r.classList.toggle('greyed', lock); });
+  infoNote();
+}
+function unawareNote() {
+  syncClueToggles();
+  const on = settings.unaware, c = settings.unawareChance;
+  const box = $('#unawareBox'); if (box) box.hidden = !on;
+  const v = $('#unawareVal'); if (v) v.textContent = c + '%';
+  const el = $('#unawareNote'); if (!el) return;
+  el.textContent = !on ? 'Off: every impostor knows they are one.'
+    : c === 0 ? 'At 0% nobody is ever fooled, so this does nothing.'
+    : (c === 100 ? 'Every impostor sees' : `Each impostor has a ${c}% chance of being fooled. A fooled impostor sees`)
+      + ' a crew card with a word from the same category that nobody else has (each fooled impostor gets their own) and no clue. They only find out when they are voted out.';
 }
 function renderNames() {
   const box = $('#names');
@@ -1071,7 +1218,7 @@ function renderNames() {
 const CAT_COLOURS = {
   'Everyday Objects': ['#5873dc', '#2c3f94'], 'Animals': ['#3f9d5a', '#1d5c33'], 'Food & Drink': ['#e5793b', '#a2401a'],
   'Places': ['#2e9bb0', '#155866'], 'Jobs': ['#94704f', '#523b28'], 'Sports & Games': ['#dc4c3e', '#8a2018'],
-  'Clothing & Style': ['#c84a93', '#782055'], 'Nature & Weather': ['#58ab47', '#2a6420'], 'Transport': ['#d4951c', '#7c5009'],
+  'Clothing & Style': ['#c84a93', '#782055'], 'Transport': ['#d4951c', '#7c5009'],
   'Music': ['#8053d4', '#432585'], 'Home & Garden': ['#78a243', '#3c5a1c'], 'Science & Space': ['#3a4c92', '#10173a'],
   'Fantasy & Fairytales': ['#a04ccc', '#521c78'], 'Celebrations': ['#e3558d', '#95204c'], 'Films': ['#c0393f', '#631419'],
   'Actors': ['#c9962c', '#6e4b0d'], 'Countries & Cities': ['#2f958b', '#12544e'], 'TV Shows': ['#4d63c9', '#232f75'],
@@ -1083,7 +1230,7 @@ const hashName = (t) => [...t].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>>
 function spanRandom() {
   const box = $('#cats'), r = box && box.querySelector('.random'); if (!r) return;
   const cols = getComputedStyle(box).gridTemplateColumns.split(' ').length || 4;
-  const span = cols - (words.categories.length % cols);   // 21 categories in 4 columns -> Random spans 3
+  const span = cols - (words.categories.length % cols);   // e.g. 21 categories in 4 columns -> Random spans 3; 20 -> Random gets a full row
   r.style.gridColumn = span > 1 ? `span ${span}` : '';
   r.classList.toggle('wide', span > 1);
 }
@@ -1133,7 +1280,9 @@ function updateSplit() {
 /* ---------- game screens ---------- */
 const catLabel = () => `${esc(game.emoji)} ${esc(game.category)}`.trim();
 // The top-bar strip: the category, or a placeholder when the house rule hides it.
-const barLabel = () => game.showCategory === false ? '❔ Category hidden' : catLabel();
+const REDACTED_CAT = `<span class="redcat" role="img" aria-label="Category hidden"><i>Category</i><b class="tape">[REDACTED]</b></span>`;
+const barHTML = () => game.showCategory === false ? REDACTED_CAT
+  : `<span class="redcat shown"><i>Category</i><b class="catval">${catLabel()}</b></span>`;   // same paper tag, value in ink instead of tape
 const isLast = () => game.idx === game.players.length - 1;
 const dealNote = (up) => !up ? 'Make sure nobody else can see, then tap the card.'
   : isLast() ? 'Tap the card to hide it and go to the shuffle.' : 'Tap the card to hide it, then pass the phone on.';
@@ -1187,8 +1336,8 @@ const SCREENS = {
       // The chosen card, in exactly the spot the reveal will use.
       const name = game.players[sel];
       return `<div class="screen stage vote-stage">
-        <div class="stage-head"><p class="kicker">Vote out</p><div class="bigname">${esc(name)}?</div></div>
-        <div class="c3d stage-card flipped"><div class="c3d-inner">${backHTML()}${idFace(name, game.impostors[sel], { redacted: true })}</div></div>
+        <div class="stage-head"><p class="kicker">Vote this player out?</p></div>
+        <div class="c3d stage-card flipped" aria-label="${esc(name)}"><div class="c3d-inner">${backHTML()}${idFace(name, looksImpostor(sel), { redacted: true })}</div></div>
         <div class="stage-foot rise"><div class="split">
           <button class="btn" data-act="unpick">${ICON.back}Pick again</button>
           <button class="btn danger" data-act="confirm">${ICON.gavel}Vote out</button>
@@ -1224,12 +1373,14 @@ const SCREENS = {
       } else if (v.next === 'found') {
         // Same choice every time, so nothing hints at how many impostors or crew are left.
         const rem = remainingImpostors(), canVote = activeIdx().length > 1;
+        // If the odds could never have dealt more impostors than have now been caught, there is nobody left to find.
+        const allFound = game.maxPossible != null && caughtImpostors() >= game.maxPossible;
         const hint = game.announce
           ? `<p class="notice">${rem === 0 ? 'That was the last impostor.' : `${rem} ${plural(rem, 'impostor is', 'impostors are')} still hiding.`}</p>` : '';
         after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p>${hint}
-          <div class="split" role="group" aria-label="Vote someone else out?">
-            <button class="btn danger" data-act="again" ${canVote ? '' : 'disabled'}>${ICON.gavel}Vote again</button>
-            <button class="btn" data-act="stop">${ICON.stop}We're done</button>
+          <div class="split${allFound ? ' one' : ''}" role="group" aria-label="${allFound ? 'Finish the round' : 'Vote someone else out?'}">
+            ${allFound ? '' : `<button class="btn danger" data-act="again" ${canVote ? '' : 'disabled'}>${ICON.gavel}Vote again</button>`}
+            <button class="btn${allFound ? ' primary' : ''}" data-act="stop">${ICON.stop}We're done</button>
           </div>`;
       } else {
         after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p><p class="lead">Only two players are left.</p>
@@ -1238,9 +1389,9 @@ const SCREENS = {
     }
     const card = v.shown
       ? `<div class="c3d verdict-card stage-card flipped" aria-label="${v.imp ? 'Impostor' : 'Crew'}"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp)}</div></div>`
-      : `<div class="c3d verdict-card stage-card flipped" data-act="flipVerdict" role="button" tabindex="0" aria-label="Reveal their role"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp, { redacted: true })}</div></div>`;
+      : `<div class="c3d verdict-card stage-card flipped" data-act="flipVerdict" role="button" tabindex="0" aria-label="Reveal ${esc(name)}'s role"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp && !v.fooled, { redacted: true })}</div></div>`;
     return `<div class="screen stage verdict"${auto ? ' data-act="verdictNext" role="button" aria-label="Move on"' : ''}>
-      <div class="stage-head"><p class="kicker">The group has voted out</p><div class="bigname">${esc(name)}</div></div>
+      <div class="stage-head"><p class="kicker">The group has voted out…</p></div>
       ${card}
       <div class="stage-foot">${v.shown ? `<div class="after">${after}</div>` : `<div class="countdown" id="countdown" aria-live="polite"></div>`}</div>
     </div>`;
@@ -1249,7 +1400,7 @@ const SCREENS = {
   // The impostors got away: tap the pile to see who they were.
   unmask: () => {
     const ids = hiddenImpostors(), n = ids.length, up = !!game.unmasked;
-    const cards = ids.map((i, k) => `<div class="c3d${up ? ' flipped' : ' enter'}" style="--k:${k};--n:${n};z-index:${k + 1}"><div class="c3d-inner">${backHTML()}${idFace(game.players[i], true)}</div></div>`).join('');
+    const cards = ids.map((i, k) => `<div class="c3d${up ? ' flipped' : ' enter'}" style="--k:${k};--n:${n};z-index:${k + 1}"><div class="c3d-inner">${backHTML()}${idFace(game.players[i], up ? true : !isFooled(i))}</div></div>`).join('');
     return `<div class="screen center unmask n${Math.min(n, 3)}">
       <h2 class="unmask-title${up && n > 1 ? ' plural' : ''}"${up ? ` aria-label="${n > 1 ? 'The impostors were…' : 'The impostor was…'}"` : ''}>${up ? REVEALED_TITLE : 'Tap to reveal the impostor'}</h2>
       <div class="stack-area${up && n > 1 ? ' fanned' : ''}" ${up ? '' : 'data-act="unmask" role="button" tabindex="0" aria-label="Reveal the impostor"'}>${cards}</div>
@@ -1316,11 +1467,18 @@ const SCREENS = {
 };
 // Which clue each impostor had. One impostor: just the clue. Several: each name with theirs.
 function ledgerClues() {
-  if (game.showHint === false) return `<div class="row"><span>Impostor clue</span><b>None (clues off)</b></div>`;
   const imps = game.players.map((_, i) => i).filter((i) => game.impostors[i]);
-  if (imps.length === 1) return `<div class="row"><span>Impostor clue</span><b>${esc(clueFor(imps[0]))}</b></div>`;
-  return `<div class="row clues"><span>Impostor clues</span><span class="cluelist">${imps.map((i) =>
-    `<span><b>${esc(clueFor(i))}</b> <small>${esc(game.players[i])}</small></span>`).join('')}</span></div>`;
+  const aware = imps.filter((i) => !isFooled(i)), fooled = imps.filter(isFooled);
+  let out = '';
+  if (aware.length) {
+    if (game.showHint === false) out += `<div class="row"><span>Impostor clue</span><b>None (clues off)</b></div>`;
+    else if (aware.length === 1 && !fooled.length) out += `<div class="row"><span>Impostor clue</span><b>${esc(clueFor(aware[0]))}</b></div>`;
+    else out += `<div class="row clues"><span>Impostor clues</span><span class="cluelist">${aware.map((i) =>
+      `<span><b>${esc(clueFor(i))}</b> <small>${esc(game.players[i])}</small></span>`).join('')}</span></div>`;
+  }
+  if (fooled.length) out += `<div class="row clues"><span>Thought they were crew</span><span class="cluelist">${fooled.map((i) =>
+    `<span><b>${esc(altOf(i))}</b> <small>${esc(game.players[i])}</small></span>`).join('')}</span></div>`;
+  return out;
 }
 function scoreHTML(scored) {
   const sc = settings.scores || {};
@@ -1352,7 +1510,9 @@ function fitText(root) {
     if (!el.clientWidth) return;
     let size = parseFloat(getComputedStyle(el).fontSize);
     const min = el.closest('.gcard') ? 6 : Math.max(9, size * 0.4);   // names on small vote cards may go smaller
-    for (let guard = 0; guard < 40 && el.scrollWidth > el.clientWidth + 1 && size > min; guard++) {
+    const lines = el.classList.contains('idname') ? 2 : 0;   // a name can take two lines, no more
+    const tooBig = () => el.scrollWidth > el.clientWidth + 1 || (lines && el.offsetHeight > size * 1.04 * lines + 2);
+    for (let guard = 0; guard < 40 && tooBig() && size > min; guard++) {
       size *= 0.93; el.style.fontSize = size.toFixed(1) + 'px';
     }
   });
@@ -1394,7 +1554,8 @@ function render() {
   clearTimers();
   const bc = document.getElementById('barcat');
   document.body.classList.toggle('on-setup', !game);
-  bc.innerHTML = game ? `<span>${barLabel()}</span>` : '';
+  bc.innerHTML = game ? barHTML() : '';
+  lights(false);
   if (!game) { renderSetup(); window.scrollTo(0, 0); fitText($app); return; }
   $app.innerHTML = SCREENS[game.screen]();
   window.scrollTo(0, 0);
@@ -1433,29 +1594,132 @@ function runShuffle() {
   later(landShuffle, 4800);
 }
 
+/* ---------- the ink ripple ----------
+   A fooled impostor's card is revealed as plain crew first. Then, slowly, the impostor card bleeds through it:
+   three drops of ink spread out from different spots, each edge ragged and softly ringed, until the whole face has changed. */
+function inkRipple(card, name, dur, onDone) {
+  const face = card.querySelector('.cface');
+  if (!face) { onDone && onDone(); return; }
+  const tmp = document.createElement('div'); tmp.innerHTML = idFace(name, true);
+  const src = tmp.firstElementChild;
+  const real = face.querySelector('.idname'), fake = src.querySelector('.idname');
+  if (real && fake) fake.style.cssText = real.style.cssText;   // same fitted name size, so nothing jumps at the end
+  const wrap = document.createElement('div'); wrap.className = 'inkwrap'; wrap.setAttribute('aria-hidden', 'true');
+  wrap.innerHTML = `<div class="ink"><div class="inkface imp">${src.innerHTML}</div></div><div class="inkring"></div>`;
+  face.appendChild(wrap);
+  const ink = wrap.querySelector('.ink'), ring = wrap.querySelector('.inkring'), disp = document.getElementById('inkDisp');
+  const W = card.offsetWidth || 200, H = card.offsetHeight || 280, far = Math.hypot(W, H);
+  const drops = [[.5, .6, 0, .66], [.18, .2, .16, .74], [.82, .82, .3, .7]];   // x, y, start (fraction of the time), reach (of the card's diagonal)
+  const F = 22, start = performance.now();
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const frame = (now) => {
+    const t = clamp((now - start) / dur);
+    const mask = [], rings = [];
+    drops.forEach(([x, y, d, reach]) => {
+      const p = clamp((t - d) / (1 - d)), e = p * p * (3 - 2 * p), R = far * reach * e;   // slow to start, slow to settle
+      if (R < 1) return;
+      const cx = (x * W).toFixed(1) + 'px ' + (y * H).toFixed(1) + 'px';
+      mask.push(`radial-gradient(circle at ${cx}, #000 ${Math.max(0, R - F).toFixed(1)}px, transparent ${R.toFixed(1)}px)`);
+      rings.push(`radial-gradient(circle at ${cx}, transparent ${Math.max(0, R - 9).toFixed(1)}px, rgba(110,30,16,.3) ${Math.max(0, R - 1).toFixed(1)}px, rgba(110,30,16,.12) ${(R + 4).toFixed(1)}px, transparent ${(R + 15).toFixed(1)}px)`);
+      if (R > 40) rings.push(`radial-gradient(circle at ${cx}, transparent ${(R * .8 - 7).toFixed(1)}px, rgba(110,30,16,.1) ${(R * .8).toFixed(1)}px, transparent ${(R * .8 + 7).toFixed(1)}px)`);
+    });
+    const m = mask.join(',') || 'none';
+    ink.style.webkitMaskImage = m; ink.style.maskImage = m;
+    ring.style.background = rings.join(',');
+    ring.style.opacity = String(1 - clamp((t - .72) / .28));
+    if (disp) disp.setAttribute('scale', (20 * Math.pow(1 - t, 1.3)).toFixed(2));   // ragged while it spreads, perfectly flat at the end
+    if (t < 1) { inkRaf = requestAnimationFrame(frame); return; }
+    ink.style.webkitMaskImage = ink.style.maskImage = 'none'; ring.remove(); wrap.style.filter = 'none';
+    if (onDone) onDone();
+  };
+  inkRaf = requestAnimationFrame(frame);
+}
+
+/* ---------- stage lighting ---------- */
+const SPOT = () => document.getElementById('spot');
+// Dim the room around an element (level 0 to 1), or bring the lights back up.
+function lights(level, around, tint) {
+  const s = SPOT(); if (!s) return;
+  if (!level) { s.style.setProperty('--dim', 0); return; }
+  if (around) {
+    const r = around.getBoundingClientRect();
+    s.style.setProperty('--sy', Math.round(r.top + r.height / 2) + 'px');
+    s.style.setProperty('--rx', Math.round(r.width * 1.05) + 'px');
+    s.style.setProperty('--ry', Math.round(r.height * .98) + 'px');
+  }
+  s.style.setProperty('--dim', level);
+}
+function lightFx(kind) {   // 'flash' | 'imp' | 'crew'
+  if (REDUCED) return;
+  const s = SPOT(); if (!s) return;
+  s.classList.remove(kind); void s.offsetWidth; s.classList.add(kind);
+  setTimeout(() => s.classList.remove(kind), 2400);
+}
+// One heartbeat of the build-up: lights drop a notch, the card shakes harder, the phone thumps.
+function beat(card, k, total) {
+  const f = (k + 1) / total;
+  card.style.setProperty('--tr', (1.1 + f * 2.6).toFixed(2));
+  card.style.setProperty('--trd', (.72 - f * .34).toFixed(2) + 's');
+  lights(.42 + f * .48, card);
+  buzz([22, 70, 34]);
+}
+
 function runVerdict(skipCountdown) {
   const card = $('.verdict-card'), cd = $('#countdown');
   const done = () => { game.verdict.shown = true; save(); render(); };
   if (REDUCED || !card) { done(); return; }
   busy = true;
+  // A fooled impostor plays out exactly like a crewmate (imp = how the card looks at first); the ink ripple comes after.
+  const fooled = !!(game.verdict.imp && game.verdict.fooled), imp = !!game.verdict.imp && !fooled;
   let t = 250;
+  lights(.4, card);                                                          // the room dims as the card lands
   if (!skipCountdown) {
     later(() => card.classList.add('bounce'), 0);   // the tape ends wobble as the card lands
-    later(() => card.classList.add('suspense'), t);
+    later(() => card.classList.add('suspense', 'strobe'), t);              // flickers start with the count…
     [3, 2, 1].forEach((n, k) => later(() => {
-      cd.textContent = n; cd.classList.remove('tick'); void cd.offsetWidth; cd.classList.add('tick'); buzz(15);
-    }, t + k * 750));
-    t += 3 * 750;
-  } else t = 0;
-  later(() => {   // peel the tape off, starting from the curled end
-    card.classList.remove('suspense', 'enter'); card.removeAttribute('data-act'); cd.textContent = '';
+      cd.textContent = n; cd.classList.remove('tick'); void cd.offsetWidth; cd.classList.add('tick');
+      beat(card, k, 3);
+      if (n === 1) card.classList.add('hard');                              // …and get frantic on the last beat
+    }, t + k * 800));
+    t += 3 * 800;
+    // The held breath: the count vanishes, the card goes dead still, the room all but goes black.
+    later(() => { cd.textContent = ''; card.classList.remove('suspense', 'strobe', 'hard'); lights(.97, card); buzz(0); }, t - 80);
+    t += 650;
+  } else {
+    t = 0; card.classList.remove('suspense'); cd.textContent = '';
+    later(() => { card.classList.add('strobe', 'hard'); lights(.9, card); }, 0);
+    t += 450;
+  }
+  later(() => {   // tape off: flash, thump, and the symbols stamp onto the card
+    card.classList.remove('suspense', 'enter', 'strobe', 'hard'); card.removeAttribute('data-act'); cd.textContent = '';
+    card.classList.add('slam');
+    lightFx('flash');
     const face = card.querySelector('.cface');
-    face.classList.remove('neutral'); face.classList.add(game.verdict.imp ? 'imp' : 'crew');
-    face.insertAdjacentHTML('afterbegin', corners(symbol(game.verdict.imp)));
+    face.classList.remove('neutral'); face.classList.add(imp ? 'imp' : 'crew');
+    face.insertAdjacentHTML('afterbegin', corners(symbol(imp)));
+    card.classList.add('revealed');
     card.querySelectorAll('.tape').forEach((tp, k) => later(() => tp.classList.add('peel'), k * 200));
-    buzz(game.verdict.imp ? [80, 60, 160] : 200);
+    buzz([120, 40, 80]);
   }, t + 150);
-  later(done, t + 150 + 2900);   // leave time for the stains to soak in on an impostor's card
+  // Only now does the outcome show: an impostor takes a hit and the room flushes red, a crewmate gets a heavy sigh and teal.
+  later(() => {
+    card.classList.remove('slam');
+    card.classList.add(imp ? 'hit' : 'sigh');
+    lightFx(imp ? 'imp' : 'crew');
+    buzz(imp ? [90, 50, 90, 50, 220] : [160]);
+  }, t + 150 + 750);
+  later(() => lights(0), t + 150 + 1500);
+  let end = t + 150 + 3000;   // leave time for the stains to soak in on an impostor's card
+  if (fooled) {
+    // A full second of plain crew (the tape is off by about +1.2s), then the truth bleeds through, slowly.
+    const go = t + 150 + 2200, dur = 2600, name = game.players[game.verdict.i];
+    later(() => lights(.55, card), go - 120);
+    later(() => { buzz([30, 150, 30, 150, 30, 150, 30]); inkRipple(card, name, dur); }, go);
+    later(() => { card.classList.remove('sigh'); card.classList.add('hit'); lightFx('imp'); buzz([90, 50, 90, 50, 220]); }, go + dur);
+    later(() => lights(0), go + dur + 450);
+    end = go + dur + 1600;
+  }
+  later(done, end);
 }
 
 /* ---------- events ---------- */
@@ -1479,6 +1743,7 @@ const ACTIONS = {
     if (busy) return;
     game.screen = 'reveal'; save();
     t.classList.remove('enter'); t.classList.add('flipped'); t.dataset.act = 'hide'; t.setAttribute('aria-label', 'Hide your card');
+    lights(.42, t);   // the same soft spotlight for everyone, so it gives nothing away
     const note = $('#dealnote'); if (note) note.textContent = dealNote(true);
   },
   hide(t) {
@@ -1489,7 +1754,7 @@ const ACTIONS = {
       save(); render();
     };
     if (REDUCED || !t) { next(); return; }
-    busy = true; t.removeAttribute('data-act'); t.classList.remove('flipped');
+    busy = true; t.removeAttribute('data-act'); t.classList.remove('flipped'); lights(0);
     game.screen = 'pass'; save();    // the role is hidden from here on
     later(() => t.classList.add('exit'), 520);
     later(next, 900);
@@ -1534,15 +1799,41 @@ const ACTIONS = {
   unmask() {
     if (busy || game.unmasked) return;
     busy = true;
+    const F = 2050;   // when the flip lands
     const area = $('.stack-area'), cards = $$('.stack-area .c3d'), n = cards.length;
     const done = () => { game.unmasked = true; save(); render(); };
     if (REDUCED) { done(); return; }
-    cards.forEach((c) => { c.classList.remove('enter'); c.classList.add('flipped'); });
-    buzz([60, 40, 120]);
+    cards.forEach((c) => c.classList.remove('enter'));
+    area.removeAttribute('data-act');
     const title = $('.unmask-title');
     if (title) { title.innerHTML = REVEALED_TITLE; title.setAttribute('aria-label', 'The impostor was…'); }
-    if (n > 1) later(() => { area.classList.add('fanned'); if (title) { title.classList.add('plural'); title.setAttribute('aria-label', 'The impostors were…'); } }, 750);
-    later(done, n > 1 ? 1500 : 900);
+    // Build-up: the pile shakes harder over three beats while the room closes in…
+    cards.forEach((c) => c.classList.add('suspense'));
+    [0, 1, 2].forEach((k) => later(() => {
+      cards.forEach((c) => { c.style.setProperty('--tr', (1.1 + (k + 1) / 3 * 2.6).toFixed(2)); c.style.setProperty('--trd', (.72 - (k + 1) / 3 * .34).toFixed(2) + 's'); });
+      lights(.42 + (k + 1) / 3 * .48, area);
+      buzz([22, 70, 34]);
+    }, k * 550));
+    // …a held breath…
+    later(() => { cards.forEach((c) => c.classList.remove('suspense')); lights(.97, area); }, F - 400);
+    // …then the flip, with a flash and a thump.
+    later(() => {
+      cards.forEach((c) => c.classList.add('flipped', 'slam'));
+      lightFx('flash'); buzz([60, 40, 160]);
+    }, F);
+    if (n > 1) later(() => { area.classList.add('fanned'); if (title) { title.classList.add('plural'); title.setAttribute('aria-label', 'The impostors were…'); } }, F + 1000);
+    // Fooled impostors flip as plain crew; once the pile has settled their real faces bleed through, slowly.
+    const ids = hiddenImpostors(), fooledAt = ids.map((id, k) => isFooled(id) ? k : -1).filter((k) => k >= 0);
+    let H = F + 600;   // when the truth lands
+    if (fooledAt.length) {
+      const go = F + (n > 1 ? 2100 : 1500), dur = 2400;
+      later(() => lights(.6, area), go - 120);
+      later(() => { buzz([30, 150, 30, 150, 30, 150, 30]); fooledAt.forEach((k) => inkRipple(cards[k], game.players[ids[k]], dur)); }, go);
+      H = go + dur;
+    }
+    later(() => { cards.forEach((c) => { c.classList.remove('slam'); c.classList.add('hit'); }); lightFx('imp'); buzz([90, 50, 90, 50, 220]); }, H);
+    later(() => lights(0), H + 700);
+    later(done, H + (n > 1 ? 1700 : 1200));
   },
   toResults() { const p = game.pending || { winner: 'impostors', reason: '' }; finish(p.winner, p.reason); },
   again() { game.screen = 'vote'; game.voteSel = null; game.regrid = true; save(); render(); },
@@ -1646,11 +1937,17 @@ $app.addEventListener('input', (e) => {
   } else if (t.id === 'maxImp') {
     settings.maxImpostors = +t.value; renderWeights(); save();
   } else if (t.id === 'showcat') {
+    if (fooling()) return;
     settings.showCategory = t.checked; infoNote(); save();
   } else if (t.id === 'announce') {
     settings.announce = t.checked; save();
   } else if (t.id === 'showhint') {
+    if (allFooled()) return;
     settings.showHint = t.checked; infoNote(); save();
+  } else if (t.id === 'unaware') {
+    settings.unaware = t.checked; unawareNote(); save();
+  } else if (t.id === 'unawareChance') {
+    settings.unawareChance = +t.value; unawareNote(); save();
   } else if (t.id === 'wurl') {
     settings.wordsUrl = t.value; save();
   }

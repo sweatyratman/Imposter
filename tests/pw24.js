@@ -33,6 +33,8 @@ await p.click('[data-act="ready"]');t((await ST(p)).history.w[key]===1,'moving o
 await home(p);await p.click('[data-act="start"]');g=(await ST(p)).game;await home(p);
 t(Object.keys((await ST(p)).history.w).length===1,'a round abandoned before the starter is announced is not counted');
 t(/played 1 of/.test(await p.textContent('#seenNote'))&&!(await p.$eval('#resetHistory',e=>e.disabled)),'note updates and reset history becomes available');
+await p.click('#prefernew');await p.click('[data-act="resetRules"]');const yr=await p.$('[data-sheet="yes"]');if(yr)await yr.click();await p.waitForTimeout(250);
+t(Object.keys((await ST(p)).history.w).length===1&&(await ST(p)).settings.preferNew===true,'"Reset all to default" never touches word history');
 await p.click('#resetHistory');const y1=await p.$('[data-sheet="yes"]');if(y1)await y1.click();await p.waitForTimeout(250);
 t(Object.keys((await ST(p)).history.w).length===0&&/played 0 of/.test(await p.textContent('#seenNote')),'reset word history clears it');
 await p.close();

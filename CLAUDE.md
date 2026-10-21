@@ -27,6 +27,7 @@ These are the "established comprehensive playtester rules":
 - Every key action must fit on small phones (360×640). Large system text sizes must not clip anything (a friend's phone did).
 - Update `README.md` for any player-visible change.
 - Keep replies short. The user watches token spend.
+- **Tidy up after yourself.** Never leave stray files (test screenshots, logs, scratch folders) in the repo; delete them or gitignore them before finishing.
 - **Questions are not orders.** "Don't act; question only" or "Dont do anything, but…" means answer and change nothing.
 - British English ("colour", "telly"). Relaxed tone, no corporate filler. The user trusts your judgement on content and prefers big content jobs delivered in one batch.
 - Never run `pkill -f "node pw"`, because it kills your own shell.
@@ -48,7 +49,7 @@ These are the "established comprehensive playtester rules":
   - The clue toggle is greyed out (and off) only at 100%. Below that, only aware impostors get clues. At 0% both toggles return, with the user's saved choices restored.
 - **Prefer words not seen before** is on by default. A word counts once the starting player is announced (`countRound()`, idempotent); abandoned rounds don't count. A fooled impostor's own word counts too (they saw it). Weight is 1/(1+n)². Clues are ordered least-seen first (ties keep original order), so a returning word gives even a lone impostor its least-seen clue (confirmed as intended). Only clues an aware impostor actually saw count. With it off, words are uniformly random and clues are in normal order; history still records. "Reset word history" clears it; "Reset all to default" turns the option back on but keeps history.
 - **The goal is the fewest repeated words.** The user: "game is exponentially more boring when you encounter the same words". So bigger lists, word/clue history, no intangible words, and no near-duplicates within a category (their examples: sun/heat, rain/dew).
-- The whole Nature & Weather category was removed on request (confirmed: the whole category; don't bring any back). There are 20 categories and 1191 words.
+- The whole Nature & Weather category was removed on request (confirmed: the whole category; don't bring any back). There are 20 categories and 1239 words; every category has 60–68.
 - **Look:** a "midnight card table". Navy felt, paper cards, brass for "the next move"; fonts Unbounded (display) and Atkinson Hyperlegible (body). 3D cards, tape, stage lighting. The reveal is deliberately dramatic. Respect reduced motion.
 - **Reveal drama:** the room dims as the card lands; three beats, each darker with a harder shake and phone thump; a held breath (near-black, dead still); then the tape rips off with a flash. Only then does the outcome show (impostor: red wash and hit; crew: teal wash and heavy sigh). Strobe is a slow breath, not a glitch (user: "looks like it's glitching out").
 - **Presentation details:** deal is tap to flip up, tap to flip down (no hide button, the card never moves). Locking the phone or switching tab hides the role; a reload mid-reveal goes back to "pass". The starter card has 3 tapes (2 corners plus a `[REDACTED]` role tape), never a role symbol. Vote cards show no name above them (the card carries it as aria-label). Both category states use the `.redcat` paper tag on its own centred row. House rules are always visible. Sliders move only with a deliberate sideways drag; the player slider gives small counts more room. Quips never repeat the same line twice in a row.
@@ -115,13 +116,12 @@ These are the "established comprehensive playtester rules":
 - Avoid cheap shots and table-awkward entries ("bin man" → "estate agent"; "Johnny Depp" → "Keira Knightley").
 - **No intangibles or near-duplicates.** Every word should be a concrete thing you could point at or name; avoid pairs so close they blur (sun/heat, rain/dew). Check a category for this before adding to it.
 - UK-centric (Bonfire Night, MOT, telly, Hogmanay, cuppa, milk float).
-- Four categories are under the ~60-word target: TV Shows 51, Video Games 45, Brands 46, Famous People 50. Others are 60–68.
+- New words should be known in both the UK and the US unless region tagging is added (see open questions).
 - **Quip tone:** cheeky, roasty, British, meme-literate, one short line ("Cooked. Absolutely cooked.", "{name} folded like a deckchair.").
 
 ## Open questions (ask the user before changing)
-1. "Reset all to default" keeps word history. Intended?
-2. History weighting also shifts the category mix (heavily played categories come up less). Probably fine; unconfirmed.
-3. Top up the four small categories to ~60 words?
-4. Countries & Cities lists both countries and their capitals (France/Paris, Italy/Rome, Japan/Tokyo, Egypt/Cairo, Ireland/Dublin, Scotland/Edinburgh, Wales/Cardiff, England/London, Germany/Berlin, Netherlands/Amsterdam, Russia/Moscow, Spain/Barcelona…). Left alone in the near-duplicate audit; swap the capitals?
-- Done 21 Oct: near-duplicate audit of all 20 categories (67 swaps, counts unchanged); fooled impostor's word counts as seen.
+1. History weighting also shifts the category mix (heavily played categories come up less). Probably fine; unconfirmed.
+2. Countries & Cities lists both countries and their capitals (France/Paris, Egypt/Cairo, Wales/Cardiff…). Swap the capitals?
+3. Localities: UK-only words (EastEnders, Greggs, Gavin & Stacey…) mean little to US players and vice versa. Proposed: tag region-only words `uk`/`us`, and a "Where are you playing?" setting (UK / US / Everywhere) that drops the other region's local words.
+- Settled: "Reset all to default" must never touch word history; it has its own "Reset word history" button (pw24 checks this).
 - Deferred: an app/Play Store wrapper (PWA/TWA/Capacitor). The user asked to do nothing about it.

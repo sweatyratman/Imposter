@@ -4,12 +4,12 @@ A pass-the-phone social deduction game. Pick players, categories, the most impos
 
 ## Deploy
 
-1. Create a GitHub repo and push these three files (`index.html`, `words.json`, `README.md`) to the root.
+1. Create a GitHub repo and push the files to the root (`index.html`, `words.json`, `README.md`, `CLAUDE.md`, `tests/`). Vercel only serves `index.html` and `words.json`; the rest is for development.
 2. In Vercel: **Add New → Project**, import the repo, leave every setting on its default (Framework Preset: *Other*, no build command, no output directory), and click **Deploy**.
 
 ## How a round works
 
-- Each player taps their card to see their role, then taps it again to hide it and pass the phone on. Crew see the secret word; impostors see only a clue. Every word has four clues: a lone impostor always gets clue 1, and with more impostors they're handed out in deal order, cycling 1, 2, 3, 4, 1, 2…, so impostors rarely share a clue.
+- Each player taps their card to see their role, then taps it again to hide it and pass the phone on. Crew see the secret word; impostors see only a clue. Every word has four clues: a lone impostor always gets clue 1, and with more impostors they're handed out in deal order, cycling 1, 2, 3, 4, 1, 2…, so impostors rarely share a clue. (With "Prefer words not seen before" on, the cycle starts from whichever clues have been seen least for that word.)
 - The cards are shuffled and one is drawn to show who goes first.
 - Everyone gives clues, then the group votes someone out. Their card is revealed with a full build-up: the room dims, the card shakes harder on each beat of the 3-2-1 and the phone thumps, then there is a held silence in the dark before the tape rips off with a flash. Only then does the outcome show: an impostor takes a hit and the room flushes red, a crewmate gets a heavy sigh and a teal wash. Everything before the tape comes off is identical for crew and impostor. If the impostors get away, the tap-to-reveal pile gets the same treatment. Reduced-motion settings skip all of it.
   - Crewmate voted out: **impostors win**. Any impostors still hiding are then revealed.
@@ -45,3 +45,7 @@ Words are fetched from `words.json` on page load, so you can edit the list witho
 Each entry is `[word, clue1, clue2, clue3, clue4]`. Clue 1 is the main one. Each clue should fit the word without pointing straight at it: if "name a thing associated with [clue]" would have most people blurt out the word, it's too obvious. Older lists with one clue per word (`[word, clue]`) still work; every impostor just gets that clue. To use a list hosted elsewhere (for example a raw GitHub or Gist link), paste its URL into **Word list** on the setup screen.
 
 The one-liners shown after votes and on the results screen are in the `QUIPS` list near the top of `index.html`. `{name}` is replaced with the player's name.
+
+## Tests
+
+Browser tests live in `tests/` (Playwright + Chromium). `cd tests && npm install && npx playwright install chromium && ./run.sh`. Add `all` to also run the slow category-distribution test (pw13). A few suites check the shipped word list itself (20 categories, 4 different clues per word), so update them if you change the categories.

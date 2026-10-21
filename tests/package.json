@@ -1,0 +1,6 @@
+{
+  "name": "impostor-tests",
+  "private": true,
+  "scripts": { "test": "./run.sh" },
+  "devDependencies": { "playwright": "^1.47.0", "pngjs": "^7.0.0" }
+}

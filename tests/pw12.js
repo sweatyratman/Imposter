@@ -1,0 +1,62 @@
+const { chromium } = require('playwright');
+const http=require('http'),fs=require('fs');const D=require('path').join(__dirname,'..')+'/';
+const srv=http.createServer((q,r)=>{const f=q.url.startsWith('/words.json')?'words.json':'index.html';r.setHeader('content-type',f.endsWith('json')?'application/json':'text/html');r.end(fs.readFileSync(D+f))}).listen(0);
+let ok=0;const t=(c,m)=>{if(!c){console.log('FAIL',m);process.exitCode=1}else ok++};
+(async()=>{const b=await chromium.launch();const errs=[];
+const mk=async(vw,vh)=>{const p=await b.newPage({viewport:{width:vw,height:vh}});p.on('pageerror',e=>errs.push(e.message));let dlg=0;p.on('dialog',d=>{dlg++;d.accept()});p.dlg=()=>dlg;
+ await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());await p.goto(`http://localhost:${srv.address().port}/`);await p.waitForFunction(()=>document.getElementById('wstatus').textContent.startsWith('✓'));return p};
+const G=(p)=>p.evaluate(()=>JSON.parse(localStorage.getItem('impostor-party-v1')).game);
+const S=(p)=>p.evaluate(()=>JSON.parse(localStorage.getItem('impostor-party-v1')).settings);
+const inView=(p,sel)=>p.$eval(sel,e=>{const r=e.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1});
+const setW=async(p,w)=>{for(const k of ['1','2','3','all']){const el=await p.$(`[data-weight="${k}"]`);if(el)await el.evaluate((e,v)=>{e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}))},w[k]||0)}};
+const deal=async(p,n)=>{for(let i=0;i<n;i++){await p.click('[data-act="reveal"]');await p.click('[data-act="hide"]')}};
+
+let p=await mk(390,844);
+t(await p.$eval('#bar',e=>getComputedStyle(e).display==='none'),'setup has no top bar');
+t(await inView(p,'[data-act="start"]'),'Start game is visible without scrolling (sticky)');
+t(await p.$eval('#rules',e=>e.tagName==='SECTION'&&!!e.querySelector('#maxImp')&&e.offsetHeight>200),'house rules always visible');await setW(p,{1:100});
+t(!!(await p.$('.masthead .logo-card .mask'))&&!!(await p.$('.masthead .tape-tag')),'logo: card + tape tagline');
+await p.click('[data-act="start"]');t(await p.$eval('#bar',e=>getComputedStyle(e).display!=='none'),'top bar shows in game');
+t(await p.$eval('#bar',e=>e.getBoundingClientRect().height)<100,'top bar: buttons row + category row, compact');t(await p.$eval('#barcat',e=>{const r=e.getBoundingClientRect(),h=document.querySelector('[data-nav=home]').getBoundingClientRect();return r.top>=h.bottom-1&&Math.abs(r.left+r.width/2-innerWidth/2)<2}),'category sits centred below the buttons');
+t(await p.$$eval('.pips i',e=>e.length)===5&&!!(await p.$('.pips i.now')),'deal progress pips');
+await p.click('[data-nav="home"]');t(!!(await p.$('.sheet'))&&p.dlg()===0,'leaving asks with an in-game sheet, not a browser pop-up');
+await p.click('[data-sheet="no"]');await p.waitForTimeout(250);t(!(await p.$('.sheet-wrap'))&&!!(await p.$('.deal-card')),'Keep playing closes the sheet');
+await p.click('[data-nav="new"]');await p.click('[data-sheet="yes"]');t((await G(p)).idx===0&&!!(await p.$('.deal-card')),'New game via sheet deals a new round');
+await deal(p,5);await p.waitForSelector('[data-act="skipShuffle"]');await p.click('[data-act="skipShuffle"]');
+await p.click('[data-act="quit"]');t(!!(await p.$('.sheet')),'End game uses the sheet');await p.click('[data-sheet="no"]');await p.waitForTimeout(250);
+// a crew win then an impostor win -> scores
+await p.click('[data-act="ready"]');let g=await G(p);const imp=g.impostors.findIndex(v=>v);
+await p.click(`[data-act="pickvote"][data-i="${imp}"]`);await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');
+await p.click('[data-act="stop"]');await p.click('[data-act="judgeNo"]');
+t(!!(await p.$('.scores'))&&(await p.$$eval('.srow em',e=>e.length))===4,'scoreboard: +1 for each of the 4 crew');
+t(await p.$$eval('.srow b',e=>e.map(x=>+x.textContent).reduce((a,b)=>a+b,0))===4,'scores total 4');
+t(!(await p.$('.result-head + .ledger + .roster + .scores ~ .btn.small:not(.ghost)')),'Change settings is now a quiet link');
+await p.click('[data-act="replay"]');await deal(p,5);await p.click('[data-act="skipShuffle"]');await p.click('[data-act="ready"]');g=await G(p);
+const crew=g.impostors.findIndex(v=>!v);await p.click(`[data-act="pickvote"][data-i="${crew}"]`);await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');
+await p.mouse.click(195,300);await p.waitForSelector('[data-act="unmask"]');await p.click('[data-act="unmask"]');await p.click('[data-act="toResults"]');
+const sc=await S(p);const impName=g.players[g.impostors.findIndex(v=>v)];t(sc.scores[impName]>=1,'impostor scored for their win');
+t(Object.values(sc.scores).reduce((a,b)=>a+b,0)===5,'scores carry over between rounds');
+await p.click('[data-act="resetScores"]');await p.click('[data-sheet="yes"]');t(!(await p.$('.scores')),'reset clears the scoreboard');
+t(!!(await p.$('.result-head')),'results screen fades in (still renders)');
+await p.close();
+
+// ----- small phone: key actions never below the fold -----
+p=await mk(360,640);await setW(p,{2:100});
+const names=['Christopher','Sam','Priya','Alex','Megan'];for(let i=0;i<5;i++)await p.fill(`[data-name="${i}"]`,names[i]);
+t(await p.$eval('#names',e=>getComputedStyle(e).gridTemplateColumns.split(' ').length)===2,'small phone: names stay in 2 columns');
+t(await inView(p,'[data-act="start"]'),'small phone: Start visible');
+await p.click('[data-act="start"]');await p.click('[data-act="reveal"]');await p.waitForTimeout(800);
+t(await inView(p,'.deal-card'),'small phone: role card fully on screen');await p.click('[data-act="hide"]');
+for(let i=1;i<5;i++){await p.click('[data-act="reveal"]');await p.click('[data-act="hide"]')}
+await p.waitForSelector('.starter.landed',{timeout:8000});await p.waitForTimeout(500);
+t(await inView(p,'[data-act="ready"]'),'small phone: "We\'re ready to vote" visible after the shuffle');
+await p.click('[data-act="ready"]');g=await G(p);const I=g.impostors.map((v,i)=>v?i:-1).filter(i=>i>=0),C=g.impostors.map((v,i)=>!v?i:-1).filter(i=>i>=0);
+t(await inView(p,'.vote > .btn'),'small phone: vote grid + back link fit');
+await p.click(`[data-act="pickvote"][data-i="${I[0]}"]`);await p.waitForSelector('[data-act="confirm"]');await p.waitForTimeout(700);
+t(await inView(p,'[data-act="confirm"]'),'small phone: Vote out button visible');
+await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');await p.waitForTimeout(400);
+t(await inView(p,'[data-act="again"]')&&await inView(p,'[data-act="stop"]'),'small phone: vote again / done visible without scrolling');
+await p.click('[data-act="again"]');await p.click(`[data-act="pickvote"][data-i="${C[0]}"]`);await p.waitForSelector('[data-act="confirm"]');await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');
+await p.waitForSelector('.after');await p.waitForTimeout(400);t(await inView(p,'.autobar'),'small phone: wrong-person countdown bar visible');
+await p.screenshot({path:'../pt/after_S_wrong.png'});
+console.log('errors:',errs.length?errs:'none','| checks passed:',ok);await b.close();srv.close()})().catch(e=>{console.log('ERR',e.message.split('\n').slice(0,3).join(' '));process.exit(1)});

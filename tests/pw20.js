@@ -1,0 +1,38 @@
+const { chromium } = require('playwright');const http=require('http'),fs=require('fs');const D=require('path').join(__dirname,'..')+'/';
+const srv=http.createServer((q,r)=>{const f=q.url.startsWith('/words.json')?'words.json':'index.html';r.setHeader('content-type',f.endsWith('json')?'application/json':'text/html');r.end(fs.readFileSync(D+f))}).listen(0);
+let ok=0;const t=(c,m)=>{if(!c){console.log('FAIL',m);process.exitCode=1}else ok++};
+(async()=>{const b=await chromium.launch();const errs=[];const p=await b.newPage({viewport:{width:390,height:844}});p.on('pageerror',e=>errs.push(e.message));
+await p.route(/fonts/,r=>r.abort());await p.goto(`http://localhost:${srv.address().port}/`);await p.waitForSelector('#count');
+await p.evaluate(()=>{const s=JSON.parse(localStorage.getItem('impostor-party-v1')||'{}');s.settings=Object.assign(s.settings||{},{showCategory:false});localStorage.setItem('impostor-party-v1',JSON.stringify(s))});await p.reload();await p.waitForSelector('#count');
+const dim=()=>p.$eval('#spot',e=>+getComputedStyle(e).getPropertyValue('--dim')||+e.style.getPropertyValue('--dim')||0);
+const run=async(pickImp)=>{await p.click('[data-act="start"]');const g=await p.evaluate(()=>JSON.parse(localStorage.getItem('impostor-party-v1')).game);
+ const o={};
+ await p.click('[data-act="reveal"]');o.dealDim=await dim();await p.click('[data-act="hide"]');await p.waitForTimeout(1000);
+ for(let i=0;i<4;i++){await p.click('[data-act="reveal"]');await p.click('[data-act="hide"]')}await p.click('[data-act="skipShuffle"]');await p.click('[data-act="ready"]');
+ o.idleDim=await dim();
+ const i=g.impostors.findIndex(v=>v===pickImp);await p.click(`[data-act="pickvote"][data-i="${i}"]`);await p.click('[data-act="confirm"]');
+ await p.waitForTimeout(800);o.beat1=await dim();o.tr1=await p.$eval('.verdict-card',c=>+c.style.getPropertyValue('--tr'));
+ await p.waitForTimeout(1500);o.beat3=await dim();o.tr3=await p.$eval('.verdict-card',c=>+c.style.getPropertyValue('--tr'));
+ await p.waitForSelector('.verdict-card:not(.suspense):not(.strobe)',{timeout:4000});o.hushCls=await p.$eval('.verdict-card',c=>c.className);o.hushDim=await dim();o.hushCount=await p.$eval('#countdown',e=>e.textContent);
+ await p.waitForFunction(()=>document.querySelector('.verdict-card.slam'),null,{timeout:4000});o.flash=await p.$eval('#spot',e=>e.className);
+ await p.waitForFunction(()=>document.querySelector('.verdict-card.hit,.verdict-card.sigh'),null,{timeout:4000});o.after=await p.$eval('.verdict-card',c=>c.className);o.tint=await p.$eval('#spot',e=>e.className);
+ await p.waitForSelector('.after',{timeout:6000});await p.waitForTimeout(900);o.end=await dim();
+ await p.click('[data-nav="home"]');const y=await p.$('[data-sheet="yes"]');if(y)await y.click();await p.waitForSelector('#count');return o};
+const imp=await run(true),crew=await run(false);
+t(imp.dealDim>0&&imp.dealDim===crew.dealDim&&imp.idleDim===0,'deal: same soft spotlight for everyone ('+imp.dealDim+'), gone afterwards');
+t(imp.beat1>0.4&&imp.beat3>imp.beat1&&imp.tr3>imp.tr1,'countdown: room darkens and card shakes harder each beat');
+t(imp.beat1===crew.beat1&&imp.beat3===crew.beat3&&imp.tr3===crew.tr3,'crew and impostor builds are identical (no tell)');
+t(imp.hushDim>.9&&imp.hushCount===''&&!/suspense/.test(imp.hushCls),'held breath: near-black, still card, no count');
+t(/flash/.test(imp.flash)&&/flash/.test(crew.flash),'flash lands as the tape goes');
+t(/hit/.test(imp.after)&&/imp/.test(imp.tint)&&/sigh/.test(crew.after)&&/crew/.test(crew.tint),'after the peel: impostor takes a hit + red wash, crew a sigh + teal wash');
+t(imp.end===0&&crew.end===0,'lights come back up');
+// redacted category tag
+t(await p.evaluate(()=>!document.querySelector('#barcat .redcat')||true),'noop');
+await p.click('[data-act="start"]');
+const rc=await p.$eval('#barcat .redcat',e=>({tape:!!e.querySelector('.tape'),label:e.getAttribute('aria-label'),h:e.getBoundingClientRect().height,w:e.getBoundingClientRect().width,iw:innerWidth}));
+t(rc.tape&&rc.label==='Category hidden'&&rc.h<36&&rc.w<rc.iw-32,'hidden category: redacted tape tag fits the bar');
+await p.click('[data-nav="home"]');const y=await p.$('[data-sheet="yes"]');if(y)await y.click();await p.waitForSelector('#count');
+// reduced motion: no sequence animations
+const q=await b.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});await q.goto(`http://localhost:${srv.address().port}/`);await q.waitForSelector('#count');
+t(await q.evaluate(()=>{const d=document.createElement('div');d.className='c3d slam hit';document.body.append(d);return getComputedStyle(d).animationName})==='none','reduced motion: no slam/hit');
+console.log('errors:',errs.length?errs:'none','| checks passed:',ok);await b.close();srv.close()})().catch(e=>{console.log('ERR',e.message.split('\n')[0],ok);process.exit(1)});

@@ -193,13 +193,9 @@ Other things that could regress:
 
 ## 4. Known issues and unfinished work
 
-- **GitHub push from Claude is refused.**
-  - The user installed the Claude GitHub app ("i have updated now"), but pushes still returned 403 "Claude doesn't have GitHub access…".
-  - Not resolved. Check github.com/settings/installations, or reconnect GitHub in Claude's connector settings.
-  - Until then, auto-push can't work.
+- **GitHub push from Claude now works.** Pushes were refused (403) for a while, even after the user installed the Claude GitHub app. They started working on 21 Oct, when this file was pushed.
 - **`tests/run.sh` has no execute bit** on GitHub, because the web upload drops it. Run it with `bash run.sh`. `CLAUDE.md` says `./run.sh`, which needs `chmod +x` or that wording fixed.
-- **`tests/.gitignore` may be missing.** The user was shown how to create it on GitHub (`node_modules/` and `*.png`). Not confirmed done.
-  - It matters because pw9, pw10 and pw11 write screenshots into the working directory. The others write to the system temp folder.
+- **`tests/.gitignore` is in the repo** (`node_modules/` and `*.png`). It matters because pw9, pw10 and pw11 write screenshots into the working directory.
 - **Four categories are under the ~60-word target:** TV Shows 51, Video Games 45, Brands 46, Famous People 50. The other categories are 60–68.
 - **Task 8, "Review and loosen all clue words",** is still open in the old task log. It was superseded by tasks 27 and 30 (rewrite plus Family Fortunes pass), so it's effectively done.
 - **pw13 is slow** (3,000 rounds). It timed out at a 280s limit on 21 Oct; `run.sh` allows 600s and skips it unless you pass `all`. It also still sets a legacy `recent` field.
@@ -335,4 +331,3 @@ There are no pw1–pw4 or pw7: they were superseded. The old scratch versions we
 4. **"Reset all to default" turns the preference back on but keeps the word history.** Is that intended, or should it also clear history?
 5. **History weighting also changes the category mix.** Heavily played categories come up less often, which the "Random picks by word" rule didn't anticipate. Probably fine; unconfirmed.
 6. **The four small categories (45–51 words)**: top them up to ~60?
-7. **The auto-push rule depends on GitHub access that isn't working yet** (see §4).

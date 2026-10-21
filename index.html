@@ -886,6 +886,11 @@ function countRound() {
   game.counted = true;
   const key = HKEY(game.category, game.word);
   history.w[key] = (history.w[key] || 0) + 1;
+  // A fooled impostor saw their own word too, so it counts as played (once, even if two share it on an old save).
+  new Set(game.impostors.map((imp, i) => (imp && isFooled(i) ? altOf(i) : null)).filter((a) => a && a !== game.word)).forEach((a) => {
+    const ak = HKEY(game.category, a);
+    history.w[ak] = (history.w[ak] || 0) + 1;
+  });
   if (game.showHint !== false) {
     const hc = history.h[key] || (history.h[key] = {});
     (game.clue || []).forEach((c, i) => { if (c && game.impostors[i] && !isFooled(i)) hc[c] = (hc[c] || 0) + 1; });

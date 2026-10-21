@@ -65,6 +65,7 @@ q=await mk({showHint:false,categories:['One']},'/one.json');await play(q);let hs
 t(Object.keys(hs.w).length===1&&Object.keys(hs.h).length===0,'clues off: the word counts, no clue does');
 await q.close();
 q=await mk({unaware:true,unawareChance:100,categories:['One']},'/one.json');await play(q);hs=(await ST(q)).history;
-t(Object.keys(hs.w).length===1&&Object.keys(hs.h).length===0,'a fooled impostor sees no clue, so none is counted');
+t(Object.keys(hs.h).length===0,'a fooled impostor sees no clue, so none is counted');
+t(Object.keys(hs.w).length===2&&Object.values(hs.w).every(n=>n===1),'a fooled impostor\'s own word counts as seen too, once');
 await q.close();
 console.log('errors:',errs.length?errs:'none','| checks passed:',ok);await b.close();srv.close()})().catch(e=>{console.log('ERR',e.message.split('\n').slice(0,3).join(' / '),ok);process.exit(1)});

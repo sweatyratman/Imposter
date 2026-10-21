@@ -6,11 +6,19 @@ Read this first. It replaces a very long earlier chat (built in one session, 17�
 "Impostor" is a mobile pass-the-phone social deduction game. It is static: `index.html` (vanilla JS in one IIFE, inline CSS, about 130 KB) plus `words.json`, which is fetched at runtime. There is no build step. Repo `sweatyratman/Imposter` (public), deployed by Vercel on every push to the default branch.
 
 ## Git: commit and push automatically
-- After every change that is finished and passes the tests, **commit and push to the default branch without asking**. Vercel deploys from there. (If a session names a feature branch, use that instead.)
+- The user wants quick iteration on live gameplay: after every finished change that passes the checks below, **commit and push straight to `main` without asking** (standing permission, even if a session names a feature branch). Vercel deploys from `main`.
 - One commit per user request, with a plain message saying what changed for players (for example "Prefer unseen words; rotate clues").
-- Don't push if any test fails. Fix the failure first, or tell the user what failed and ask.
-- If the push is rejected, pull with `--rebase`, re-run the tests and push again. Never force-push.
+- Don't push if a check that applies fails. Fix it first, or tell the user what failed and ask.
+- If the push is rejected, pull with `--rebase`, re-run the checks and push again. Never force-push.
 - The user works from their phone: no local clone or terminal. Anything they do by hand is in GitHub's mobile web UI (dot-files can't be uploaded there; use Add file → Create new file).
+
+### When to run which tests (the full suite takes 20+ minutes)
+- **Docs only** (`README.md`, `CLAUDE.md`): no tests.
+- **Word list only** (`words.json` swaps/additions, no structure change): the validity check (4 distinct clues, none containing the word, no duplicates in a category) plus pw15 and pw24. Also pw5 if categories change.
+- **Small logic or copy change** in one area: that area's suites (see coverage below) plus pw8.
+- **Full `run.sh`** (before pushing) when the change touches any of: verdict/unmask/ink timing, the deal or shuffle flow, layout/CSS shared across screens, settings or save format (`defaultSettings`, `load()`, `RULE_KEYS`), round setup (`startRound`), or anything affecting what crew, impostor and fooled players see before the peel. Batch several requests into one push so the full run happens once.
+- Never skip the layout checks (pw12, pw23, 360×640) for a visible UI change.
+- Run suites with output going to a file (not piped through `tail`) and a long timeout, in the background.
 
 ## How the user wants work done
 These are the "established comprehensive playtester rules":
@@ -38,7 +46,7 @@ These are the "established comprehensive playtester rules":
 - **Impostors think they're crew** ("fooled") is off by default, with a chance slider (default 100% when switched on), rolled per impostor. A fooled impostor gets a crew card with a different word from the same category. Multiple fooled impostors get distinct words (never the crew's, never each other's). The reveal looks exactly like a crew reveal and shows crew for 1 second, then a slow stained-ink ripple turns it into the impostor card. The results ledger has a "Thought they were crew" row with each word.
   - While the chance is above 0%, the category is forced to shown (its toggle is greyed out).
   - The clue toggle is greyed out (and off) only at 100%. Below that, only aware impostors get clues. At 0% both toggles return, with the user's saved choices restored.
-- **Prefer words not seen before** is on by default. A word counts once the starting player is announced (`countRound()`, idempotent); abandoned rounds don't count. Weight is 1/(1+n)². Clues are ordered least-seen first (ties keep original order), so a returning word gives even a lone impostor its least-seen clue (confirmed as intended). Only clues an aware impostor actually saw count. With it off, words are uniformly random and clues are in normal order; history still records. "Reset word history" clears it; "Reset all to default" turns the option back on but keeps history.
+- **Prefer words not seen before** is on by default. A word counts once the starting player is announced (`countRound()`, idempotent); abandoned rounds don't count. A fooled impostor's own word counts too (they saw it). Weight is 1/(1+n)². Clues are ordered least-seen first (ties keep original order), so a returning word gives even a lone impostor its least-seen clue (confirmed as intended). Only clues an aware impostor actually saw count. With it off, words are uniformly random and clues are in normal order; history still records. "Reset word history" clears it; "Reset all to default" turns the option back on but keeps history.
 - **The goal is the fewest repeated words.** The user: "game is exponentially more boring when you encounter the same words". So bigger lists, word/clue history, no intangible words, and no near-duplicates within a category (their examples: sun/heat, rain/dew).
 - The whole Nature & Weather category was removed on request (confirmed: the whole category; don't bring any back). There are 20 categories and 1191 words.
 - **Look:** a "midnight card table". Navy felt, paper cards, brass for "the next move"; fonts Unbounded (display) and Atkinson Hyperlegible (body). 3D cards, tape, stage lighting. The reveal is deliberately dramatic. Respect reduced motion.
@@ -111,9 +119,9 @@ These are the "established comprehensive playtester rules":
 - **Quip tone:** cheeky, roasty, British, meme-literate, one short line ("Cooked. Absolutely cooked.", "{name} folded like a deckchair.").
 
 ## Open questions (ask the user before changing)
-1. Should a fooled impostor's own word count as "seen"? They did see it; only the crew word is counted today. (Previous chat's lean: yes.)
-2. "Reset all to default" keeps word history. Intended?
-3. History weighting also shifts the category mix (heavily played categories come up less). Probably fine; unconfirmed.
-4. Top up the four small categories to ~60 words?
-- Suggested next job: audit all 20 categories for near-duplicate pairs and swap them out.
+1. "Reset all to default" keeps word history. Intended?
+2. History weighting also shifts the category mix (heavily played categories come up less). Probably fine; unconfirmed.
+3. Top up the four small categories to ~60 words?
+4. Countries & Cities lists both countries and their capitals (France/Paris, Italy/Rome, Japan/Tokyo, Egypt/Cairo, Ireland/Dublin, Scotland/Edinburgh, Wales/Cardiff, England/London, Germany/Berlin, Netherlands/Amsterdam, Russia/Moscow, Spain/Barcelona…). Left alone in the near-duplicate audit; swap the capitals?
+- Done 21 Oct: near-duplicate audit of all 20 categories (67 swaps, counts unchanged); fooled impostor's word counts as seen.
 - Deferred: an app/Play Store wrapper (PWA/TWA/Capacitor). The user asked to do nothing about it.

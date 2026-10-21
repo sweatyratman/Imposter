@@ -551,6 +551,20 @@
   .resetrules { width: auto; flex: none; min-height: 40px; padding: 0 9px; gap: 6px; font-size: .78rem; margin-bottom: 0; white-space: nowrap; }
   .resetrules svg { width: 17px; height: 17px; }
   .resetrules:disabled { outline: 0; box-shadow: none; }
+  /* Resets come in three looks: the one that resets every house rule (brass), one that resets a single section (plain),
+     and ones that wipe saved data, scores or word history (coral, with an ✕). */
+  .reset { width: auto; flex: none; min-height: 40px; padding: 0 10px; gap: 6px; font-size: .8rem; white-space: nowrap; background: transparent; }
+  .reset svg { width: 16px; height: 16px; }
+  .reset:disabled { outline: 0; box-shadow: none; }
+  .reset.all { color: var(--brass); box-shadow: inset 0 0 0 2px rgba(240,196,87,.6); font-weight: 700; }
+  .reset.scope { color: var(--paper); box-shadow: inset 0 0 0 1.5px var(--line); font-weight: 400; }
+  .reset.wipe { color: var(--coral); box-shadow: inset 0 0 0 2px rgba(242,131,107,.55); }
+  .reset:active { transform: none; }
+  .subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .subhead .reset { margin-left: auto; }
+  .wrow.greyed { opacity: .42; }
+  .sub > .reset { align-self: flex-start; }
+  @media (max-width: 380px) { .reset.all { font-size: .74rem; padding: 0 8px; gap: 4px; } .reset.all svg { width: 14px; height: 14px; } }
   .ledger .cluelist b { color: var(--ink); }
   .rules .sub { background: rgba(31,43,75,.55); border: 1px solid rgba(51,65,106,.7); border-radius: 18px; padding: 16px; }
   .rules .sub h3 { font-size: 1.02rem; }
@@ -903,10 +917,12 @@ function validOptions(n) {
   o.push({ key: 'all', count: n, label: 'Everyone is an impostor' });
   return o;
 }
+// Announcing the count would give "everyone is an impostor" away at once, so it's off while the count is announced.
+const allLocked = () => !!settings.announce;
 function effective(n) {
-  const opts = validOptions(n);
-  const total = opts.reduce((s, o) => s + weightOf(o.key, n), 0);
-  return opts.map((o) => ({ ...o, pct: total ? weightOf(o.key, n) / total * 100 : (o.key === '1' ? 100 : 0) }));
+  const opts = validOptions(n), w = (o) => (o.key === 'all' && allLocked() ? 0 : weightOf(o.key, n));
+  const total = opts.reduce((s, o) => s + w(o), 0);
+  return opts.map((o) => ({ ...o, pct: total ? w(o) / total * 100 : (o.key === '1' ? 100 : 0) }));
 }
 function chooseOption(n) {
   const eff = effective(n);
@@ -1223,9 +1239,10 @@ function renderSetup() {
 
     <section class="block rules" id="rules">
       <div class="row"><h2>House rules</h2>
-        <button class="btn small resetrules" data-act="resetRules" ${rulesAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset all to default</button></div>
+        <button class="btn small resetrules reset all" data-act="resetRules" ${rulesAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset all house rules</button></div>
     <section class="sub">
-      <h3>Impostors per round</h3>
+      <div class="subhead"><h3>Impostors per round</h3>
+        <button class="btn reset scope" data-act="resetOdds" id="resetOdds" ${oddsAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset odds</button></div>
       <div class="wrow">
         <div class="whead"><span>Most impostors in a round</span><b id="maxVal"></b></div>
         ${slider(`<input type="range" id="maxImp" min="1" step="1" aria-label="Most impostors in a round">`)}
@@ -1262,7 +1279,7 @@ function renderSetup() {
       <h3>Word list</h3>
       <label class="check"><input type="checkbox" id="prefernew" ${settings.preferNew !== false ? 'checked' : ''}> Prefer words not seen before</label>
       <p class="muted small" id="seenNote"></p>
-      <button class="btn small" data-act="resetHistory" id="resetHistory">Reset word history</button>
+      <button class="btn reset wipe" data-act="resetHistory" id="resetHistory">${ICON.x}Reset word history</button>
       <div class="stack">
         <p class="muted small">Words and clues come from <b>words.json</b> on the site. To use your own list, paste a link to a JSON file in the same format (a raw GitHub or Gist link works).</p>
         <input type="url" id="wurl" placeholder="Custom word list URL (optional)" value="${esc(settings.wordsUrl || '')}" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -1286,7 +1303,13 @@ function rulesAreDefault() {
     ? validOptions(settings.playerCount).every((o) => weightOf(o.key) === autoWeights(settings.playerCount)[o.key])
     : (settings[k] ?? d[k]) === d[k]);
 }
-function syncResetRules() { const b = $('[data-act="resetRules"]'); if (b) b.disabled = rulesAreDefault(); }
+// The odds box (most impostors + each count's chance) has its own reset.
+const oddsAreDefault = () => (settings.maxImpostors || 3) === defaultSettings().maxImpostors
+  && validOptions(settings.playerCount).every((o) => weightOf(o.key) === autoWeights(settings.playerCount)[o.key]);
+function syncResetRules() {
+  const b = $('[data-act="resetRules"]'); if (b) b.disabled = rulesAreDefault();
+  const o = $('#resetOdds'); if (o) o.disabled = oddsAreDefault();
+}
 // Spell out what the impostors will be working with, especially when they'd get nothing at all.
 function infoNote() {
   const el = $('#infoNote'); if (!el) return;
@@ -1397,16 +1420,17 @@ function renderWeights() {
     $('#maxVal').textContent = m;
     $('#maxNote').textContent = (cap === n - 1 ? `${n} players allows up to ${cap}.` : `Never more than ${cap}.`)
       + (m * 2 > n ? ' Impostors can outnumber the crew at this setting.' : '')
-      + ' “Everyone is an impostor” is always on the list.';
+      + (allLocked() ? ' “Everyone is an impostor” is off while the count is announced.' : ' “Everyone is an impostor” is always on the list.');
   }
   const eff = effective(n);
   $('#weights').innerHTML = eff.map((o) => `
-    <div class="wrow">
+    <div class="wrow${o.key === 'all' && allLocked() ? ' greyed' : ''}">
       <div class="whead"><span><i class="dot" style="background:${segColour(o.key)}"></i>${o.label}</span><b data-pct="${o.key}">${Math.round(o.pct)}%</b></div>
-      ${slider(`<input type="range" min="0" max="100" step="1" value="${weightOf(o.key)}" data-weight="${o.key}" aria-label="Chance of ${o.label}">`, '', segColour(o.key))}
+      ${slider(`<input type="range" min="0" max="100" step="1" value="${weightOf(o.key)}" data-weight="${o.key}" aria-label="Chance of ${o.label}"${o.key === 'all' && allLocked() ? ' disabled' : ''}>`, '', segColour(o.key))}
+      ${o.key === 'all' && allLocked() ? '<p class="muted small">Off while everyone is told how many impostors there are: it would give the game away.</p>' : ''}
     </div>`).join('');
   $$('#weights .slider input').forEach(syncSlider);
-  updateSplit();
+  updateSplit(); syncResetRules();
 }
 function updateSplit() {
   const eff = effective(settings.playerCount);
@@ -1623,7 +1647,7 @@ function scoreHTML(scored) {
   const names = game.players.slice().sort((a, b) => (sc[b] || 0) - (sc[a] || 0) || game.players.indexOf(a) - game.players.indexOf(b));
   if (!names.some((n) => sc[n])) return '';
   const top = sc[names[0]] || 0;
-  return `<section class="scores"><div class="row"><h3>Scores</h3><button class="linkbtn" data-act="resetScores">Reset</button></div>
+  return `<section class="scores"><div class="row"><h3>Scores</h3><button class="btn reset wipe" data-act="resetScores">${ICON.x}Reset scores</button></div>
     ${names.map((n) => { const i = game.players.indexOf(n); return `<div class="srow${(sc[n] || 0) === top && top > 0 ? ' lead-player' : ''}">
       <span>${esc(n)}</span><span>${gain(i) ? `<em>+${gain(i)}</em>` : ''}<b>${sc[n] || 0}</b></span></div>`; }).join('')}
     <p class="muted small">${SCORING_NOTE}</p></section>`;
@@ -1990,6 +2014,7 @@ const ACTIONS = {
   resetScores() { ask('Reset everyone\'s score to zero?', 'Reset scores', () => { settings.scores = {}; save(); render(); }, 'Cancel'); },
   board() { showBoard(); },
   resetHistory() { ask('Forget which words you have played? Every word will count as new again.', 'Reset history', () => { history = { w: {}, h: {} }; save(); seenNote(); }, 'Cancel'); },
+  resetOdds() { settings.weights = {}; settings.maxImpostors = defaultSettings().maxImpostors; save(); renderWeights(); syncResetRules(); },
   resetRules() {
     ask('Put every house rule back to its default?', 'Reset rules', () => {
       const d = defaultSettings(), urlChanged = (settings.wordsUrl || '') !== d.wordsUrl;
@@ -2040,7 +2065,7 @@ function showBoard() {
     ${names.some((n) => sc[n] > 0) ? `<ol class="blist">${rows}</ol><p class="muted small">${SCORING_NOTE}</p>`
       : `<p class="board-empty">No points yet.<br><span class="muted">Win a round to get on the board.</span></p>`}
     <div class="split"><button class="btn" data-sheet="close">Close</button>
-      <button class="btn danger-line" data-sheet="reset" ${names.some((n) => sc[n] > 0) ? '' : 'disabled'}>${ICON.x}Reset scores</button></div></div>`;
+      <button class="btn danger-line reset wipe" data-sheet="reset" ${names.some((n) => sc[n] > 0) ? '' : 'disabled'}>${ICON.x}Reset scores</button></div></div>`;
   const close = () => { wrap.classList.add('closing'); setTimeout(() => wrap.remove(), REDUCED ? 0 : 200); };
   wrap.addEventListener('click', (e) => {
     const b = e.target.closest('[data-sheet]');
@@ -2080,6 +2105,7 @@ $app.addEventListener('input', (e) => {
   } else if (t.dataset.weight) {
     // The first nudge freezes the odds you can see, so the others don't shift when the player count changes.
     if (!Object.keys(settings.weights).length) validOptions(settings.playerCount).forEach((o) => { settings.weights[o.key] = weightOf(o.key); });
+    if (t.dataset.weight === 'all' && allLocked()) return;
     settings.weights[t.dataset.weight] = +t.value; updateSplit(); save(); syncResetRules();
   } else if (t.id === 'maxImp') {
     settings.maxImpostors = +t.value; renderWeights(); save();
@@ -2087,7 +2113,7 @@ $app.addEventListener('input', (e) => {
     if (fooling()) return;
     settings.showCategory = t.checked; infoNote(); save();
   } else if (t.id === 'announce') {
-    settings.announce = t.checked; save();
+    settings.announce = t.checked; renderWeights(); save();
   } else if (t.id === 'showhint') {
     if (allFooled()) return;
     settings.showHint = t.checked; infoNote(); save();

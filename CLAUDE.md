@@ -32,8 +32,9 @@ These are the "established comprehensive playtester rules":
 - **Impostors think they're crew** is off by default, with a chance slider (default 100%). A fooled impostor gets a crew card with a different word from the same category. Multiple fooled impostors get distinct words. The reveal looks exactly like a crew reveal and shows crew for 1 second, then a slow stained-ink ripple turns it into the impostor card.
   - While the chance is above 0%, the category is forced to shown (its toggle is greyed out).
   - The clue toggle is greyed out (and off) only at 100%. Below that, only aware impostors get clues.
-- **Prefer words not seen before** is on by default. A word counts once the starting player is announced (`countRound()`, idempotent). The weighting is 1/(1+n)². Clue order also prefers the least-seen clues. With it off, words are uniformly random and clues come in their normal order. History still records while it's off.
-- The Weather category was removed on request. There are 20 categories and 1191 words.
+- **Prefer words not seen before** is on by default. A word counts once the starting player is announced (`countRound()`, idempotent). The weighting is 1/(1+n)². Clue order also prefers the least-seen clues, so a returning word gives even a lone impostor its least-seen clue (confirmed as intended). With it off, words are uniformly random and clues come in their normal order. History still records while it's off.
+- The whole Nature & Weather category was removed on request (confirmed: the whole category). There are 20 categories and 1191 words.
+- **The goal is the fewest repeated words.** The user: "game is exponentially more boring when you encounter the same words". So no intangible words, and no near-duplicates within a category (their examples: sun/heat, rain/dew). Bigger lists and the word/clue history serve the same goal.
 
 ## Code map (`index.html`)
 - **State:** localStorage `impostor-party-v1` = `{settings, game, recent, history}`. The words cache is `impostor-party-words-v1`. `recent` is legacy and unused.

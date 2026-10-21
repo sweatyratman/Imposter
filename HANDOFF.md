@@ -130,6 +130,8 @@ This file holds what isn't already in the code, `README.md` or `CLAUDE.md`. Read
   - Every key action fits at 360×640.
 - **Quips** after votes and on results never repeat the same line twice in a row.
 
+- **Clue rotation is confirmed.** A returning word hands even a lone impostor its least-seen clue rather than clue 1. The user confirmed this is what they wanted ("That is what I wanted, correct"). The first time a word appears, clue 1 still leads.
+
 ### Discussions with no code change
 
 - **App or Play Store version.** User: "Dont do anything, but is it easy for you to turn this into an app/play store app?" Answered as a discussion only; nothing was built. The exact answer wasn't kept. It was along the lines of: feasible by wrapping the static page (PWA, Trusted Web Activity or Capacitor).
@@ -294,12 +296,16 @@ There are no pw1–pw4 or pw7: they were superseded. The old scratch versions we
     - satellite "GPS" → "dish"; daisy "chain" → "petals"; lake "district" → "boating".
   - That pass also replaced clues that were too vague (no foothold): rainbow "sky" → "colours"; tide "cycle" → "moon"; acorn "seed" → "squirrel".
 - **Avoid cheap shots and table-awkward entries.** Swapped: "bin man" → "estate agent"; "train driver" → "air traffic controller"; "Johnny Depp" → "Keira Knightley".
+- **No intangibles or near-duplicates.** Every word should be a concrete thing you could point at or name. Avoid abstract or intangible entries, and avoid pairs so close they blur together (the user's examples: sun/heat, rain/dew). Check a category for this before adding to it.
+- **The underlying goal is no repeats.** User: "Goal being the end user experiences the last amount of duplicate words. I always hate that about words against humanity etc. game is exponentially moreboring when you encounter the same words". This drives word history, clue rotation, list size and the near-duplicate rule.
 - **UK-centric content:** Bonfire Night, MOT, telly, Hogmanay, "cuppa", milk float.
 - **Category history:**
   - Started with core categories.
   - Then "Films & Actors" (~30 films, ~30 actors), which ended up as separate **Films** and **Actors**.
   - Task 27: grew five small categories to ~60 and added **Countries & Cities, TV Shows, Video Games, Brands, Famous People** (21 categories, 1,252 words).
   - Then **Nature & Weather** was removed (61 words). User: "Remove the Weather category too".
+    - **Confirmed:** the whole category goes ("Nope, the whole category"). Don't bring any of it back.
+    - The real complaint was "weather intangible things or things that are so similar like sun/heat rain/dew". That's a content rule now (below).
   - Now: 20 categories, 1,191 words.
 - **Quip tone:** cheeky, roasty, British, meme-literate. For example "The impostor marinated you HARD.", "Cooked. Absolutely cooked.", "Gaslit, gatekept, girlbossed.", "{name} folded like a deckchair."
   - Short, one line each.
@@ -325,9 +331,7 @@ There are no pw1–pw4 or pw7: they were superseded. The old scratch versions we
 
 ## 9. Open questions
 
-1. **"Remove the Weather category too".** The whole **Nature & Weather** category was removed, including nature words like rainbow, mushroom, acorn and rose. Did the user mean only the weather words? Backup: `words_pre_weather.json` (not in the repo).
-2. **A lone impostor no longer always gets clue 1.** With "Prefer words not seen" on, a repeat word hands out its least-seen clue first. The README says "a lone impostor always gets clue 1", with a note about the preference. pw15 only passes because it starts with an empty history. Confirm this is wanted (the user did say the preference "should affect hints too").
-3. **Should a fooled impostor's own word count as "seen"?** They saw it, but only the crew word is counted today.
-4. **"Reset all to default" turns the preference back on but keeps the word history.** Is that intended, or should it also clear history?
-5. **History weighting also changes the category mix.** Heavily played categories come up less often, which the "Random picks by word" rule didn't anticipate. Probably fine; unconfirmed.
-6. **The four small categories (45–51 words)**: top them up to ~60?
+1. **Should a fooled impostor's own word count as "seen"?** They saw it, but only the crew word is counted today.
+2. **"Reset all to default" turns the preference back on but keeps the word history.** Is that intended, or should it also clear history?
+3. **History weighting also changes the category mix.** Heavily played categories come up less often, which the "Random picks by word" rule didn't anticipate. Probably fine; unconfirmed.
+4. **The four small categories (45–51 words)**: top them up to ~60?

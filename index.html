@@ -1166,10 +1166,10 @@ $app.addEventListener('input', (e) => { if (e.target.matches('.slider input')) s
 
 /* ---------- setup screen ---------- */
 const REGION_NOTES = {
-  uk: 'British names and UK favourites like Greggs, EastEnders and Bonfire Night.',
-  us: 'American names (flashlight, sneakers, soccer) and US favourites like Walmart and Jeopardy!',
-  au: 'Aussie names (doona, thongs, servo) and local favourites like Bunnings and Kath & Kim.',
-  all: 'Only words everyone knows, with no local names. Best for mixed groups.'
+  uk: 'Words UK players will know, with British names. That includes big American and Aussie hits, plus local favourites like Greggs and Bonfire Night.',
+  us: 'Words US players will know, with American names (flashlight, sneakers, soccer). British-only things like Greggs are left out; Walmart and Jeopardy! are in.',
+  au: 'Words Aussie players will know, with Aussie names (doona, thongs, servo). Includes the UK and US hits Aussies watch, plus Bunnings and Kath & Kim.',
+  all: 'Only words everyone knows, with no local names or local-only words. Best for mixed groups.'
 };
 const regionNote = () => REGION_NOTES[settings.region] || '';
 const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], ['crew', 'Crew still wins']];
@@ -1273,13 +1273,18 @@ function infoNote() {
   const forced = fooling(), noClues = allFooled();
   const clue = !noClues && settings.showHint !== false, cat = forced || settings.showCategory !== false;
   const one = settings.categories.length === 1;
-  if (noClues) { el.textContent = 'Every impostor is fooled, so nobody gets a clue and the category is shown to everyone. Your own choices come back if you lower the chance or switch this off.'; return; }
-  el.textContent = clue && cat ? 'Impostors see the category and a clue. With several impostors, each gets a different clue.'
-    : clue ? `Impostors get a clue but not the category${one ? ' (though with one category picked, everyone knows it anyway)' : ''}. Harder for them.`
-    : cat ? 'Impostors only see the category. They must pick the word up from everyone else.'
-    : one ? 'Impostors get no clue, but with one category picked everyone knows it anyway.'
-    : 'Impostors get nothing at all: no clue, no category. They must bluff purely from what others say. Very hard for them.';
-  if (forced) el.textContent += ' The category is always shown while impostors can be fooled, and a fooled impostor sees a crew card instead.';
+  const many = ' With several impostors, each gets a different clue (up to four).';
+  if (noClues) { el.textContent = 'Every impostor is fooled into thinking they\'re crew, so nobody gets a clue and everyone sees the category. Your own choices for these two come back if you lower the chance or switch it off.'; return; }
+  if (forced) {
+    el.textContent = 'While impostors can be fooled, everyone sees the category. '
+      + (clue ? 'Impostors who know what they are get a clue.' + many : 'Impostors who know what they are get no clue, so they must pick the word up from everyone else.');
+    return;
+  }
+  el.textContent = clue && cat ? 'Impostors see the category and a clue.' + many
+    : clue ? `Nobody sees the category during the round, so impostors get a clue with no context${one ? ' (though with one category picked, everyone knows it anyway)' : ''}. Harder for them.` + many
+    : cat ? 'Impostors only see the category. They must pick the word up from everyone else, which also makes guessing it at the end much harder.'
+    : one ? 'Impostors get no clue, but with one category picked everyone knows the category, so that\'s all they have to go on.'
+    : 'Impostors get nothing at all: no clue and no category. They must bluff purely from what others say. Very hard for them.';
 }
 // Reflect the two toggles: greyed out and fixed while impostors can be fooled, otherwise showing the saved choice.
 function syncClueToggles() {
@@ -1316,8 +1321,8 @@ function unawareNote() {
   const el = $('#unawareNote'); if (!el) return;
   el.textContent = !on ? 'Off: every impostor knows they are one.'
     : c === 0 ? 'At 0% nobody is ever fooled, so this does nothing.'
-    : (c === 100 ? 'Every impostor sees' : `Each impostor has a ${c}% chance of being fooled. A fooled impostor sees`)
-      + ' a crew card with a word from the same category that nobody else has (each fooled impostor gets their own) and no clue. They only find out when they are voted out.';
+    : (c === 100 ? 'Every impostor is fooled. They see' : `Each impostor has a ${c}% chance of being fooled; the rest know what they are. A fooled impostor sees`)
+      + ' a normal crew card, but with a different word from the same category (each fooled impostor gets their own) and no clue. They only find out at the reveal.';
 }
 function renderNames() {
   const box = $('#names');

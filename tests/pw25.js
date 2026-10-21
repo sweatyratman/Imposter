@@ -68,6 +68,8 @@ await p.unroute(/loc\.json/);
 const W=JSON.parse(fs.readFileSync(D+'words.json'));
 const nOf=(c,r)=>c.words.filter(w=>{const n=w.find(x=>x&&typeof x==='object'&&!Array.isArray(x));return !(n&&n.in&&n.in.length&&(r==='all'||!n.in.includes(r)))}).length;
 t(W.categories.every(c=>['uk','us','au','all'].every(r=>nOf(c,r)>=45)),'every category has at least 45 words in every region');
+const glob=(cat,word)=>{const w=W.categories.find(c=>c.name===cat).words.find(w=>w[0]===word);return w&&!w.some(x=>x&&typeof x==='object'&&x.in)};
+t(glob('Films','Harry Potter')&&glob('TV Shows','The Simpsons')&&glob('TV Shows','Friends')&&glob('Brands','Walmart'),'shared hits (Harry Potter, The Simpsons, Friends, Walmart) are in every region');
 t(W.categories.every(c=>c.words.every(w=>{const n=w.find(x=>x&&typeof x==='object');return !n||Object.keys(n).every(k=>['in','uk','us','au'].includes(k))})),'region notes only use in/uk/us/au');
 
 // ---- fits a small phone, even with big text

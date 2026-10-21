@@ -942,12 +942,7 @@
           "burrow",
           "cube poo",
           "chubby",
-          "pouch",
-          {
-            "in": [
-              "au"
-            ]
-          }
+          "pouch"
         ],
         [
           "kookaburra",
@@ -957,6 +952,7 @@
           "bird call",
           {
             "in": [
+              "uk",
               "au"
             ]
           }
@@ -1511,9 +1507,7 @@
           "batter",
           "sausage",
           {
-            "in": [
-              "us"
-            ]
+            "au": "Dagwood dog"
           }
         ],
         [
@@ -1573,7 +1567,8 @@
           "orange",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -2076,12 +2071,7 @@
           "booths",
           "waitress",
           "milkshakes",
-          "neon",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "neon"
         ],
         [
           "corner shop",
@@ -2111,12 +2101,7 @@
           "red dirt",
           "remote",
           "kangaroos",
-          "dusty",
-          {
-            "in": [
-              "au"
-            ]
-          }
+          "dusty"
         ],
         [
           "bottle-o",
@@ -3601,9 +3586,8 @@
           "badges",
           "jock",
           {
-            "in": [
-              "us"
-            ]
+            "uk": "varsity jacket",
+            "au": "varsity jacket"
           }
         ],
         [
@@ -5081,12 +5065,7 @@
           "rocking chair",
           "steps",
           "swing",
-          "neighbours",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "neighbours"
         ]
       ]
     },
@@ -6442,7 +6421,8 @@
           "celebration",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -6487,12 +6467,7 @@
           "adverts",
           "wings",
           "halftime show",
-          "couch",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "couch"
         ],
         [
           "Cinco de Mayo",
@@ -6511,12 +6486,7 @@
           "birthday",
           "car",
           "party",
-          "teenager",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "teenager"
         ],
         [
           "Australia Day",
@@ -7018,13 +6988,7 @@
           "northern",
           "unemployed",
           "dancing",
-          "Yorkshire",
-          {
-            "in": [
-              "uk",
-              "au"
-            ]
-          }
+          "Yorkshire"
         ],
         [
           "Slumdog Millionaire",
@@ -7949,24 +7913,14 @@
           "trams",
           "coffee",
           "laneways",
-          "four seasons",
-          {
-            "in": [
-              "au"
-            ]
-          }
+          "four seasons"
         ],
         [
           "Perth",
           "sunsets",
           "isolated",
           "Indian Ocean",
-          "quokkas",
-          {
-            "in": [
-              "au"
-            ]
-          }
+          "quokkas"
         ],
         [
           "Gold Coast",
@@ -7976,6 +7930,7 @@
           "schoolies",
           {
             "in": [
+              "uk",
               "au"
             ]
           }
@@ -7985,12 +7940,7 @@
           "red rock",
           "sacred",
           "outback",
-          "sunrise",
-          {
-            "in": [
-              "au"
-            ]
-          }
+          "sunrise"
         ],
         [
           "Chicago",
@@ -8011,12 +7961,7 @@
           "country music",
           "cowboy boots",
           "honky-tonk",
-          "hen parties",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "hen parties"
         ],
         [
           "Grand Canyon",
@@ -8107,7 +8052,8 @@
           "drama",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -8119,7 +8065,8 @@
           "long-running",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -8172,7 +8119,8 @@
           "brothers",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -8432,7 +8380,8 @@
           "teenagers",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -8493,7 +8442,8 @@
           "cringe",
           {
             "in": [
-              "uk"
+              "uk",
+              "au"
             ]
           }
         ],
@@ -8565,60 +8515,35 @@
           "sketches",
           "cast",
           "live",
-          "host",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "host"
         ],
         [
           "Jeopardy!",
           "answers",
           "buzzer",
           "Alex",
-          "quiz",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "quiz"
         ],
         [
           "American Idol",
           "auditions",
           "judges",
           "singing",
-          "vote",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "vote"
         ],
         [
           "Wheel of Fortune",
           "spin",
           "letters",
           "vowel",
-          "prizes",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "prizes"
         ],
         [
           "The West Wing",
           "White House",
           "walking",
           "politics",
-          "staff",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "staff"
         ],
         [
           "Modern Family",
@@ -8701,6 +8626,7 @@
           "sunburn",
           {
             "in": [
+              "uk",
               "au"
             ]
           }
@@ -8713,6 +8639,7 @@
           "kids",
           {
             "in": [
+              "uk",
               "au"
             ]
           }
@@ -9620,12 +9547,7 @@
           "supercentre",
           "greeters",
           "cheap",
-          "everything",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "everything"
         ],
         [
           "Target",
@@ -9635,7 +9557,8 @@
           "home decor",
           {
             "in": [
-              "us"
+              "us",
+              "au"
             ]
           }
         ],
@@ -9644,36 +9567,21 @@
           "kisses",
           "chocolate",
           "Pennsylvania",
-          "bar",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "bar"
         ],
         [
           "Dunkin'",
           "doughnuts",
           "iced coffee",
           "Boston",
-          "pink and orange",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "pink and orange"
         ],
         [
           "Taco Bell",
           "bell",
           "late night",
           "Mexican-ish",
-          "drive-thru",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "drive-thru"
         ],
         [
           "Bunnings",
@@ -9707,6 +9615,7 @@
           "packet",
           {
             "in": [
+              "uk",
               "au"
             ]
           }
@@ -10202,12 +10111,7 @@
           "home runs",
           "Yankees",
           "baseball",
-          "legend",
-          {
-            "in": [
-              "us"
-            ]
-          }
+          "legend"
         ],
         [
           "Steve Irwin",
@@ -10237,6 +10141,7 @@
           "outlaw",
           {
             "in": [
+              "uk",
               "au"
             ]
           }
@@ -10249,6 +10154,7 @@
           "the Don",
           {
             "in": [
+              "uk",
               "au"
             ]
           }

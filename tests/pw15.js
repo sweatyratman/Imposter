@@ -66,7 +66,7 @@ await p.click('[data-sheet="close"]');await p.waitForTimeout(300);
 // ---- show category rule ----
 t(await p.$eval('#showcat',e=>e.checked),'show category on by default');
 await p.click('#showhint');await p.click('#showcat');t((await p.textContent('#infoNote')).includes('nothing at all'),'warns when impostors get nothing');
-await p.click('#showhint');t((await p.textContent('#infoNote')).includes('not the category'),'clue but no category note');
+await p.click('#showhint');t((await p.textContent('#infoNote')).includes('no context')&&(await p.textContent('#infoNote')).includes('different clue'),'clue but no category note still says each impostor gets a different clue');
 await inp('#count',4);await setW({1:100});await p.click('[data-act="start"]');g=await G();t(g.showCategory===false,'round locks the rule in');
 t(!!(await p.$('#barcat .redcat .tape'))&&(await p.getAttribute('#barcat .redcat','aria-label'))==='Category hidden'&&!(await p.textContent('#barcat')).includes(g.category),'bar hides the category behind redacted tape');
 for(let i=0;i<4;i++){await p.click('[data-act="reveal"]');t(!(await p.evaluate(()=>document.body.innerText)).includes(g.category),'category nowhere on screen while dealing');await p.click('[data-act="hide"]')}

@@ -141,7 +141,7 @@
           "thermometer",
           "reading",
           "glass",
-          "poorly",
+          "fever",
           "weather"
         ],
         [
@@ -170,7 +170,10 @@
           "camping",
           "beam",
           "cupboard",
-          "power cut"
+          "power cut",
+          {
+            "us": "flashlight"
+          }
         ],
         [
           "envelope",
@@ -198,7 +201,11 @@
           "warm",
           "bed",
           "cover",
-          "feathers"
+          "feathers",
+          {
+            "us": "comforter",
+            "au": "doona"
+          }
         ],
         [
           "doormat",
@@ -289,14 +296,21 @@
           "wrapping",
           "dispenser",
           "sticky",
-          "peeling"
+          "peeling",
+          {
+            "us": "Scotch tape",
+            "au": "sticky tape"
+          }
         ],
         [
           "tin opener",
           "grip",
           "beans",
           "hand-held",
-          "turn"
+          "turn",
+          {
+            "us": "can opener"
+          }
         ],
         [
           "colander",
@@ -371,7 +385,7 @@
         [
           "safety pin",
           "fastening",
-          "nappy",
+          "punk",
           "tiny",
           "emergency"
         ],
@@ -380,14 +394,20 @@
           "pinch",
           "wooden",
           "tent",
-          "clothes"
+          "clothes",
+          {
+            "us": "clothespin"
+          }
         ],
         [
           "zip",
           "stuck",
           "jacket",
           "bag",
-          "teeth"
+          "teeth",
+          {
+            "us": "zipper"
+          }
         ],
         [
           "USB stick",
@@ -423,6 +443,17 @@
           "sweep",
           "crumbs",
           "floor"
+        ],
+        [
+          "cool box",
+          "picnic",
+          "ice packs",
+          "drinks",
+          "lid",
+          {
+            "us": "cooler",
+            "au": "Esky"
+          }
         ]
       ]
     },
@@ -877,6 +908,58 @@
           "field",
           "racing",
           "stable"
+        ],
+        [
+          "raccoon",
+          "bins",
+          "mask",
+          "night",
+          "ringed tail"
+        ],
+        [
+          "skunk",
+          "smell",
+          "stripe",
+          "spray",
+          "black and white"
+        ],
+        [
+          "moose",
+          "antlers",
+          "Canada",
+          "forest",
+          "huge"
+        ],
+        [
+          "platypus",
+          "bill",
+          "eggs",
+          "river",
+          "odd"
+        ],
+        [
+          "wombat",
+          "burrow",
+          "cube poo",
+          "chubby",
+          "pouch",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "kookaburra",
+          "laughing",
+          "gum tree",
+          "dawn",
+          "bird call",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -1029,7 +1112,10 @@
           "sugar",
           "glazed",
           "sprinkles",
-          "fried"
+          "fried",
+          {
+            "us": "donut"
+          }
         ],
         [
           "taco",
@@ -1085,7 +1171,10 @@
           "bland",
           "hot",
           "breakfast",
-          "winter"
+          "winter",
+          {
+            "us": "oatmeal"
+          }
         ],
         [
           "sausage",
@@ -1120,7 +1209,10 @@
           "pot",
           "Greek",
           "spoon",
-          "fruit"
+          "fruit",
+          {
+            "us": "yogurt"
+          }
         ],
         [
           "butter",
@@ -1148,7 +1240,13 @@
           "dessert",
           "custard",
           "sherry",
-          "Christmas"
+          "Christmas",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "scone",
@@ -1162,14 +1260,21 @@
           "tin",
           "tea",
           "crumbs",
-          "packet"
+          "packet",
+          {
+            "us": "cookie"
+          }
         ],
         [
           "crisps",
           "sharing",
           "packet",
           "salty",
-          "crunch"
+          "crunch",
+          {
+            "us": "potato chips",
+            "au": "potato chips"
+          }
         ],
         [
           "birthday cake",
@@ -1190,7 +1295,16 @@
           "fizzy",
           "summer",
           "cloudy",
-          "bubbly"
+          "bubbly",
+          {
+            "us": [
+              "lemonade",
+              "roadside stand",
+              "sour",
+              "pitcher",
+              "summer"
+            ]
+          }
         ],
         [
           "orange juice",
@@ -1232,7 +1346,13 @@
           "orchard",
           "scrumpy",
           "fizzy",
-          "West Country"
+          "West Country",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "dumplings",
@@ -1246,7 +1366,10 @@
           "bake",
           "cheese",
           "oven",
-          "mince"
+          "mince",
+          {
+            "us": "lasagna"
+          }
         ],
         [
           "pie",
@@ -1260,7 +1383,13 @@
           "family",
           "gravy",
           "potatoes",
-          "carvery"
+          "carvery",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "olive",
@@ -1352,6 +1481,125 @@
           "sea",
           "shaker",
           "pinch"
+        ],
+        [
+          "mac and cheese",
+          "pasta",
+          "cheesy",
+          "baked",
+          "comfort",
+          {
+            "uk": "macaroni cheese"
+          }
+        ],
+        [
+          "s'mores",
+          "campfire",
+          "marshmallow",
+          "graham crackers",
+          "toasted",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "corn dog",
+          "stick",
+          "fair",
+          "batter",
+          "sausage",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "pavlova",
+          "meringue",
+          "fruit",
+          "cream",
+          "Christmas",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
+        ],
+        [
+          "lamington",
+          "sponge",
+          "coconut",
+          "chocolate",
+          "squares",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "fairy bread",
+          "sprinkles",
+          "kids' party",
+          "white bread",
+          "butter",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "sausage sizzle",
+          "Bunnings",
+          "onions",
+          "bread",
+          "fundraiser",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "beans on toast",
+          "tin",
+          "student",
+          "quick",
+          "orange",
+          {
+            "in": [
+              "uk"
+            ]
+          }
+        ],
+        [
+          "Cornish pasty",
+          "pastry",
+          "crimped",
+          "miners",
+          "seaside",
+          {
+            "in": [
+              "uk"
+            ]
+          }
+        ],
+        [
+          "jacket potato",
+          "butter",
+          "beans",
+          "crispy skin",
+          "cheese",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ]
       ]
     },
@@ -1539,21 +1787,32 @@
           "waiting",
           "coins",
           "spin",
-          "soap"
+          "soap",
+          {
+            "us": "laundromat",
+            "au": "laundromat"
+          }
         ],
         [
           "petrol station",
           "motorway",
           "snacks",
           "queue",
-          "air"
+          "air",
+          {
+            "us": "gas station",
+            "au": "servo"
+          }
         ],
         [
           "car park",
           "pay",
           "ticket",
           "spaces",
-          "barrier"
+          "barrier",
+          {
+            "us": "parking lot"
+          }
         ],
         [
           "train station",
@@ -1630,7 +1889,10 @@
           "interval",
           "stage",
           "seats",
-          "tickets"
+          "tickets",
+          {
+            "us": "theater"
+          }
         ],
         [
           "aquarium",
@@ -1651,7 +1913,10 @@
           "outdoors",
           "field",
           "fire",
-          "showers"
+          "showers",
+          {
+            "us": "campground"
+          }
         ],
         [
           "playground",
@@ -1693,7 +1958,10 @@
           "bedding",
           "plants",
           "compost",
-          "Sunday"
+          "Sunday",
+          {
+            "us": "garden center"
+          }
         ],
         [
           "graveyard",
@@ -1792,6 +2060,75 @@
           "coffee",
           "cake",
           "tables"
+        ],
+        [
+          "shopping centre",
+          "escalators",
+          "food court",
+          "shops",
+          "car park",
+          {
+            "us": "mall"
+          }
+        ],
+        [
+          "diner",
+          "booths",
+          "waitress",
+          "milkshakes",
+          "neon",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "corner shop",
+          "milk",
+          "newspapers",
+          "late night",
+          "sweets",
+          {
+            "us": "bodega",
+            "au": "milk bar"
+          }
+        ],
+        [
+          "chippy",
+          "vinegar",
+          "Friday",
+          "queue",
+          "wrapped",
+          {
+            "in": [
+              "uk"
+            ]
+          }
+        ],
+        [
+          "outback",
+          "red dirt",
+          "remote",
+          "kangaroos",
+          "dusty",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "bottle-o",
+          "drive-through",
+          "beer",
+          "Friday night",
+          "slabs",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -1867,7 +2204,11 @@
           "van",
           "round",
           "early",
-          "dog"
+          "dog",
+          {
+            "us": "mailman",
+            "au": "postie"
+          }
         ],
         [
           "astronaut",
@@ -1888,7 +2229,10 @@
           "patrol",
           "whistle",
           "pool",
-          "beach"
+          "beach",
+          {
+            "au": "lifesaver"
+          }
         ],
         [
           "magician",
@@ -2182,7 +2526,11 @@
           "suits",
           "houses",
           "viewings",
-          "commission"
+          "commission",
+          {
+            "us": "realtor",
+            "au": "real estate agent"
+          }
         ],
         [
           "paramedic",
@@ -2218,6 +2566,30 @@
           "suit",
           "needle",
           "bespoke"
+        ],
+        [
+          "lollipop lady",
+          "school",
+          "crossing",
+          "stop sign",
+          "hi-vis",
+          {
+            "us": "crossing guard"
+          }
+        ],
+        [
+          "sheriff",
+          "badge",
+          "Wild West",
+          "deputy",
+          "jail"
+        ],
+        [
+          "cowboy",
+          "lasso",
+          "ranch",
+          "hat",
+          "horse"
         ]
       ]
     },
@@ -2230,7 +2602,11 @@
           "terraces",
           "pitch",
           "Saturday",
-          "kit"
+          "kit",
+          {
+            "us": "soccer",
+            "au": "soccer"
+          }
         ],
         [
           "tennis",
@@ -2293,7 +2669,10 @@
           "table",
           "balls",
           "pockets",
-          "green"
+          "green",
+          {
+            "us": "pool"
+          }
         ],
         [
           "archery",
@@ -2314,7 +2693,13 @@
           "whites",
           "bat",
           "tea",
-          "summer"
+          "summer",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "monopoly",
@@ -2412,7 +2797,10 @@
           "rink",
           "sticks",
           "Canada",
-          "fights"
+          "fights",
+          {
+            "us": "hockey"
+          }
         ],
         [
           "table tennis",
@@ -2573,7 +2961,10 @@
           "suspects",
           "board",
           "mansion",
-          "weapons"
+          "weapons",
+          {
+            "us": "Clue"
+          }
         ],
         [
           "twister",
@@ -2650,7 +3041,67 @@
           "string",
           "horse chestnut",
           "autumn",
-          "playground"
+          "playground",
+          {
+            "in": [
+              "uk"
+            ]
+          }
+        ],
+        [
+          "American football",
+          "touchdown",
+          "helmets",
+          "quarterback",
+          "Super Bowl",
+          {
+            "us": "football",
+            "au": "gridiron"
+          }
+        ],
+        [
+          "netball",
+          "bibs",
+          "goal ring",
+          "school",
+          "no running",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
+        ],
+        [
+          "Aussie rules",
+          "AFL",
+          "high marks",
+          "oval ball",
+          "grand final",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "cornhole",
+          "bean bags",
+          "board",
+          "tailgate",
+          "throw",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "dodgeball",
+          "PE",
+          "throw",
+          "duck",
+          "teams"
         ]
       ]
     },
@@ -2677,7 +3128,11 @@
           "comfy",
           "laces",
           "running",
-          "white"
+          "white",
+          {
+            "us": "sneakers",
+            "au": "runners"
+          }
         ],
         [
           "hat",
@@ -2719,14 +3174,20 @@
           "lazy",
           "bed",
           "flannel",
-          "weekend"
+          "weekend",
+          {
+            "us": "pajamas"
+          }
         ],
         [
           "swimsuit",
           "holiday",
           "pool",
           "beach",
-          "wet"
+          "wet",
+          {
+            "au": "cossie"
+          }
         ],
         [
           "raincoat",
@@ -2736,11 +3197,14 @@
           "wet"
         ],
         [
-          "sandals",
-          "heat",
-          "summer",
+          "flip-flops",
+          "beach",
           "toes",
-          "straps"
+          "holiday",
+          "slap",
+          {
+            "au": "thongs"
+          }
         ],
         [
           "earrings",
@@ -2789,7 +3253,11 @@
           "puddles",
           "mud",
           "festival",
-          "farm"
+          "farm",
+          {
+            "us": "rain boots",
+            "au": "gumboots"
+          }
         ],
         [
           "kilt",
@@ -2831,7 +3299,10 @@
           "knit",
           "wool",
           "cosy",
-          "sleeves"
+          "sleeves",
+          {
+            "us": "sweater"
+          }
         ],
         [
           "boots",
@@ -2866,7 +3337,10 @@
           "tweed",
           "three-piece",
           "wedding",
-          "buttons"
+          "buttons",
+          {
+            "us": "vest"
+          }
         ],
         [
           "suit",
@@ -2901,7 +3375,10 @@
           "painter",
           "denim",
           "straps",
-          "toddler"
+          "toddler",
+          {
+            "us": "overalls"
+          }
         ],
         [
           "onesie",
@@ -2915,7 +3392,10 @@
           "hotel",
           "fluffy",
           "belt",
-          "morning"
+          "morning",
+          {
+            "us": "bathrobe"
+          }
         ],
         [
           "tutu",
@@ -3006,7 +3486,16 @@
           "designer",
           "leather",
           "purse",
-          "shoulder"
+          "shoulder",
+          {
+            "us": [
+              "purse",
+              "designer",
+              "leather",
+              "clutch",
+              "shoulder"
+            ]
+          }
         ],
         [
           "button",
@@ -3083,7 +3572,10 @@
           "denier",
           "nylon",
           "ladder",
-          "legs"
+          "legs",
+          {
+            "us": "pantyhose"
+          }
         ],
         [
           "thermals",
@@ -3091,6 +3583,40 @@
           "winter",
           "layers",
           "ski"
+        ],
+        [
+          "bum bag",
+          "waist",
+          "zip",
+          "festival",
+          "90s",
+          {
+            "us": "fanny pack"
+          }
+        ],
+        [
+          "letterman jacket",
+          "high school",
+          "varsity",
+          "badges",
+          "jock",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Akubra",
+          "Australian",
+          "brim",
+          "outback",
+          "farmers",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -3131,7 +3657,10 @@
           "seatbelt",
           "wings",
           "holiday",
-          "window seat"
+          "window seat",
+          {
+            "us": "airplane"
+          }
         ],
         [
           "helicopter",
@@ -3187,7 +3716,10 @@
           "overhead",
           "tracks",
           "city",
-          "bell"
+          "bell",
+          {
+            "us": "streetcar"
+          }
         ],
         [
           "ferry",
@@ -3236,21 +3768,31 @@
           "cargo",
           "motorway",
           "heavy",
-          "deliveries"
+          "deliveries",
+          {
+            "us": "truck",
+            "au": "truck"
+          }
         ],
         [
           "caravan",
           "bank holiday",
           "towing",
           "holiday",
-          "site"
+          "site",
+          {
+            "us": "trailer"
+          }
         ],
         [
           "sledge",
           "runners",
           "hill",
           "winter",
-          "wooden"
+          "wooden",
+          {
+            "us": "sled"
+          }
         ],
         [
           "jet ski",
@@ -3278,7 +3820,10 @@
           "awkward",
           "buttons",
           "music",
-          "stuck"
+          "stuck",
+          {
+            "us": "elevator"
+          }
         ],
         [
           "cable car",
@@ -3313,7 +3858,10 @@
           "park",
           "pushing",
           "wheels",
-          "hood"
+          "hood",
+          {
+            "us": "stroller"
+          }
         ],
         [
           "unicycle",
@@ -3341,7 +3889,11 @@
           "weekly",
           "early",
           "smelly",
-          "noisy"
+          "noisy",
+          {
+            "us": "garbage truck",
+            "au": "garbage truck"
+          }
         ],
         [
           "steam train",
@@ -3394,24 +3946,33 @@
         ],
         [
           "lifeboat",
-          "RNLI",
           "rescue",
           "storm",
-          "volunteers"
+          "volunteers",
+          "orange"
         ],
         [
           "pedalo",
           "holiday",
           "lake",
           "feet",
-          "swan"
+          "swan",
+          {
+            "us": "pedal boat",
+            "au": "paddle boat"
+          }
         ],
         [
           "narrowboat",
           "locks",
           "painted",
           "slow",
-          "towpath"
+          "towpath",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "hovercraft",
@@ -3467,7 +4028,23 @@
           "chimes",
           "99",
           "queue",
-          "sprinkles"
+          "sprinkles",
+          {
+            "us": [
+              "ice cream truck",
+              "chimes",
+              "sprinkles",
+              "jingle",
+              "summer"
+            ],
+            "au": [
+              "ice cream van",
+              "chimes",
+              "Mr Whippy",
+              "sprinkles",
+              "summer"
+            ]
+          }
         ],
         [
           "hearse",
@@ -3516,7 +4093,10 @@
           "rush hour",
           "escalators",
           "map",
-          "tunnel"
+          "tunnel",
+          {
+            "us": "subway"
+          }
         ],
         [
           "space shuttle",
@@ -3537,7 +4117,22 @@
           "doorstep",
           "electric",
           "early",
-          "bottles"
+          "bottles",
+          {
+            "in": [
+              "uk"
+            ]
+          }
+        ],
+        [
+          "pickup truck",
+          "flatbed",
+          "farm",
+          "tradie",
+          "tow bar",
+          {
+            "au": "ute"
+          }
         ]
       ]
     },
@@ -3738,7 +4333,7 @@
           "lullaby",
           "gentle",
           "soft",
-          "mum",
+          "cradle",
           "humming"
         ],
         [
@@ -3914,7 +4509,10 @@
           "hat",
           "street",
           "guitar",
-          "coins"
+          "coins",
+          {
+            "us": "street performer"
+          }
         ],
         [
           "boy band",
@@ -3935,7 +4533,10 @@
           "tiny",
           "guitar",
           "lost",
-          "wallet"
+          "wallet",
+          {
+            "us": "guitar pick"
+          }
         ],
         [
           "amplifier",
@@ -3985,6 +4586,13 @@
           "pages",
           "adjustable",
           "clipped"
+        ],
+        [
+          "didgeridoo",
+          "drone",
+          "long",
+          "Australia",
+          "circular breathing"
         ]
       ]
     },
@@ -3997,14 +4605,21 @@
           "lounge",
           "cushions",
           "living room",
-          "telly"
+          "telly",
+          {
+            "us": "couch",
+            "au": "couch"
+          }
         ],
         [
           "wardrobe",
           "doors",
           "bedroom",
           "wooden",
-          "tall"
+          "tall",
+          {
+            "us": "closet"
+          }
         ],
         [
           "bookshelf",
@@ -4088,7 +4703,10 @@
           "draught",
           "post",
           "flap",
-          "door"
+          "door",
+          {
+            "us": "mail slot"
+          }
         ],
         [
           "curtains",
@@ -4144,7 +4762,10 @@
           "extension",
           "glass",
           "hot",
-          "plants"
+          "plants",
+          {
+            "us": "sunroom"
+          }
         ],
         [
           "compost heap",
@@ -4193,7 +4814,10 @@
           "cat",
           "bucket",
           "toddlers",
-          "garden"
+          "garden",
+          {
+            "us": "sandbox"
+          }
         ],
         [
           "garden pond",
@@ -4277,7 +4901,12 @@
           "towels",
           "warm",
           "boiler",
-          "shelves"
+          "shelves",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "pantry",
@@ -4305,7 +4934,10 @@
           "lid",
           "rubbish",
           "Tuesday",
-          "kitchen"
+          "kitchen",
+          {
+            "us": "trash can"
+          }
         ],
         [
           "smoke alarm",
@@ -4340,7 +4972,11 @@
           "pegs",
           "Monday",
           "sheets",
-          "rotary"
+          "rotary",
+          {
+            "us": "clothesline",
+            "au": "Hills Hoist"
+          }
         ],
         [
           "trellis",
@@ -4361,7 +4997,11 @@
           "rain",
           "garden",
           "drainpipe",
-          "green"
+          "green",
+          {
+            "us": "rain barrel",
+            "au": "water tank"
+          }
         ],
         [
           "wheelbarrow",
@@ -4431,7 +5071,22 @@
           "midnight",
           "door",
           "pet",
-          "night"
+          "night",
+          {
+            "us": "cat door"
+          }
+        ],
+        [
+          "front porch",
+          "rocking chair",
+          "steps",
+          "swing",
+          "neighbours",
+          {
+            "in": [
+              "us"
+            ]
+          }
         ]
       ]
     },
@@ -5143,7 +5798,16 @@
           "snow",
           "footprints",
           "mountains",
-          "hairy"
+          "hairy",
+          {
+            "us": [
+              "Bigfoot",
+              "footprints",
+              "forest",
+              "blurry photo",
+              "hairy"
+            ]
+          }
         ],
         [
           "Loch Ness Monster",
@@ -5298,6 +5962,18 @@
           "gold",
           "guess his name",
           "first-born"
+        ],
+        [
+          "bunyip",
+          "billabong",
+          "swamp",
+          "Aboriginal",
+          "lurking",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -5331,7 +6007,12 @@
           "sparklers",
           "November",
           "smoke",
-          "cold"
+          "cold",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "birthday",
@@ -5394,7 +6075,13 @@
           "lemon",
           "race",
           "February",
-          "frying pan"
+          "frying pan",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "carnival",
@@ -5415,7 +6102,12 @@
           "tinned food",
           "marrows",
           "school assembly",
-          "hymn"
+          "hymn",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "picnic",
@@ -5478,14 +6170,22 @@
           "mates",
           "pub",
           "embarrassing",
-          "weekend"
+          "weekend",
+          {
+            "us": "bachelor party",
+            "au": "bucks night"
+          }
         ],
         [
           "hen party",
           "girls",
           "sash",
           "cocktails",
-          "weekend"
+          "weekend",
+          {
+            "us": "bachelorette party",
+            "au": "hens night"
+          }
         ],
         [
           "music festival",
@@ -5513,14 +6213,22 @@
           "poetry",
           "Scotland",
           "whisky",
-          "January"
+          "January",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Remembrance Day",
           "wreath",
           "November",
           "soldiers",
-          "eleven"
+          "eleven",
+          {
+            "us": "Veterans Day"
+          }
         ],
         [
           "Mardi Gras",
@@ -5569,7 +6277,13 @@
           "sales",
           "football",
           "December",
-          "leftovers"
+          "leftovers",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Black Friday",
@@ -5611,7 +6325,12 @@
           "bells",
           "Scotland",
           "midnight",
-          "ceilidh"
+          "ceilidh",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Ramadan",
@@ -5667,7 +6386,12 @@
           "Horse Guards",
           "bearskins",
           "balcony",
-          "June"
+          "June",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "coronation",
@@ -5681,42 +6405,68 @@
           "bunting",
           "tables",
           "neighbours",
-          "flags"
+          "flags",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "fancy dress party",
           "theme",
           "costumes",
           "wigs",
-          "prizes"
+          "prizes",
+          {
+            "us": "costume party"
+          }
         ],
         [
           "Last Night of the Proms",
           "Royal Albert Hall",
           "Rule Britannia",
           "Union Jack",
-          "Jerusalem"
+          "Jerusalem",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "jubilee",
           "decades",
           "queen",
           "flags",
-          "celebration"
+          "celebration",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "sports day",
           "medals",
           "parents",
           "races",
-          "summer"
+          "summer",
+          {
+            "us": "field day"
+          }
         ],
         [
           "pantomime",
           "dame",
           "booing",
           "sweets thrown",
-          "slapstick"
+          "slapstick",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Passover",
@@ -5724,6 +6474,97 @@
           "matzo",
           "Exodus",
           "four questions"
+        ],
+        [
+          "Fourth of July",
+          "fireworks",
+          "hot dogs",
+          "stars and stripes",
+          "independence"
+        ],
+        [
+          "Super Bowl Sunday",
+          "adverts",
+          "wings",
+          "halftime show",
+          "couch",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Cinco de Mayo",
+          "margaritas",
+          "Mexico",
+          "May",
+          "tacos",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "sweet sixteen",
+          "birthday",
+          "car",
+          "party",
+          "teenager",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Australia Day",
+          "barbecue",
+          "January",
+          "flags",
+          "beach",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Anzac Day",
+          "dawn service",
+          "poppies",
+          "April",
+          "diggers",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Melbourne Cup",
+          "horses",
+          "fascinators",
+          "sweepstake",
+          "November",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "schoolies",
+          "Gold Coast",
+          "end of school",
+          "party",
+          "week",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -6177,7 +7018,13 @@
           "northern",
           "unemployed",
           "dancing",
-          "Yorkshire"
+          "Yorkshire",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Slumdog Millionaire",
@@ -6668,25 +7515,25 @@
       "emoji": "🗺️",
       "words": [
         [
-          "France",
-          "museums",
-          "Europe",
-          "cycling",
-          "kissing"
+          "Belgium",
+          "waffles",
+          "chocolate",
+          "Brussels sprouts",
+          "comics"
         ],
         [
-          "Italy",
-          "ruins",
-          "Europe",
-          "scooters",
-          "opera"
+          "Croatia",
+          "coastline",
+          "islands",
+          "Dubrovnik",
+          "red and white"
         ],
         [
-          "Spain",
-          "holidays",
-          "Europe",
-          "sun",
-          "football"
+          "Morocco",
+          "souks",
+          "tagine",
+          "Sahara",
+          "mint tea"
         ],
         [
           "Germany",
@@ -6724,18 +7571,18 @@
           "choirs"
         ],
         [
-          "England",
-          "tea",
-          "rain",
-          "pubs",
-          "football"
+          "Finland",
+          "saunas",
+          "lakes",
+          "Santa",
+          "snow"
         ],
         [
-          "USA",
-          "states",
-          "flag",
-          "big",
-          "burgers"
+          "Cuba",
+          "cigars",
+          "classic cars",
+          "salsa",
+          "rum"
         ],
         [
           "Canada",
@@ -6752,11 +7599,11 @@
           "beaches"
         ],
         [
-          "Brazil",
-          "football",
-          "beaches",
-          "rainforest",
-          "dancing"
+          "Colombia",
+          "coffee",
+          "salsa",
+          "Andes",
+          "emeralds"
         ],
         [
           "Argentina",
@@ -6766,11 +7613,11 @@
           "dancing"
         ],
         [
-          "Australia",
-          "spiders",
-          "beaches",
-          "hot",
-          "far"
+          "Fiji",
+          "coral",
+          "islands",
+          "rugby",
+          "palm trees"
         ],
         [
           "New Zealand",
@@ -6850,11 +7697,11 @@
           "forests"
         ],
         [
-          "Netherlands",
-          "flat",
-          "bikes",
-          "cheese",
-          "orange"
+          "Denmark",
+          "pastries",
+          "hygge",
+          "bricks",
+          "Vikings"
         ],
         [
           "Switzerland",
@@ -6913,11 +7760,11 @@
           "subway"
         ],
         [
-          "Tokyo",
-          "neon",
-          "busy",
-          "trains",
-          "capital"
+          "Seoul",
+          "K-pop",
+          "skincare",
+          "barbecue",
+          "neon"
         ],
         [
           "Rome",
@@ -6976,32 +7823,32 @@
           "fireworks"
         ],
         [
-          "Edinburgh",
-          "festival",
+          "Budapest",
+          "thermal baths",
+          "Danube",
+          "goulash",
+          "parliament"
+        ],
+        [
+          "Vienna",
+          "waltz",
+          "cake",
+          "palaces",
+          "Mozart"
+        ],
+        [
+          "Prague",
+          "bridges",
           "castle",
-          "capital",
-          "hills"
+          "stag dos",
+          "astronomical clock"
         ],
         [
-          "Dublin",
-          "Georgian",
-          "pubs",
-          "capital",
-          "river"
-        ],
-        [
-          "Berlin",
-          "techno",
-          "capital",
-          "history",
-          "clubs"
-        ],
-        [
-          "Hong Kong",
-          "dim sum",
-          "skyline",
-          "harbour",
-          "shopping"
+          "Antarctica",
+          "penguins",
+          "ice",
+          "research",
+          "coldest"
         ],
         [
           "Rio de Janeiro",
@@ -7011,18 +7858,18 @@
           "football"
         ],
         [
-          "Cairo",
-          "chaos",
-          "desert",
-          "river",
-          "capital"
+          "Kathmandu",
+          "Everest",
+          "temples",
+          "prayer flags",
+          "trekking"
         ],
         [
-          "Moscow",
-          "domes",
-          "capital",
-          "cold",
-          "squares"
+          "Monaco",
+          "casino",
+          "Grand Prix",
+          "yachts",
+          "tiny"
         ],
         [
           "Istanbul",
@@ -7064,28 +7911,138 @@
           "seaside",
           "donkeys",
           "arcades",
-          "rock"
+          "rock",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Brighton",
           "pier",
           "seaside",
           "pebbles",
-          "seagulls"
+          "seagulls",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
-          "Cardiff",
-          "bay",
-          "capital",
-          "rugby",
-          "castle"
+          "Bali",
+          "temples",
+          "rice terraces",
+          "surf",
+          "honeymoon"
         ],
         [
-          "Belfast",
-          "shipyard",
-          "capital",
-          "murals",
-          "Irish"
+          "Transylvania",
+          "Dracula",
+          "castles",
+          "Romania",
+          "forests"
+        ],
+        [
+          "Melbourne",
+          "trams",
+          "coffee",
+          "laneways",
+          "four seasons",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Perth",
+          "sunsets",
+          "isolated",
+          "Indian Ocean",
+          "quokkas",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Gold Coast",
+          "theme parks",
+          "surf",
+          "high-rises",
+          "schoolies",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Uluru",
+          "red rock",
+          "sacred",
+          "outback",
+          "sunrise",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Chicago",
+          "deep dish",
+          "windy",
+          "lake",
+          "skyscrapers"
+        ],
+        [
+          "Miami",
+          "beach",
+          "art deco",
+          "hot",
+          "nightlife"
+        ],
+        [
+          "Nashville",
+          "country music",
+          "cowboy boots",
+          "honky-tonk",
+          "hen parties",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Grand Canyon",
+          "gorge",
+          "Arizona",
+          "river",
+          "road trip"
+        ],
+        [
+          "Cornwall",
+          "pasties",
+          "surfing",
+          "coves",
+          "fudge",
+          {
+            "in": [
+              "uk"
+            ]
+          }
+        ],
+        [
+          "Stonehenge",
+          "ancient",
+          "circle",
+          "solstice",
+          "Druids"
         ]
       ]
     },
@@ -7147,14 +8104,24 @@
           "London",
           "soap",
           "pub",
-          "drama"
+          "drama",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Coronation Street",
           "pub",
           "soap",
           "northern",
-          "long-running"
+          "long-running",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Love Island",
@@ -7168,28 +8135,46 @@
           "Saturday",
           "judges",
           "couples",
-          "Saturday nights"
+          "glitter ball",
+          {
+            "us": "Dancing with the Stars",
+            "au": "Dancing with the Stars"
+          }
         ],
         [
           "The Great British Bake Off",
           "tent",
           "cakes",
           "weekly",
-          "judges"
+          "judges",
+          {
+            "us": "The Great British Baking Show"
+          }
         ],
         [
           "Gogglebox",
           "commentary",
           "families",
           "TV",
-          "armchair"
+          "armchair",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Only Fools and Horses",
           "market",
           "London",
           "van",
-          "brothers"
+          "brothers",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Blue Planet",
@@ -7252,7 +8237,13 @@
           "rude",
           "hotel",
           "waiter",
-          "classic"
+          "classic",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Downton Abbey",
@@ -7266,7 +8257,12 @@
           "interviews",
           "police",
           "corruption",
-          "cliffhanger"
+          "cliffhanger",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "The Traitors",
@@ -7287,35 +8283,61 @@
           "trials",
           "bugs",
           "camp",
-          "Australia"
+          "Australia",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Britain's Got Talent",
           "judges",
           "acts",
           "stage",
-          "Simon"
+          "Simon",
+          {
+            "us": "America's Got Talent",
+            "au": "Australia's Got Talent"
+          }
         ],
         [
           "The X Factor",
           "auditions",
           "singing",
           "Simon",
-          "judges"
+          "judges",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Match of the Day",
           "pundits",
           "highlights",
           "Saturday",
-          "football"
+          "football",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Countdown",
           "letters",
           "numbers",
           "clock",
-          "teatime"
+          "teatime",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Who Wants to Be a Millionaire",
@@ -7329,14 +8351,24 @@
           "students",
           "teams",
           "questions",
-          "buzzer"
+          "buzzer",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Blue Peter",
           "pets",
           "children",
           "presenters",
-          "garden"
+          "garden",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Teletubbies",
@@ -7385,14 +8417,24 @@
           "Barry",
           "wedding",
           "families",
-          "Christmas special"
+          "Christmas special",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Derry Girls",
           "school",
           "90s",
           "nuns",
-          "teenagers"
+          "teenagers",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "The Walking Dead",
@@ -7448,7 +8490,12 @@
           "car",
           "teenagers",
           "school",
-          "cringe"
+          "cringe",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "The Big Bang Theory",
@@ -7512,6 +8559,163 @@
           "slow motion",
           "lifeguards",
           "Malibu"
+        ],
+        [
+          "Saturday Night Live",
+          "sketches",
+          "cast",
+          "live",
+          "host",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Jeopardy!",
+          "answers",
+          "buzzer",
+          "Alex",
+          "quiz",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "American Idol",
+          "auditions",
+          "judges",
+          "singing",
+          "vote",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Wheel of Fortune",
+          "spin",
+          "letters",
+          "vowel",
+          "prizes",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "The West Wing",
+          "White House",
+          "walking",
+          "politics",
+          "staff",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Modern Family",
+          "mockumentary",
+          "family",
+          "LA",
+          "sitcom"
+        ],
+        [
+          "Survivor",
+          "island",
+          "tribes",
+          "immunity",
+          "vote off"
+        ],
+        [
+          "Law & Order",
+          "courtroom",
+          "detectives",
+          "dun dun",
+          "cases"
+        ],
+        [
+          "Sex and the City",
+          "New York",
+          "shoes",
+          "friends",
+          "columnist"
+        ],
+        [
+          "The Bachelor",
+          "roses",
+          "dating",
+          "proposal",
+          "limousine"
+        ],
+        [
+          "Neighbours",
+          "Ramsay Street",
+          "soap",
+          "Melbourne",
+          "Kylie",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
+        ],
+        [
+          "Home and Away",
+          "Summer Bay",
+          "soap",
+          "beach",
+          "surf club",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
+        ],
+        [
+          "Kath & Kim",
+          "Fountain Gate",
+          "mum and daughter",
+          "noice",
+          "suburbs",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Bondi Rescue",
+          "lifeguards",
+          "beach",
+          "rips",
+          "sunburn",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Round the Twist",
+          "lighthouse",
+          "theme song",
+          "weird",
+          "kids",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -8013,7 +9217,12 @@
           "big",
           "supermarket",
           "blue",
-          "meal deal"
+          "meal deal",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Cadbury",
@@ -8034,7 +9243,14 @@
           "toast",
           "black",
           "jar",
-          "sticky"
+          "sticky",
+          {
+            "in": [
+              "uk",
+              "au"
+            ],
+            "au": "Vegemite"
+          }
         ],
         [
           "Pringles",
@@ -8132,14 +9348,24 @@
           "pastry",
           "bakery",
           "cheap",
-          "high street"
+          "high street",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Primark",
           "queues",
           "cheap",
           "clothes",
-          "bags"
+          "bags",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Aldi",
@@ -8153,14 +9379,24 @@
           "department store",
           "shop",
           "posh",
-          "Waitrose"
+          "Waitrose",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Marks & Spencer",
           "food",
           "underwear",
           "posh",
-          "sandwiches"
+          "sandwiches",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Haribo",
@@ -8216,7 +9452,13 @@
           "chicken",
           "spicy",
           "cheeky",
-          "loyalty card"
+          "loyalty card",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
         ],
         [
           "Domino's",
@@ -8230,7 +9472,12 @@
           "budget",
           "cheap",
           "flights",
-          "delays"
+          "delays",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Duracell",
@@ -8265,7 +9512,10 @@
           "spray",
           "teenagers",
           "smell",
-          "adverts"
+          "adverts",
+          {
+            "us": "Axe"
+          }
         ],
         [
           "Samsung",
@@ -8364,6 +9614,126 @@
           "no mouth",
           "Japanese",
           "pencil case"
+        ],
+        [
+          "Walmart",
+          "supercentre",
+          "greeters",
+          "cheap",
+          "everything",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Target",
+          "red",
+          "bullseye",
+          "Starbucks inside",
+          "home decor",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Hershey's",
+          "kisses",
+          "chocolate",
+          "Pennsylvania",
+          "bar",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Dunkin'",
+          "doughnuts",
+          "iced coffee",
+          "Boston",
+          "pink and orange",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Taco Bell",
+          "bell",
+          "late night",
+          "Mexican-ish",
+          "drive-thru",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Bunnings",
+          "sausage sizzle",
+          "DIY",
+          "hardware",
+          "green",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Woolworths",
+          "supermarket",
+          "green",
+          "fresh food",
+          "Woolies",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Tim Tam",
+          "slam",
+          "chocolate",
+          "biscuit",
+          "packet",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Holden",
+          "cars",
+          "Commodore",
+          "lion",
+          "ute",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Milo",
+          "malt",
+          "chocolate",
+          "powder",
+          "green tin",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     },
@@ -8698,7 +10068,12 @@
           "Manchester",
           "football",
           "campaign",
-          "England"
+          "England",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Lewis Hamilton",
@@ -8719,7 +10094,12 @@
           "lockdown",
           "fitness",
           "curly hair",
-          "YouTube"
+          "YouTube",
+          {
+            "in": [
+              "uk"
+            ]
+          }
         ],
         [
           "Barack Obama",
@@ -8790,6 +10170,100 @@
           "yellow jumpsuit",
           "one-inch punch",
           "Hong Kong"
+        ],
+        [
+          "George Washington",
+          "president",
+          "cherry tree",
+          "dollar bill",
+          "wooden teeth"
+        ],
+        [
+          "Dolly Parton",
+          "country",
+          "wigs",
+          "theme park",
+          "9 to 5"
+        ],
+        [
+          "Tom Brady",
+          "quarterback",
+          "rings",
+          "Patriots",
+          "retired twice",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Babe Ruth",
+          "home runs",
+          "Yankees",
+          "baseball",
+          "legend",
+          {
+            "in": [
+              "us"
+            ]
+          }
+        ],
+        [
+          "Steve Irwin",
+          "crocodiles",
+          "khaki",
+          "Crikey",
+          "zoo"
+        ],
+        [
+          "Kylie Minogue",
+          "pop",
+          "Neighbours",
+          "gold hotpants",
+          "Locomotion",
+          {
+            "in": [
+              "uk",
+              "au"
+            ]
+          }
+        ],
+        [
+          "Ned Kelly",
+          "armour",
+          "bushranger",
+          "helmet",
+          "outlaw",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Don Bradman",
+          "cricket",
+          "average",
+          "99.94",
+          "the Don",
+          {
+            "in": [
+              "au"
+            ]
+          }
+        ],
+        [
+          "Cathy Freeman",
+          "sprinter",
+          "Sydney 2000",
+          "bodysuit",
+          "gold",
+          {
+            "in": [
+              "au"
+            ]
+          }
         ]
       ]
     }

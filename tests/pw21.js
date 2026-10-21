@@ -45,7 +45,7 @@ let g;const dealt=[];
 await p.click('[data-act="start"]');g=await G(p);
 const ii=g.impostors.findIndex(Boolean);
 t(g.fooled.filter(Boolean).length===g.impostors.filter(Boolean).length&&g.alts[ii]&&g.alts[ii].toLowerCase()!==g.word.toLowerCase(),'100%: every impostor fooled, alt word differs ('+g.word+' / '+g.alts[ii]+')');
-const cat=W.categories.find(c=>c.name===g.category);t(cat.words.some(w=>w[0]===g.alts[ii])&&cat.words.some(w=>w[0]===g.word),'alt word comes from the same category');
+const cat=W.categories.find(c=>c.name===g.category);t(cat.words.some(w=>w[0]===g.altKeys[ii])&&cat.words.some(w=>w[0]===g.wkey),'alt word comes from the same category');
 t(g.clue.every(c=>c===null),'fooled impostors get no clue');
 const cardInfo=async()=>p.$eval('.deal-card',c=>({txt:c.innerText.replace(/\s+/g,' ').trim(),face:c.querySelector('.cface').className,corner:c.querySelector('.corner').innerHTML.includes('peace')}));
 let crewIdx=g.impostors.findIndex(v=>!v),dc={};
@@ -144,7 +144,7 @@ let allDistinct=true,counts=[];
 for(let k=0;k<15;k++){await p.click('[data-act="start"]');const gg=await G(p);
  const ws=gg.alts.filter(a=>a!=null);counts.push(ws.length);
  const cat2=W.categories.find(c=>c.name===gg.category);
- if(ws.length!==3||new Set(ws.map(x=>x.toLowerCase())).size!==3||ws.some(x=>x.toLowerCase()===gg.word.toLowerCase()||!cat2.words.some(w=>w[0]===x)))allDistinct=false;
+ if(ws.length!==3||new Set(ws.map(x=>x.toLowerCase())).size!==3||ws.some(x=>x.toLowerCase()===gg.word.toLowerCase())||gg.altKeys.filter(a=>a!=null).some(k=>!cat2.words.some(w=>w[0]===k)))allDistinct=false;
  await p.click('[data-nav="home"]');const yy=await p.$('[data-sheet="yes"]');if(yy)await yy.click();await p.waitForSelector('#count')}
 t(allDistinct,'3 fooled impostors: three different words, none the crew word, all from the category (15 rounds)');
 await p.close();

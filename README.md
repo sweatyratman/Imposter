@@ -19,6 +19,10 @@ A pass-the-phone social deduction game. Pick players, categories, the most impos
 - **Vote again** is only offered while more impostors could still be hiding. If your odds could never have dealt more impostors than have now been caught (say, 100% chance of exactly 1 impostor and that one is caught), the button is dropped and only "We're done" is shown. With any slack in the odds both buttons always appear, so nothing is given away.
 - **Last two:** if only 1 crewmate and 1 impostor are left, the crew win unless that impostor guesses the word.
 - **Everyone is an impostor:** the round plays exactly like any other, so nobody can tell. If the group votes until two are left, both of them win; if they stop early, the impostors still hiding win.
+- **Where are you playing?** Under the categories, pick **UK**, **US**, **Aus** or **Everywhere**. It starts on your phone's language setting.
+  - UK, US and Aus use the local name for things (torch, flashlight; duvet, comforter, doona; petrol station, gas station, servo) and add words only locals would know (Greggs and Bonfire Night; Walmart and Jeopardy!; Bunnings and Kath & Kim). Other regions' local words are left out.
+  - **Everywhere** keeps only the words everyone knows, which suits mixed groups.
+  - It isn't a house rule, so "Reset all to default" leaves it alone, and switching never touches your word history.
 - During a round the category sits on its own centred line just below the top buttons.
 - **Scores** carry over between rounds: everyone on the winning side gets a point. The trophy button at the top of every screen opens the leaderboard, with a button to reset it. Scores also show on the results screen.
 - **House rules** sit on the setup screen:
@@ -42,7 +46,15 @@ Words are fetched from `words.json` on page load, so you can edit the list witho
 { "categories": [ { "name": "Animals", "emoji": "🐾", "words": [["penguin", "waddle", "black and white", "ice", "fish"]] } ] }
 ```
 
-Each entry is `[word, clue1, clue2, clue3, clue4]`. Clue 1 is the main one. Each clue should fit the word without pointing straight at it: if "name a thing associated with [clue]" would have most people blurt out the word, it's too obvious. Older lists with one clue per word (`[word, clue]`) still work; every impostor just gets that clue. To use a list hosted elsewhere (for example a raw GitHub or Gist link), paste its URL into **Word list** on the setup screen.
+Each entry is `[word, clue1, clue2, clue3, clue4]`, optionally followed by a region note:
+
+```json
+["torch", "camping", "beam", "cupboard", "power cut", { "us": "flashlight" }]
+["Greggs", "pastry", "bakery", "cheap", "high street", { "in": ["uk"] }]
+["handbag", "designer", "leather", "purse", "shoulder", { "us": ["purse", "designer", "leather", "clutch", "shoulder"] }]
+```
+
+`in` limits a word to those regions (`uk`, `us`, `au`). A region key renames the word there, or swaps the name and clues when it's a list. Words with no note are known everywhere. Clue 1 is the main one. Each clue should fit the word without pointing straight at it: if "name a thing associated with [clue]" would have most people blurt out the word, it's too obvious. Older lists with one clue per word (`[word, clue]`) still work; every impostor just gets that clue. To use a list hosted elsewhere (for example a raw GitHub or Gist link), paste its URL into **Word list** on the setup screen.
 
 The one-liners shown after votes and on the results screen are in the `QUIPS` list near the top of `index.html`. `{name}` is replaced with the player's name.
 

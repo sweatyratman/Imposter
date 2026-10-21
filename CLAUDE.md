@@ -1,5 +1,7 @@
 # CLAUDE.md: Impostor
 
+**Mission: we are creating the world's best, quintessential, go-to impostor game app.** Judge every change against that.
+
 Read this first. It replaces a very long earlier chat (built in one session, 17–21 Oct 2026), so don't go looking for history. Player-facing rules and features are in `README.md`; this file covers how to work on the code. Lines marked **[inferred]** were reconstructed from code, tests and task logs rather than the user's own words.
 
 ## What it is
@@ -14,7 +16,7 @@ Read this first. It replaces a very long earlier chat (built in one session, 17�
 
 ### When to run which tests (the full suite takes 20+ minutes)
 - **Docs only** (`README.md`, `CLAUDE.md`): no tests.
-- **Word list only** (`words.json` swaps/additions, no structure change): the validity check (4 distinct clues, none containing the word, no duplicates in a category) plus pw15 and pw24. Also pw5 if categories change.
+- **Word list only** (`words.json` swaps/additions, no structure change): the validity check (4 distinct clues, none containing the word, no duplicate names per region in a category) plus pw15, pw24 and pw25. Also pw5 if categories change.
 - **Small logic or copy change** in one area: that area's suites (see coverage below) plus pw8.
 - **Full `run.sh`** (before pushing) when the change touches any of: verdict/unmask/ink timing, the deal or shuffle flow, layout/CSS shared across screens, settings or save format (`defaultSettings`, `load()`, `RULE_KEYS`), round setup (`startRound`), or anything affecting what crew, impostor and fooled players see before the peel. Batch several requests into one push so the full run happens once.
 - Never skip the layout checks (pw12, pw23, 360×640) for a visible UI change.
@@ -30,7 +32,7 @@ These are the "established comprehensive playtester rules":
 - **Tidy up after yourself.** Never leave stray files (test screenshots, logs, scratch folders) in the repo; delete them or gitignore them before finishing.
 - **Questions are not orders.** "Don't act; question only" or "Dont do anything, but…" means answer and change nothing.
 - British English ("colour", "telly"). Relaxed tone, no corporate filler. The user trusts your judgement on content and prefers big content jobs delivered in one batch.
-- Never run `pkill -f "node pw"`, because it kills your own shell.
+- Never `pkill -f` a pattern that appears in your own command line (`"node pw"`, `"timeout 600 node pw"`…): it kills your own shell. Stop a background run with its task id instead.
 
 ## Game rules and design philosophy (keep these)
 - A crewmate voted out means impostors win. An impostor voted out shows "Correct!", and the group chooses to vote again or stop.
@@ -49,7 +51,7 @@ These are the "established comprehensive playtester rules":
   - The clue toggle is greyed out (and off) only at 100%. Below that, only aware impostors get clues. At 0% both toggles return, with the user's saved choices restored.
 - **Prefer words not seen before** is on by default. A word counts once the starting player is announced (`countRound()`, idempotent); abandoned rounds don't count. A fooled impostor's own word counts too (they saw it). Weight is 1/(1+n)². Clues are ordered least-seen first (ties keep original order), so a returning word gives even a lone impostor its least-seen clue (confirmed as intended). Only clues an aware impostor actually saw count. With it off, words are uniformly random and clues are in normal order; history still records. "Reset word history" clears it; "Reset all to default" turns the option back on but keeps history.
 - **The goal is the fewest repeated words.** The user: "game is exponentially more boring when you encounter the same words". So bigger lists, word/clue history, no intangible words, and no near-duplicates within a category (their examples: sun/heat, rain/dew).
-- The whole Nature & Weather category was removed on request (confirmed: the whole category; don't bring any back). There are 20 categories and 1239 words; every category has 60–68.
+- The whole Nature & Weather category was removed on request (confirmed: the whole category; don't bring any back). There are 20 categories and 1329 entries; every category has 50–72 words in every region (pw25 asserts ≥45).
 - **Look:** a "midnight card table". Navy felt, paper cards, brass for "the next move"; fonts Unbounded (display) and Atkinson Hyperlegible (body). 3D cards, tape, stage lighting. The reveal is deliberately dramatic. Respect reduced motion.
 - **Reveal drama:** the room dims as the card lands; three beats, each darker with a harder shake and phone thump; a held breath (near-black, dead still); then the tape rips off with a flash. Only then does the outcome show (impostor: red wash and hit; crew: teal wash and heavy sigh). Strobe is a slow breath, not a glitch (user: "looks like it's glitching out").
 - **Presentation details:** deal is tap to flip up, tap to flip down (no hide button, the card never moves). Locking the phone or switching tab hides the role; a reload mid-reveal goes back to "pass". The starter card has 3 tapes (2 corners plus a `[REDACTED]` role tape), never a role symbol. Vote cards show no name above them (the card carries it as aria-label). Both category states use the `.redcat` paper tag on its own centred row. House rules are always visible. Sliders move only with a deliberate sideways drag; the player slider gives small counts more room. Quips never repeat the same line twice in a row.
@@ -75,7 +77,7 @@ These are the "established comprehensive playtester rules":
   - The CSS uses px, so emulate large text by scaling computed font sizes, not the root font size.
   - Breakpoints: <330px bar labels hide; <300px names in 1 column; <350px category note wraps; <340px category grid drops to 3 columns.
 - **Fragile spots:** never animate opacity or transform on an ancestor of `.tape` around the peel (the `rolePop` bug hid the tape; animate only `.rtext`). The verdict card must arrive face-up and taped (pw11).
-- **Words format:** `[word, clue1..clue4]`. Quips are in `QUIPS` (banks: wrong, caught, impWin, crewWin, draw; `{name}` is the player).
+- **Words format:** `[word, clue1..clue4]`, plus an optional region note object (see Content rules). `sanitise()` turns notes into `category.loc[word]`; `regionWord(c, w)` returns the word as the current region knows it, or null. `game.word`/`game.alts` hold the shown names and `game.wkey`/`game.altKeys` the base names; history always uses base names. Region is not in `RULE_KEYS`; it defaults from `navigator.languages` (`guessRegion()`). Quips are in `QUIPS` (banks: wrong, caught, impWin, crewWin, draw; `{name}` is the player).
 
 ## Tuning values
 | Area | Value |
@@ -107,7 +109,7 @@ These are the "established comprehensive playtester rules":
   - Animation-timing tests wait for state classes (for example `.stack-area.fanned`), not fixed sleeps.
   - Slider tests use CDP touch events.
   - **Timing-sensitive:** pw17, pw20, pw21 (and pw24's statistical weighting check, small flake chance). Re-check them if any verdict or unmask timing changes. They flaked at beat boundaries before; sample times sit off the boundaries.
-- Coverage: pw5 category select; pw6 no layout shift 280–520px; pw8 big end-to-end (71 checks); pw9 long names/words; pw10 vote grid 3–20 players; pw11 pixel brightness; pw12 playtest outcomes; pw13 category distribution; pw14 clue toggle; pw15 slider caps, clue cycling, leaderboard, redaction, tile grid, 4 distinct clues, old saves; pw16 reset all; pw17 unmask title; pw18 slider touch; pw19 strobe; pw20 drama timeline; pw21 fooled impostors; pw22 `maxPossible`; pw23 large text ×1/1.3/1.5/1.8; pw24 word history.
+- Coverage: pw5 category select; pw6 no layout shift 280–520px; pw8 big end-to-end (71 checks); pw9 long names/words; pw10 vote grid 3–20 players; pw11 pixel brightness; pw12 playtest outcomes; pw13 category distribution; pw14 clue toggle; pw15 slider caps, clue cycling, leaderboard, redaction, tile grid, 4 distinct clues, old saves; pw16 reset all; pw17 unmask title; pw18 slider touch; pw19 strobe; pw20 drama timeline; pw21 fooled impostors; pw22 `maxPossible`; pw23 large text ×1/1.3/1.5/1.8; pw24 word history; pw25 regions (locale defaults, filtering, local names, clue swaps, fooled words, history keys, 360px fit).
 - **Not covered:** WebKit/iOS Safari, real-device font scaling, remote `wordsUrl`/offline cache, vibration patterns, visual snapshot diffs.
 
 ## Content rules
@@ -116,12 +118,14 @@ These are the "established comprehensive playtester rules":
 - Avoid cheap shots and table-awkward entries ("bin man" → "estate agent"; "Johnny Depp" → "Keira Knightley").
 - **No intangibles or near-duplicates.** Every word should be a concrete thing you could point at or name; avoid pairs so close they blur (sun/heat, rain/dew). Check a category for this before adding to it.
 - UK-centric (Bonfire Night, MOT, telly, Hogmanay, cuppa, milk float).
-- New words should be known in both the UK and the US unless region tagging is added (see open questions).
+- **Regions** (`settings.region`: `uk` | `us` | `au` | `all`, labelled UK / US / Aus / Everywhere). An entry may end with a note object: `{"in": ["uk","au"]}` restricts it to those regions; `{"us": "flashlight"}` renames it there; `{"us": ["purse", c1..c4]}` swaps name and clues. No note = known everywhere. Everywhere drops every `in` word and uses base names.
+  - When adding words, decide for each: known everywhere, or local (tag `in`)? Does a region call it something else (spelling counts: theater, donut)? Add the region favourites locals would expect.
+  - A local name must not clash with another word in that region (the validator in the content job checks this).
+- **No country with its own city.** A country and its famous city blur (France/Paris), so the category never holds both (21 Oct: 17 swaps, e.g. France→Belgium, England→Finland, USA→Cuba, Australia→Fiji).
 - **Quip tone:** cheeky, roasty, British, meme-literate, one short line ("Cooked. Absolutely cooked.", "{name} folded like a deckchair.").
 
 ## Open questions (ask the user before changing)
 1. History weighting also shifts the category mix (heavily played categories come up less). Probably fine; unconfirmed.
-2. Countries & Cities lists both countries and their capitals (France/Paris, Egypt/Cairo, Wales/Cardiff…). Swap the capitals?
-3. Localities: UK-only words (EastEnders, Greggs, Gavin & Stacey…) mean little to US players and vice versa. Proposed: tag region-only words `uk`/`us`, and a "Where are you playing?" setting (UK / US / Everywhere) that drops the other region's local words.
+2. Celebrations and TV Shows have only 50 words in Everywhere mode (most locals are UK). Add more global ones?
 - Settled: "Reset all to default" must never touch word history; it has its own "Reset word history" button (pw24 checks this).
 - Deferred: an app/Play Store wrapper (PWA/TWA/Capacitor). The user asked to do nothing about it.

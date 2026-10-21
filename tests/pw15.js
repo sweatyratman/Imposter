@@ -16,7 +16,7 @@ const home=async()=>{await p.click('[data-nav="home"]');const y=await p.$('[data
 const W=JSON.parse(fs.readFileSync(D+'words.json'));
 
 // ---- word list: 4 different clues each ----
-let all=0,four=0;W.categories.forEach((c)=>{c.words.forEach((w)=>{all++;if(w.length===5&&new Set(w.slice(1).map(x=>x.toLowerCase())).size===4)four++})});
+let all=0,four=0;W.categories.forEach((c)=>{c.words.forEach((w)=>{all++;w=w.filter(x=>typeof x==='string');if(w.length===5&&new Set(w.slice(1).map(x=>x.toLowerCase())).size===4)four++})});
 t(all>0&&four===all,'every word has 4 different clues ('+four+'/'+all+')');
 
 // ---- house rules visible; impostor slider ----

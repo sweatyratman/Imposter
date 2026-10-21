@@ -177,6 +177,9 @@
   .seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 5.6em), 1fr)); gap: 6px; padding: 4px; border-radius: 16px; background: var(--raised); }
   .seg button { border: 0; background: transparent; border-radius: 12px; min-height: 52px; padding: 6px 8px; cursor: pointer;
     font-size: .92rem; line-height: 1.2; color: var(--mute); font-weight: 700; }   /* bold either way, so labels never re-wrap */
+  .regionhead { margin: 18px 0 8px; }
+  #region { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 250px) { #region { grid-template-columns: 1fr; } }
   .seg button.sel { background: var(--paper); color: var(--ink); font-weight: 700; box-shadow: 0 2px 0 #b9ad97; }
 
   .bar { display: flex; height: 10px; border-radius: 99px; overflow: hidden; background: var(--raised); }
@@ -713,8 +716,20 @@ const defaultSettings = () => ({
   unaware: false,          // impostors can be fooled into thinking they're crew (they get a different word)
   unawareChance: 100,      // % chance that each impostor is fooled, when the option is on
   guessRule: 'impostors',  // caught impostors guess the word: 'impostors' win | 'nobody' wins | 'crew' still win
-  wordsUrl: ''
+  wordsUrl: '',
+  region: guessRegion()    // where the group plays: 'uk' | 'us' | 'au' | 'all' (only words known everywhere)
 });
+// Where you play picks local names (torch → flashlight) and drops words only another region would know.
+const REGIONS = [['uk', 'UK'], ['us', 'US'], ['au', 'Aus'], ['all', 'Everywhere']];
+function guessRegion() {
+  const langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((l) => String(l).toLowerCase());
+  for (const l of langs) {
+    if (/-(gb|uk|ie)$/.test(l)) return 'uk';
+    if (/-us$/.test(l)) return 'us';
+    if (/-(au|nz)$/.test(l)) return 'au';
+  }
+  return 'all';
+}
 let settings = defaultSettings();
 let game = null;          // current round, or null when on the setup screen
 let recent = [];          // (older versions) recently used words; kept so old saves still load
@@ -758,6 +773,7 @@ function load() {
       settings.maxImpostors = Math.max(1, Math.min(MAX_PLAYERS, Math.round(+settings.maxImpostors) || 3));
       settings.unaware = settings.unaware === true;
       settings.preferNew = settings.preferNew !== false;
+      if (!REGIONS.some(([v]) => v === settings.region)) settings.region = guessRegion();
       const uc = Math.round(+settings.unawareChance); settings.unawareChance = Number.isFinite(uc) ? Math.max(0, Math.min(100, uc)) : 100;
     }
     game = d.game || null;
@@ -779,12 +795,29 @@ function sanitise(data) {
   for (const c of list) {
     if (!c || typeof c.name !== 'string' || !Array.isArray(c.words)) continue;
     // Each entry is [word, hint1, hint2, hint3, hint4]. Older lists with a single hint still work.
+    // An optional object at the end says where the word is known and what it's called there:
+    // {"in": ["uk", "au"]} keeps it to those regions; {"us": "flashlight"} renames it; {"us": ["purse", clue…]} swaps the clues too.
+    // The cached copy keeps these notes as c.loc, already cleaned, so both shapes are read.
+    const loc = {};
+    const addNote = (word, note) => {
+      if (!note || typeof note !== 'object' || typeof word !== 'string') return;
+      const l = {};
+      if (Array.isArray(note.in)) l.in = note.in.filter((r) => REGIONS.some(([v]) => v === r && v !== 'all'));
+      ['uk', 'us', 'au'].forEach((r) => {
+        const v = note[r];
+        if (typeof v === 'string' && v.trim()) l[r] = v.trim();
+        else if (Array.isArray(v) && v.length > 1 && v.every((x) => typeof x === 'string' && x.trim())) l[r] = v.map((x) => x.trim()).slice(0, MAX_HINTS + 1);
+      });
+      if (Object.keys(l).length) loc[word.trim()] = l;
+    };
+    if (c.loc && typeof c.loc === 'object') Object.keys(c.loc).forEach((k) => addNote(k, c.loc[k]));
+    c.words.forEach((w) => { if (Array.isArray(w)) addNote(w[0], w.find((x) => x && typeof x === 'object' && !Array.isArray(x))); });
     const ws = c.words
       .map((w) => Array.isArray(w) ? w : [w && w.word].concat(w && Array.isArray(w.hints) ? w.hints : [w && w.hint]))
       .map((w) => [w[0]].concat(w.slice(1).filter((h) => typeof h === 'string' && h.trim()).map((h) => h.trim()).slice(0, MAX_HINTS)))
       .filter((w) => typeof w[0] === 'string' && w[0].trim() && w.length > 1)
       .map((w) => [w[0].trim()].concat(w.slice(1)));
-    if (ws.length) out.push({ name: c.name.trim(), emoji: typeof c.emoji === 'string' ? c.emoji : '', words: ws });
+    if (ws.length) out.push({ name: c.name.trim(), emoji: typeof c.emoji === 'string' ? c.emoji : '', words: ws, loc });
   }
   return out;
 }
@@ -880,14 +913,22 @@ function getNames() {
   return out;
 }
 const HKEY = (cat, word) => cat + '::' + word;
+// A word as your region knows it ([name, clue…]), or null if it's local to somewhere else. History always uses the base name.
+function regionWord(c, w) {
+  const r = settings.region, l = c.loc && Object.prototype.hasOwnProperty.call(c.loc, w[0]) ? c.loc[w[0]] : null;
+  if (!l) return w;
+  if (l.in && l.in.length && (r === 'all' || !l.in.includes(r))) return null;
+  const v = r !== 'all' && l[r];
+  return Array.isArray(v) ? v : v ? [v].concat(w.slice(1)) : w;
+}
 // A word counts as played once the game has announced who goes first: everyone has seen their card by then.
 function countRound() {
   if (!game || game.counted) return;
   game.counted = true;
-  const key = HKEY(game.category, game.word);
+  const base = game.wkey || game.word, key = HKEY(game.category, base);
   history.w[key] = (history.w[key] || 0) + 1;
   // A fooled impostor saw their own word too, so it counts as played (once, even if two share it on an old save).
-  new Set(game.impostors.map((imp, i) => (imp && isFooled(i) ? altOf(i) : null)).filter((a) => a && a !== game.word)).forEach((a) => {
+  new Set(game.impostors.map((imp, i) => (imp && isFooled(i) ? (game.altKeys ? game.altKeys[i] : altOf(i)) : null)).filter((a) => a && a !== base)).forEach((a) => {
     const ak = HKEY(game.category, a);
     history.w[ak] = (history.w[ak] || 0) + 1;
   });
@@ -904,14 +945,16 @@ function startRound() {
   // Every word in the chosen categories is a candidate. With "prefer words not seen" on, a word's chance falls the more
   // often it has been played (1, 1/4, 1/9…), so fresh words dominate; off, it is plain uniform luck with no memory.
   const from = chosen.length ? chosen : cats;
-  const cand = []; from.forEach((c) => c.words.forEach((w) => cand.push([c, w])));
+  let cand = [];
+  from.forEach((c) => c.words.forEach((w) => { const s = regionWord(c, w); if (s) cand.push([c, w[0], s]); }));
+  if (!cand.length) from.forEach((c) => c.words.forEach((w) => cand.push([c, w[0], w])));   // a list with nothing for this region
   let at = rand(cand.length);
   if (settings.preferNew !== false) {
-    const wt = cand.map(([c, w]) => 1 / Math.pow(1 + (history.w[HKEY(c.name, w[0])] || 0), 2));
+    const wt = cand.map(([c, k]) => 1 / Math.pow(1 + (history.w[HKEY(c.name, k)] || 0), 2));
     let r = Math.random() * wt.reduce((x, y) => x + y, 0);
     for (at = 0; at < cand.length - 1; at++) { if (r < wt[at]) break; r -= wt[at]; }
   }
-  const cat = cand[at][0], [word, ...hints] = cand[at][1];
+  const cat = cand[at][0], wkey = cand[at][1], [word, ...hints] = cand[at][2];
   const count = chooseOption(n).count;
   const maxPossible = Math.max(...effective(n).filter((o) => o.pct > 0).map((o) => o.count), count);   // the most impostors these odds allow
   const impostors = Array(n).fill(false);
@@ -919,12 +962,16 @@ function startRound() {
   // Clue 1 goes to the first impostor in deal order, clue 2 to the next, and so on, cycling 1,2,3,4,1,2…
   // "Impostors think they're crew": some impostors are dealt a crew card with a different word from the same category.
   // Every fooled impostor gets a word of their own, different from the crew's and from each other's.
-  const alts = Array(n).fill(null);
+  const alts = Array(n).fill(null), altKeys = Array(n).fill(null);
   if (settings.unaware) {
-    const seen = new Set([word.toLowerCase()]), others = [];
-    cat.words.forEach((w) => { const k = w[0].toLowerCase(); if (!seen.has(k)) { seen.add(k); others.push(w[0]); } });
+    const seen = new Set([word.toLowerCase(), wkey.toLowerCase()]), others = [];
+    cat.words.forEach((w) => {
+      const s = regionWord(cat, w); if (!s) return;
+      const k = s[0].toLowerCase(), b = w[0].toLowerCase();
+      if (!seen.has(k) && !seen.has(b)) { seen.add(k); seen.add(b); others.push([w[0], s[0]]); }
+    });
     shuffle(others);
-    impostors.forEach((imp, i) => { if (imp && others.length && Math.random() * 100 < settings.unawareChance) alts[i] = others.pop(); });
+    impostors.forEach((imp, i) => { if (imp && others.length && Math.random() * 100 < settings.unawareChance) [altKeys[i], alts[i]] = others.pop(); });
   }
   const fooled = alts.map((a) => a != null);
   // Knowing impostors take the clues in order, cycling 1,2,3,4,1,2… (with the preference on, the clues you've seen least come first).
@@ -935,7 +982,7 @@ function startRound() {
   if (settings.preferNew !== false) order.sort((x, y) => ((seenHints[hints[x]] || 0) - (seenHints[hints[y]] || 0)) || x - y);
   impostors.forEach((imp, i) => { if (imp && !fooled[i]) clue[i] = hints[order[k++ % order.length]]; });
   game = {
-    screen: 'pass', players: getNames(), impostors, word, hints, clue, alts, fooled,
+    screen: 'pass', players: getNames(), impostors, word, wkey, hints, clue, alts, altKeys, fooled,
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     outcome: null, announce: !!settings.announce, guessRule: settings.guessRule,
     showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
@@ -1118,6 +1165,13 @@ $app.addEventListener('pointercancel', endDrag);
 $app.addEventListener('input', (e) => { if (e.target.matches('.slider input')) syncSlider(e.target); }, true);
 
 /* ---------- setup screen ---------- */
+const REGION_NOTES = {
+  uk: 'British names and UK favourites like Greggs, EastEnders and Bonfire Night.',
+  us: 'American names (flashlight, sneakers, soccer) and US favourites like Walmart and Jeopardy!',
+  au: 'Aussie names (doona, thongs, servo) and local favourites like Bunnings and Kath & Kim.',
+  all: 'Only words everyone knows, with no local names. Best for mixed groups.'
+};
+const regionNote = () => REGION_NOTES[settings.region] || '';
 const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], ['crew', 'Crew still wins']];
 function renderSetup() {
   const n = settings.playerCount;
@@ -1140,6 +1194,11 @@ function renderSetup() {
       <div class="row cathead"><h2>Categories</h2><span class="catflavour">Choose as many as you want</span></div>
       <p class="catnote" id="catnote">&nbsp;</p>
       <div id="cats" class="catgrid"></div>
+      <h3 class="regionhead">Where are you playing?</h3>
+      <div class="seg" id="region" role="group" aria-label="Where are you playing?">
+        ${REGIONS.map(([v, l]) => `<button data-act="region" data-v="${v}" class="${settings.region === v ? 'sel' : ''}" aria-pressed="${settings.region === v}">${l}</button>`).join('')}
+      </div>
+      <p class="muted small" id="regionNote">${regionNote()}</p>
     </section>
 
     <section class="block rules" id="rules">
@@ -1243,7 +1302,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if
 function seenNote() {
   const el = $('#seenNote'); if (!el) return;
   let seen = 0, total = 0;
-  words.categories.forEach((c) => c.words.forEach((w) => { total++; if (history.w[HKEY(c.name, w[0])] > 0) seen++; }));
+  words.categories.forEach((c) => c.words.forEach((w) => { if (!regionWord(c, w)) return; total++; if (history.w[HKEY(c.name, w[0])] > 0) seen++; }));
   const b = $('#resetHistory'); if (b) b.disabled = !Object.keys(history.w).length;
   el.textContent = `You've played ${seen} of ${total} words. ` + (settings.preferNew !== false
     ? 'New words come up more often, and a word that returns gets clues you haven\'t used yet.'
@@ -1784,6 +1843,11 @@ const ACTIONS = {
     else if (settings.categories.includes(c)) settings.categories = settings.categories.filter((x) => x !== c);
     else settings.categories = settings.categories.concat(c);           // picking any category un-selects Random
     renderCats(); save();
+  },
+  region(t) {
+    settings.region = t.dataset.v; save(); seenNote();
+    $$('#region button').forEach((b) => { const on = b.dataset.v === settings.region; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+    const n = $('#regionNote'); if (n) n.textContent = regionNote();
   },
   guessrule(t) {
     settings.guessRule = t.dataset.v; save(); syncResetRules();

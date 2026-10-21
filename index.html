@@ -707,7 +707,7 @@ const defaultSettings = () => ({
   playerCount: 5,
   names: [],
   categories: [],          // names of selected categories; empty = Random (any category)
-  weights: { '1': 70, '2': 20, '3': 7, 'all': 3 },
+  weights: {},             // your own odds once you move a slider; empty = the defaults for this many players (autoWeights)
   maxImpostors: 3,         // the most impostors a round can have (capped by player count); "everyone" is separate
   announce: false,
   showHint: true,          // give impostors a clue word
@@ -763,7 +763,10 @@ function load() {
     const d = JSON.parse(raw);
     const base = defaultSettings();
     if (d.settings) {
-      settings = Object.assign(base, d.settings, { weights: Object.assign(base.weights, d.settings.weights || {}) });
+      settings = Object.assign(base, d.settings, { weights: Object.assign({}, d.settings.weights || {}) });
+      // Saves from before the defaults followed the player count hold the old fixed defaults: treat those as untouched.
+      const OLD = { 1: 70, 2: 20, 3: 7, 4: 4, 5: 3, all: 3 };
+      if (Object.keys(settings.weights).every((k) => +settings.weights[k] === (OLD[k] ?? 2))) settings.weights = {};
       settings.playerCount = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, +settings.playerCount || 5));
       if (!Array.isArray(settings.names)) settings.names = [];
       if (!Array.isArray(settings.categories)) settings.categories = [];
@@ -879,9 +882,21 @@ const fooling = () => !!settings.unaware && settings.unawareChance > 0;
 const allFooled = () => !!settings.unaware && settings.unawareChance >= 100;   // then nobody is left to get a clue
 const impostorCap = (n) => Math.max(1, Math.min(n - 1, IMPOSTOR_CEILING));
 const maxImpostors = (n) => Math.min(settings.maxImpostors || 3, impostorCap(n));
-// Fresh odds for a count the first time the slider reaches it: rarer the more impostors there are.
-const defaultWeight = (c) => ({ 1: 70, 2: 20, 3: 7, 4: 4, 5: 3 }[c] || 2);
-const weightOf = (key) => settings.weights[key] == null ? defaultWeight(+key) : +settings.weights[key] || 0;
+// Default odds (%) for 1, 2 and 3 impostors by player count. Small groups are nearly always one impostor;
+// bigger groups lean to two, then three. "Everyone is an impostor" is always 7%. Counts above 3 start at 0%.
+const ALL_PCT = 7;
+const AUTO_ODDS = { 3: [93, 0, 0], 4: [86, 7, 0], 5: [78, 15, 0], 6: [68, 25, 0], 7: [55, 35, 3], 8: [43, 42, 8],
+  9: [30, 48, 15], 10: [20, 50, 23], 11: [13, 45, 35], 12: [8, 35, 50], 13: [5, 25, 63] };
+function autoWeights(n) {
+  const row = AUTO_ODDS[Math.max(3, Math.min(13, n))], m = maxImpostors(n), out = { all: ALL_PCT };
+  const raw = []; for (let c = 1; c <= m; c++) raw.push(row[c - 1] || 0);
+  const sum = raw.reduce((a, b) => a + b, 0) || 1;
+  const w = raw.map((x) => Math.round(x * (100 - ALL_PCT) / sum));
+  w[w.indexOf(Math.max(...w))] += 100 - ALL_PCT - w.reduce((a, b) => a + b, 0);   // rounding: keep the total at 100
+  w.forEach((x, i) => { out[i + 1] = x; });
+  return out;
+}
+const weightOf = (key, n = settings.playerCount) => settings.weights[key] != null ? +settings.weights[key] || 0 : autoWeights(n)[key] || 0;
 function validOptions(n) {
   const o = [];
   for (let c = 1; c <= maxImpostors(n); c++) o.push({ key: String(c), count: c, label: c === 1 ? '1 impostor' : c + ' impostors' });
@@ -890,8 +905,8 @@ function validOptions(n) {
 }
 function effective(n) {
   const opts = validOptions(n);
-  const total = opts.reduce((s, o) => s + weightOf(o.key), 0);
-  return opts.map((o) => ({ ...o, pct: total ? weightOf(o.key) / total * 100 : (o.key === '1' ? 100 : 0) }));
+  const total = opts.reduce((s, o) => s + weightOf(o.key, n), 0);
+  return opts.map((o) => ({ ...o, pct: total ? weightOf(o.key, n) / total * 100 : (o.key === '1' ? 100 : 0) }));
 }
 function chooseOption(n) {
   const eff = effective(n);
@@ -1000,15 +1015,20 @@ const hiddenImpostors = () => game.impostors.map((v, i) => (v && !game.out.inclu
 const crewCount = () => game.players.length - game.impostorCount;
 const caughtImpostors = () => game.out.filter((i) => game.impostors[i]).length;
 
-function finish(winner, reason, winners) {
+// Scoring: crew win, 1 point per crewmate. Impostors win, 2 points each (3 for a lone impostor, who beat the odds alone).
+// A caught impostor gets nothing, unless the caught impostors' guess is what won it.
+const SCORING_NOTE = 'Crew win: 1 point each. Impostors win: 2 points each, or 3 for a lone impostor. Caught impostors get nothing, unless their guess wins it.';
+function finish(winner, reason, winners, byGuess) {
   const kind = winner === 'impostors' ? 'impWin' : winner === 'crew' ? 'crewWin' : 'draw';
   game.outcome = { winner, reason, winners: winners || null, quip: quip(kind) };
-  // Score: a point for everyone on the winning side (only the named winners when the last two impostors win).
-  const pts = winner === 'impostors' ? (winners || game.players.map((_, i) => i).filter((i) => game.impostors[i]))
-    : winner === 'crew' ? game.players.map((_, i) => i).filter((i) => !game.impostors[i]) : [];
+  const all = game.players.map((_, i) => i), lone = (game.impostorCount || game.impostors.filter(Boolean).length) === 1;
+  const pts = {};
+  if (winner === 'crew') all.filter((i) => !game.impostors[i]).forEach((i) => { pts[i] = 1; });
+  if (winner === 'impostors') (winners || all.filter((i) => game.impostors[i]))
+    .filter((i) => byGuess || !game.out.includes(i)).forEach((i) => { pts[i] = lone ? 3 : 2; });
   game.outcome.scored = pts;
   settings.scores = settings.scores || {};
-  pts.forEach((i) => { const nm = game.players[i]; settings.scores[nm] = (settings.scores[nm] || 0) + 1; });
+  Object.keys(pts).forEach((i) => { const nm = game.players[i]; settings.scores[nm] = (settings.scores[nm] || 0) + pts[i]; });
   game.screen = 'result';
   save(); render();
 }
@@ -1053,7 +1073,7 @@ function judgeGuess(correct) {
   const who = multi ? 'The impostors' : 'The impostor';
   if (game.guessRule === 'nobody') finish('nobody', `${who} got caught but guessed the word, so it's a draw.`);
   else if (game.guessRule === 'crew') finish('crew', `${who} guessed the word, but the crew still win.`);
-  else finish('impostors', `${who} got caught but guessed the word: “${game.word}”.`);
+  else finish('impostors', `${who} got caught but guessed the word: “${game.word}”.`, null, true);
 }
 
 /* The unmask heading always starts singular, so the pile gives nothing away. When the cards fan out,
@@ -1263,7 +1283,7 @@ const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCateg
 function rulesAreDefault() {
   const d = defaultSettings();
   return RULE_KEYS.every((k) => k === 'weights'
-    ? validOptions(settings.playerCount).every((o) => weightOf(o.key) === (d.weights[o.key] ?? defaultWeight(+o.key)))
+    ? validOptions(settings.playerCount).every((o) => weightOf(o.key) === autoWeights(settings.playerCount)[o.key])
     : (settings[k] ?? d[k]) === d[k]);
 }
 function syncResetRules() { const b = $('[data-act="resetRules"]'); if (b) b.disabled = rulesAreDefault(); }
@@ -1576,7 +1596,7 @@ const SCREENS = {
         ${ledgerClues()}
       </div>
       <div class="roster">${rows}</div>
-      ${scoreHTML(o.scored || [])}
+      ${scoreHTML(o.scored || {})}
       <div class="dock"><button class="btn primary big" data-act="replay">${ICON.play}Play again</button></div>
       <button class="btn ghost small" data-act="settings">Change players or settings</button>
     </div>`;
@@ -1599,12 +1619,14 @@ function ledgerClues() {
 }
 function scoreHTML(scored) {
   const sc = settings.scores || {};
+  const gain = (i) => Array.isArray(scored) ? (scored.includes(i) ? 1 : 0) : scored[i] || 0;   // older saves kept a list of +1s
   const names = game.players.slice().sort((a, b) => (sc[b] || 0) - (sc[a] || 0) || game.players.indexOf(a) - game.players.indexOf(b));
   if (!names.some((n) => sc[n])) return '';
   const top = sc[names[0]] || 0;
   return `<section class="scores"><div class="row"><h3>Scores</h3><button class="linkbtn" data-act="resetScores">Reset</button></div>
     ${names.map((n) => { const i = game.players.indexOf(n); return `<div class="srow${(sc[n] || 0) === top && top > 0 ? ' lead-player' : ''}">
-      <span>${esc(n)}</span><span>${scored.includes(i) ? '<em>+1</em>' : ''}<b>${sc[n] || 0}</b></span></div>`; }).join('')}</section>`;
+      <span>${esc(n)}</span><span>${gain(i) ? `<em>+${gain(i)}</em>` : ''}<b>${sc[n] || 0}</b></span></div>`; }).join('')}
+    <p class="muted small">${SCORING_NOTE}</p></section>`;
 }
 function gameOnHTML(animate) {
   const c = game.impostorCount, n = game.players.length;
@@ -1971,7 +1993,7 @@ const ACTIONS = {
   resetRules() {
     ask('Put every house rule back to its default?', 'Reset rules', () => {
       const d = defaultSettings(), urlChanged = (settings.wordsUrl || '') !== d.wordsUrl;
-      RULE_KEYS.forEach((k) => { settings[k] = k === 'weights' ? { ...d.weights } : d[k]; });
+      RULE_KEYS.forEach((k) => { settings[k] = k === 'weights' ? {} : d[k]; });
       save(); const y = window.scrollY; render(); window.scrollTo(0, y);
       if (urlChanged) loadWords();
     }, 'Cancel');
@@ -2015,7 +2037,7 @@ function showBoard() {
   wrap.className = 'sheet-wrap';
   wrap.innerHTML = `<div class="sheet board" role="dialog" aria-modal="true" aria-label="Leaderboard">
     <div class="row"><h2 class="board-title">${ICON.trophy}Leaderboard</h2><button class="barbtn icon" data-sheet="close" aria-label="Close">${ICON.x}</button></div>
-    ${names.some((n) => sc[n] > 0) ? `<ol class="blist">${rows}</ol><p class="muted small">A point for everyone on the winning side of each round.</p>`
+    ${names.some((n) => sc[n] > 0) ? `<ol class="blist">${rows}</ol><p class="muted small">${SCORING_NOTE}</p>`
       : `<p class="board-empty">No points yet.<br><span class="muted">Win a round to get on the board.</span></p>`}
     <div class="split"><button class="btn" data-sheet="close">Close</button>
       <button class="btn danger-line" data-sheet="reset" ${names.some((n) => sc[n] > 0) ? '' : 'disabled'}>${ICON.x}Reset scores</button></div></div>`;
@@ -2056,7 +2078,9 @@ $app.addEventListener('input', (e) => {
   } else if (t.dataset.name !== undefined) {
     settings.names[+t.dataset.name] = t.value; save();
   } else if (t.dataset.weight) {
-    settings.weights[t.dataset.weight] = +t.value; updateSplit(); save();
+    // The first nudge freezes the odds you can see, so the others don't shift when the player count changes.
+    if (!Object.keys(settings.weights).length) validOptions(settings.playerCount).forEach((o) => { settings.weights[o.key] = weightOf(o.key); });
+    settings.weights[t.dataset.weight] = +t.value; updateSplit(); save(); syncResetRules();
   } else if (t.id === 'maxImp') {
     settings.maxImpostors = +t.value; renderWeights(); save();
   } else if (t.id === 'showcat') {

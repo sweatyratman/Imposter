@@ -54,7 +54,7 @@ t(led.includes('Impostor clues')&&g.impostors.every((v,i)=>!v||(led.includes(g.c
 
 // ---- leaderboard ----
 await p.click('[data-nav="board"]');t(!!(await p.$('.sheet.board .brow')),'trophy in the bar opens the leaderboard');
-const rows=await p.$$eval('.brow b',e=>e.map(x=>+x.textContent));t(rows.length===5&&rows.slice(0,2).every(x=>x===1)&&rows.slice(2).every(x=>x===0),'both impostor winners on top, the rest of the table on zero');
+const rows=await p.$$eval('.brow b',e=>e.map(x=>+x.textContent));t(rows.length===5&&rows.slice(0,2).every(x=>x===2)&&rows.slice(2).every(x=>x===0),'both impostor winners on top, the rest of the table on zero');
 await p.keyboard.press('Escape');await p.waitForTimeout(300);t(!(await p.$('.sheet-wrap')),'Escape closes it');
 await home();t(!!(await p.$('.masthead [data-act="board"]')),'trophy on the setup screen too');
 await p.click('.masthead [data-act="board"]');await p.click('[data-sheet="reset"]');t((await p.textContent('.sheet-q')).includes('Reset'),'reset asks to confirm');

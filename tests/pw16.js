@@ -21,7 +21,7 @@ await p.fill('[data-name="0"]','Jonny');await p.click('[data-cat="Animals"]');
 t(!(await p.$eval('[data-act="resetRules"]',e=>e.disabled)),'enabled once a rule changes');
 await p.click('[data-act="resetRules"]');await p.click('[data-sheet="no"]');await p.waitForTimeout(300);t((await S()).maxImpostors===4,'cancel keeps rules');
 await p.click('[data-act="resetRules"]');await p.click('[data-sheet="yes"]');const s=await S();
-t(s.maxImpostors===3&&s.weights['2']===20&&s.showCategory===true&&s.showHint===true&&s.announce===false&&s.guessRule==='impostors','rules back to defaults');
+t(s.maxImpostors===3&&Object.keys(s.weights).length===0&&s.showCategory===true&&s.showHint===true&&s.announce===false&&s.guessRule==='impostors','rules back to defaults');
 t(s.names[0]==='Jonny'&&s.categories[0]==='Animals','players and categories untouched');
 t(await p.$eval('#showcat',e=>e.checked)&&await p.$eval('#maxImp',e=>+e.value)===3&&await p.$eval('[data-act="resetRules"]',e=>e.disabled),'screen shows defaults, button disabled again');
 await p.waitForTimeout(400);await inp('#maxImp',4);await p.$eval('#rules',e=>e.scrollIntoView());await p.screenshot({path:`${require('os').tmpdir()}/R_${w}.png`});

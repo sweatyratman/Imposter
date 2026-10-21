@@ -25,9 +25,10 @@ A pass-the-phone social deduction game. Pick players, categories, the most impos
   - **Everywhere** keeps only the words everyone knows, under their British names, which suits mixed groups.
   - It isn't a house rule, so "Reset all to default" leaves it alone, and switching never touches your word history.
 - During a round the category sits on its own centred line just below the top buttons.
-- **Scores** carry over between rounds: everyone on the winning side gets a point. The trophy button at the top of every screen opens the leaderboard, with a button to reset it. Scores also show on the results screen.
+- **Scores** carry over between rounds. Crew win: 1 point per crewmate. Impostors win: 2 points per impostor, or 3 for a lone impostor, who beat the odds alone. A caught impostor gets nothing, unless the caught impostors' guess is what wins it. ("Nobody wins" scores nobody; "Crew still win" scores the crew.) The trophy button at the top of every screen opens the leaderboard, with a button to reset it. Scores also show on the results screen.
 - **House rules** sit on the setup screen:
   - **Most impostors in a round:** a slider from 1 up to everyone-but-one, never more than 10. Each number up to that gets its own odds slider, plus "Everyone is an impostor", which is always available.
+  - **Default odds follow the group size.** Small groups nearly always get one impostor (3 players: 93% one, 4 players: 86% one, 7% two); bigger groups lean to two, then three (10 players: 20% / 50% / 23%). "Everyone is an impostor" is always 7%. Move any slider and your own odds stick, whatever the player count, until "Reset all to default".
   - Whether to tell everyone how many impostors there are.
   - **Impostor clues:** "Show the category during gameplay" and "Give impostors a clue word" (both on by default), plus "Impostors think they're crew" (off by default, see below).
   - **Reset all to default** at the top puts every house rule back (players, names, categories and scores are left alone).

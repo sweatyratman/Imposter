@@ -34,8 +34,8 @@ t(!(await p.$('.result-head + .ledger + .roster + .scores ~ .btn.small:not(.ghos
 await p.click('[data-act="replay"]');await deal(p,5);await p.click('[data-act="skipShuffle"]');await p.click('[data-act="ready"]');g=await G(p);
 const crew=g.impostors.findIndex(v=>!v);await p.click(`[data-act="pickvote"][data-i="${crew}"]`);await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');
 await p.mouse.click(195,300);await p.waitForSelector('[data-act="unmask"]');await p.click('[data-act="unmask"]');await p.click('[data-act="toResults"]');
-const sc=await S(p);const impName=g.players[g.impostors.findIndex(v=>v)];t(sc.scores[impName]>=1,'impostor scored for their win');
-t(Object.values(sc.scores).reduce((a,b)=>a+b,0)===5,'scores carry over between rounds');
+const sc=await S(p);const impName=g.players[g.impostors.findIndex(v=>v)];const won=(await G(p)).outcome.scored;t(Object.keys(won).length===1&&won[g.impostors.findIndex(v=>v)]===3,'a lone impostor who wins gets 3');
+t(Object.values(sc.scores).reduce((a,b)=>a+b,0)===7,'scores carry over between rounds (4 + 3)');
 await p.click('[data-act="resetScores"]');await p.click('[data-sheet="yes"]');t(!(await p.$('.scores')),'reset clears the scoreboard');
 t(!!(await p.$('.result-head')),'results screen fades in (still renders)');
 await p.close();

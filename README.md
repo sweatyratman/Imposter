@@ -29,6 +29,7 @@ New players see a **"New here?"** invitation on the setup screen, and the **?** 
   - **Everywhere** keeps only the words everyone knows, under their British names, which suits mixed groups.
   - It isn't a house rule, so "Reset all house rules" leaves it alone, and switching never touches your word history.
 - During a round the category sits on its own centred line just below the top buttons.
+- **Get the game:** the results screen has a QR code and a Share link button so others at the table can get the game on their own phone. (For now it points at this website; it will point at the app stores later.)
 - **Scores** carry over between rounds. Crew win: 1 point per crewmate. Impostors win: 2 points per impostor, or 3 for a lone impostor, who beat the odds alone. A caught impostor gets nothing, unless the caught impostors' guess is what wins it. ("Nobody wins" scores nobody; "Crew still win" scores the crew.) The trophy button at the top of every screen opens the leaderboard, with a button to reset it. Scores also show on the results screen.
 - **Above Start** a one-line summary says how the game will play (for example "5 players · mostly 1 impostor · clues on · UK"). Tap it to jump to the house rules.
 - **House rules** sit on the setup screen:

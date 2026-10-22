@@ -50,12 +50,24 @@ await p.click('[data-h="close"]');await p.ctx.close();
 // cross-fade between screens
 p=await mk();await p.click('#howtoCta [data-act="howtoDismiss"]');
 await p.click('[data-act="start"]');
-const g1=await p.evaluate(()=>({ghost:document.querySelectorAll('.ghost').length,dupes:document.querySelectorAll('[data-act="start"]').length}));
+const g1=await p.evaluate(()=>({ghost:document.querySelectorAll('.xfade').length,dupes:document.querySelectorAll('[data-act="start"]').length}));
 t(g1.ghost===1,'leaving setup: the old screen fades out over the new one');
 t(g1.dupes===0,'the fading copy never matches page lookups');
-await p.waitForTimeout(400);t((await p.evaluate(()=>document.querySelectorAll('.ghost').length))===0,'and it cleans itself up');
-await p.click('[data-act="reveal"]');t((await p.evaluate(()=>document.querySelectorAll('.ghost').length))===0,'the deal keeps its own slide (no cross-fade)');
+t(await p.evaluate(()=>{const b=document.querySelector('.btn.ghost');return !b||getComputedStyle(b).position!=='fixed'}),'quiet .ghost buttons are not mistaken for the fading copy');
+await p.waitForTimeout(400);t((await p.evaluate(()=>document.querySelectorAll('.xfade').length))===0,'and it cleans itself up');
+await p.click('[data-act="reveal"]');t((await p.evaluate(()=>document.querySelectorAll('.xfade').length))===0,'the deal keeps its own slide (no cross-fade)');
 await p.ctx.close();
-p=await mk({reduce:true});await p.click('[data-act="start"]');t((await p.evaluate(()=>document.querySelectorAll('.ghost').length))===0,'reduced motion: no cross-fade');await p.ctx.close();
+p=await mk({reduce:true});await p.click('[data-act="start"]');t((await p.evaluate(()=>document.querySelectorAll('.xfade').length))===0,'reduced motion: no cross-fade');await p.ctx.close();
+
+// get the game card on the results screen
+p=await mk();await p.evaluate(()=>{const x=JSON.parse(localStorage.getItem('impostor-party-v1'));x.settings.weights={1:100,2:0,3:0,all:0};x.settings.seenHowto=true;localStorage.setItem('impostor-party-v1',JSON.stringify(x))});
+await p.reload();await p.waitForSelector('#count');await p.evaluate(()=>{window.__copied=null;Object.defineProperty(navigator,'share',{value:undefined,configurable:true});navigator.clipboard.writeText=async(t)=>{window.__copied=t}});
+await p.click('[data-act="start"]');let gg=await p.evaluate(()=>JSON.parse(localStorage.getItem('impostor-party-v1')).game);
+for(let i=0;i<gg.players.length;i++){await p.click('[data-act="reveal"]');await p.click('[data-act="hide"]')}await p.click('[data-act="skipShuffle"]');await p.click('[data-act="ready"]');
+await p.click(`[data-act="pickvote"][data-i="${gg.impostors.findIndex(Boolean)}"]`);await p.click('[data-act="confirm"]');await p.waitForSelector('.after',{timeout:12000});await p.click('[data-act="stop"]');await p.click('[data-act="judgeNo"]');
+await p.waitForSelector('.getgame');t(await p.$eval('.gg-qr svg path',e=>e.getAttribute('d').length>500),'results: a "Get the game" card with a QR code');
+const qb=await p.$eval('.gg-qr',e=>{const r=e.getBoundingClientRect();return r.width>=90&&r.right<=innerWidth});t(qb,'the QR is big enough to scan and on screen');
+await p.click('#shareGame');await p.waitForTimeout(200);t((await p.evaluate(()=>window.__copied))===await p.evaluate(()=>location.origin+location.pathname)&&/copied/.test(await p.textContent('#shareGame')),'Share copies the link when the phone has no share sheet');
+await p.ctx.close();
 
 console.log('errors:',errs.length?errs:'none','| checks passed:',ok);await b.close();srv.close()})().catch(e=>{console.log('ERR',e.message.split('\n').slice(0,3).join(' / '),ok);process.exit(1)});

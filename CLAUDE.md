@@ -2,6 +2,8 @@
 
 **Mission: we are creating the world's best, quintessential, go-to impostor game app.** Judge every change against that.
 
+**Key tenet: silky animations.** Every transition should feel smooth, deliberate and premium: no jank, jumps, flicker or layout shift. Animate only `transform` and `opacity` where possible (GPU-friendly), use easing rather than linear motion, keep timings consistent, and check every new screen or state change animates in and out. Respect reduced motion.
+
 Read this first. It replaces a very long earlier chat (built in one session, 17–21 Oct 2026), so don't go looking for history. Player-facing rules and features are in `README.md`; this file covers how to work on the code. Lines marked **[inferred]** were reconstructed from code, tests and task logs rather than the user's own words.
 
 ## What it is

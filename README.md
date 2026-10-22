@@ -7,6 +7,10 @@ A pass-the-phone social deduction game. Pick players, categories, the most impos
 1. Create a GitHub repo and push the files to the root (`index.html`, `words.json`, `README.md`, `CLAUDE.md`, `tests/`). Vercel only serves `index.html` and `words.json`; the rest is for development.
 2. In Vercel: **Add New → Project**, import the repo, leave every setting on its default (Framework Preset: *Other*, no build command, no output directory), and click **Deploy**.
 
+## How to play, in the app
+
+New players see a **"New here?"** invitation on the setup screen, and the **?** button by the trophy replays it any time: five short animated scenes (the deal, passing the phone, clues, the vote, how it ends) with captions and a spoken voiceover. It moves on by itself when each line finishes, or use Next/Back. The speaker button mutes the voice (captions stay). The voice is the phone's own for now; recorded human voices will replace it.
+
 ## How a round works
 
 - Each player taps their card to see their role, then taps it again to hide it and pass the phone on. Crew see the secret word; impostors see only a clue. Every word has four clues: a lone impostor always gets clue 1, and with more impostors they're handed out in deal order, cycling 1, 2, 3, 4, 1, 2…, so impostors rarely share a clue. (With "Prefer words not seen before" on, the cycle starts from whichever clues have been seen least for that word.)

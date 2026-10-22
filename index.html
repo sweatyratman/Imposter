@@ -545,7 +545,7 @@
   .masthead { position: relative; }
   .masthead .wordmark { margin-right: 52px; }   /* room for the trophy button */
   .tape-tag.nw { white-space: nowrap; }   /* set from script: one line wherever it fits, wraps when the text is larger */
-  .masthead .trophy { position: absolute; top: 22px; right: 0; color: var(--brass); border-color: rgba(233,185,73,.5); }
+  .masthead .trophy { position: absolute; top: 8px; right: 0; color: var(--brass); border-color: rgba(233,185,73,.5); }
   .cluelist { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; }
   .rules > .row { flex-wrap: wrap; gap: 10px 8px; }
   .rules > .row h2 { flex: 1 1 auto; white-space: nowrap; }   /* never squeezed: the button wraps below it instead */
@@ -565,6 +565,84 @@
   .subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .subhead .reset { margin-left: auto; }
   .wrow.greyed { opacity: .42; }
+  /* Leaving a screen: a snapshot of it fades and settles while the new one rises in (render() -> ghostOut). */
+  .ghost { position: fixed; z-index: 4; pointer-events: none; animation: ghostOut .22s cubic-bezier(.4,0,.6,1) forwards; }
+  @keyframes ghostOut { to { opacity: 0; transform: translateY(-6px) scale(.985); } }
+
+  /* ---------- How to play ---------- */
+  .masthead { padding-top: 58px; }   /* the ? and trophy buttons sit in a row above the logo */
+  .masthead .help { position: absolute; top: 8px; right: 52px; font-family: var(--display); font-weight: 800; font-size: 1.05rem; }
+  .howto-cta { display: flex; align-items: center; gap: 10px; margin: 4px 0 6px; padding: 10px 10px 10px 14px; border: 1.5px solid rgba(233,185,73,.55);
+    border-radius: 16px; background: var(--raised); animation: fadeUp .4s .2s ease-out both; }
+  .howto-cta p { flex: 1; margin: 0; font-size: .95rem; line-height: 1.3; }
+  .howto-cta p small { color: var(--mute); }
+  .howto-cta .btn { width: auto; flex: none; min-height: 42px; padding: 0 14px; }
+  .howto-cta .x { flex: none; width: 38px; min-height: 38px; border: 0; background: none; color: var(--mute); cursor: pointer; }
+  .howto-cta .x svg { width: 18px; height: 18px; }
+  .howto { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; gap: 14px; padding: calc(14px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    background: radial-gradient(120% 80% at 50% 30%, #1e2a4a 0%, var(--table) 60%); animation: fadeIn .25s ease-out both; max-width: 560px; margin: 0 auto; }
+  .howto.closing { animation: fadeOut .2s forwards; }
+  .howto-top { display: flex; align-items: center; gap: 10px; }
+  .howto-top .pips { flex: 1; display: flex; gap: 6px; }
+  .howto-top .pips i { flex: 1; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; position: relative; }
+  .howto-top .pips i.done { background: var(--brass); }
+  .howto-top .pips i.now::after { content: ""; position: absolute; inset: 0; background: var(--brass); transform-origin: left; animation: pipFill var(--dur, 6s) linear forwards; }
+  @keyframes pipFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .howto-stage { position: relative; flex: 1; min-height: 210px; max-height: 340px; display: grid; place-items: center; }
+  .howto-cap { min-height: 4.6em; margin: 0; text-align: center; font-size: 1.15rem; line-height: 1.35; color: var(--paper); animation: fadeUp .35s ease-out both; }
+  .howto-nav { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+  .howto-nav .btn { min-height: 56px; }
+  /* scene pieces: everything moves with transform and opacity only */
+  .hrow { display: flex; gap: 10px; justify-content: center; align-items: flex-end; }
+  .hcard { width: 64px; aspect-ratio: 5 / 7; border-radius: 10px; background: var(--paper); color: var(--ink); display: grid; place-items: center;
+    font-family: var(--display); font-weight: 800; font-size: .62rem; letter-spacing: .02em; box-shadow: 0 10px 22px rgba(0,0,0,.4); text-align: center; padding: 4px; }
+  .hcard.imp { background: #2a1b22; color: #ffd9d4; }
+  .hcard.imp svg { width: 34px; height: 34px; }
+  .h-in { opacity: 0; animation: hDeal .6s cubic-bezier(.2,.9,.3,1.2) both; animation-delay: calc(var(--i, 0) * .35s + .2s); }
+  @keyframes hDeal { from { opacity: 0; transform: translateY(60px) rotate(-12deg) scale(.8); } to { opacity: 1; transform: none; } }
+  .h-wobble { animation: hDeal .6s cubic-bezier(.2,.9,.3,1.2) both, hWob .5s ease-in-out 2.2s 3; animation-delay: calc(var(--i, 0) * .35s + .2s), 2.2s; }
+  @keyframes hWob { 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+  .hseats { position: relative; width: 260px; height: 190px; }
+  .hseat { position: absolute; width: 46px; height: 46px; margin: -23px; border-radius: 50%; background: var(--raised); border: 2px solid var(--line);
+    display: grid; place-items: center; font-weight: 700; color: var(--paper); }
+  .hphone { position: absolute; left: 50%; top: 50%; width: 70px; height: 112px; margin: -56px -35px; border-radius: 14px; background: #0c1222;
+    border: 3px solid #3c4a75; display: grid; place-items: center; animation: hPass 4.8s cubic-bezier(.45,0,.25,1) .3s both; }
+  .hphone .hcard { width: 46px; font-size: .5rem; animation: hPeek 4.8s ease-in-out .3s both; }
+  @keyframes hPass { 0% { transform: translate(-95px, 40px); } 30% { transform: translate(-95px, 40px); } 45% { transform: translate(0, -62px); }
+    70% { transform: translate(0, -62px); } 85%, 100% { transform: translate(95px, 40px); } }
+  @keyframes hPeek { 0%, 8% { transform: scaleX(1); } 0%, 10% { opacity: .15; } 14%, 26% { opacity: 1; } 32%, 48% { opacity: .15; } 52%, 64% { opacity: 1; } 70%, 100% { opacity: .15; } }
+  .hbubble { position: absolute; padding: 6px 10px; border-radius: 12px 12px 12px 3px; background: var(--paper); color: var(--ink); font-weight: 700; font-size: .85rem;
+    white-space: nowrap; opacity: 0; animation: hPop .45s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(var(--i) * 1.1s + .3s); }
+  .hbubble.sus { background: #ffe1db; }
+  .hbubble.sus.shake { animation: hPop .45s cubic-bezier(.2,1.4,.4,1) both, hWob .4s ease-in-out 3; animation-delay: calc(var(--i) * 1.1s + .3s), calc(var(--i) * 1.1s + .9s); }
+  @keyframes hPop { from { opacity: 0; transform: translateY(8px) scale(.6); } to { opacity: 1; transform: none; } }
+  .hvote .hcard { transition: transform .4s cubic-bezier(.2,.9,.3,1.2); }
+  .hvote .hcard.pick { animation: hPick .6s cubic-bezier(.2,.9,.3,1.2) 2.4s both; }
+  .hvote .hcard.dim { animation: hDim .5s ease-out 2.4s both; }
+  @keyframes hPick { to { transform: translateY(-14px) scale(1.18); } }
+  @keyframes hDim { to { opacity: .35; transform: scale(.92); } }
+  .hpointer { position: absolute; width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--brass); left: 50%; top: 50%; margin: -15px;
+    animation: hPoint 2.6s cubic-bezier(.45,0,.25,1) .3s both; }
+  @keyframes hPoint { 0% { opacity: 0; transform: translate(-110px, 60px); } 20% { opacity: 1; } 45% { transform: translate(-37px, 10px); } 75% { opacity: 1; transform: translate(37px, 10px) scale(1); } 100% { opacity: 0; transform: translate(37px, 10px) scale(1.6); } }
+  .hvote .hcard.pick { position: relative; }
+  .hstamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-12deg); padding: 3px 6px; border: 2.5px solid var(--red); color: var(--red);
+    font-family: var(--display); font-weight: 800; font-size: .5rem; white-space: nowrap; border-radius: 5px; opacity: 0; animation: hStamp .35s cubic-bezier(.2,1.4,.4,1) 3s both; background: rgba(244,238,227,.92); }
+  @keyframes hStamp { from { opacity: 0; transform: translate(-50%, -50%) rotate(-12deg) scale(2.2); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scale(1); } }
+  .hend { display: grid; justify-items: center; gap: 12px; }
+  .hflip { position: relative; width: 84px; aspect-ratio: 5 / 7; }
+  .hflip .hcard { position: absolute; inset: 0; width: auto; font-size: .7rem; }
+  .hflip .hcard.imp { opacity: 0; animation: fadeIn .5s ease-out 1s both; }
+  .hflip .hcard:first-child { animation: fadeOut .5s ease-out 1s both; }
+  .hend .hbubble { position: static; }
+  .hends { display: grid; gap: 6px; text-align: center; font-weight: 700; }
+  .hends span { opacity: 0; animation: fadeUp .4s ease-out both; }
+  .hends .c { color: var(--teal); animation-delay: 3.2s; }
+  .hends .i { color: var(--coral); animation-delay: 4.6s; }
+  @media (prefers-reduced-motion: reduce) {
+    .howto *, .howto { animation: none !important; transition: none !important; opacity: 1 !important; }
+    .hflip .hcard:first-child { display: none; }
+    .ghost { display: none; }
+  }
   .summary { display: block; width: fit-content; max-width: 100%; margin: 0 auto 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 99px;
     background: var(--raised); color: var(--mute); font: inherit; font-size: .8rem; text-align: center; white-space: nowrap; overflow: hidden;
     text-overflow: ellipsis; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
@@ -656,6 +734,8 @@ const PEACE = () => `<svg class="peace" viewBox="0 0 28 36" aria-hidden="true"><
 
 const svg = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const ICON = {
+  sound: svg('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>'),
+  mute: svg('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>'),
   play: svg('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>'),
   gavel: svg('<path d="M13.5 3.5l7 7"/><path d="M10 7l7 7"/><path d="M11.8 5.2l7 7-3.3 3.3-7-7z"/><path d="M10.5 12.5L4 19"/><path d="M3 21h9"/>'),
   check: svg('<path d="M4 12.5l5 5L20 6.5"/>'),
@@ -751,6 +831,8 @@ const defaultSettings = () => ({
   drama: 'full',           // the reveals: 'full' build-up, or 'quick' for groups playing lots of rounds
   timer: 0,                // optional clue timer on the Game on screen, in seconds (0 = off)
   wordsUrl: '',
+  seenHowto: false,        // the "How to play" invitation has been watched or dismissed
+  voice: true,             // the How to play narration speaks (captions always show)
   region: guessRegion()    // where the group plays: 'uk' | 'us' | 'au' | 'all' (only words known everywhere)
 });
 // Where you play picks local names (torch → flashlight) and drops words only another region would know.
@@ -1271,9 +1353,12 @@ function renderSetup() {
       <span class="logo-card" aria-hidden="true"><span class="cback"></span><span class="cframe">${MASK()}</span></span>
       <div class="logo-words"><h1 class="wordmark">Impostor</h1>
         <p class="tagline"><span class="tape tape-tag">Pass the phone. Find the faker.</span></p></div>
+      <button class="barbtn icon help" data-act="howto" aria-label="How to play" title="How to play">?</button>
       <button class="barbtn icon trophy" data-act="board" aria-label="Leaderboard" title="Leaderboard">${ICON.trophy}</button>
     </header>
 
+    ${settings.seenHowto ? '' : `<div class="howto-cta" id="howtoCta"><p><b>New here?</b> <small>See how to play in under a minute.</small></p>
+      <button class="btn primary" data-act="howto">${ICON.play}Watch</button><button class="x" data-act="howtoDismiss" aria-label="No thanks">${ICON.x}</button></div>`}
     <section class="block">
       <div class="row"><h2>Players</h2><span class="count" id="countVal">${n}</span></div>
       ${slider(`<input type="range" id="count" min="${MIN_PLAYERS}" max="${MAX_PLAYERS}" value="${n}" aria-label="Number of players">`, 'count')}
@@ -1806,7 +1891,30 @@ function gridFit(n, width, height) {
 }
 const autoAdvance = (v) => !v.imp || v.next === 'bothwin';   // the impostors have won: move on by itself
 
+// Screen changes cross-fade: a snapshot of the old screen fades out over the new one, inside a closed shadow root so it
+// never matches page queries. Choreographed moves (the deal, the shuffle, vote -> verdict) keep their own animation.
+let lastScreen = null, ghostSheet = null;
+const screenGroup = (sc) => (sc === 'pass' || sc === 'reveal' ? 'deal' : sc);
+function ghostOut() {
+  const old = $app.firstElementChild;
+  if (REDUCED || !old || !document.adoptedStyleSheets) return;
+  try {
+    if (!ghostSheet) { ghostSheet = new CSSStyleSheet(); ghostSheet.replaceSync(document.querySelector('style').textContent); }
+    const r = old.getBoundingClientRect(), host = document.createElement('div');
+    host.className = 'ghost'; host.setAttribute('aria-hidden', 'true');
+    host.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px`;
+    const root = host.attachShadow({ mode: 'closed' });
+    root.adoptedStyleSheets = [ghostSheet];
+    const still = document.createElement('style'); still.textContent = '*{animation-play-state:paused!important;transition:none!important}';
+    root.append(still, old.cloneNode(true));
+    document.body.appendChild(host);
+    setTimeout(() => host.remove(), 260);
+  } catch (e) {}
+}
 function render() {
+  const now = game ? screenGroup(game.screen) : 'setup', prev = lastScreen;
+  lastScreen = now;
+  if (prev && prev !== now && !(prev === 'vote' && now === 'verdict')) ghostOut();
   clearTimers();
   const bc = document.getElementById('barcat');
   document.body.classList.toggle('on-setup', !game);
@@ -1985,8 +2093,112 @@ function runVerdict(skipCountdown) {
   later(done, end);
 }
 
+/* ---------- How to play: short animated scenes with narration ---------- */
+// The narration is the browser's own voice for now. To use recorded human voices later, give a scene an `audio` file
+// (e.g. 'audio/howto-1.mp3'); it plays instead of the synthetic voice, and the captions stay the same.
+const HOWTO = [
+  { id: 'deal', text: 'Everyone gets the same secret word, except the impostor, who doesn\'t.', audio: null },
+  { id: 'pass', text: 'Pass the phone round. Tap your card to look, then tap it again to hide it.', audio: null },
+  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Impostor, blend in.', audio: null },
+  { id: 'vote', text: 'When everyone has had a go, agree on who to vote out.', audio: null },
+  { id: 'end', text: 'Catch every impostor and the crew win, unless they guess the word. Vote out a crewmate, and the impostors win.', audio: null }
+];
+const MASK_SM = '<svg viewBox="0 0 64 32" aria-hidden="true"><path fill="currentColor" d="M2 8c10-6 20-6 30 2 10-8 20-8 30-2-1 14-9 22-19 20-5-1-8-5-11-9-3 4-6 8-11 9C11 30 3 22 2 8zm14 6c-4 0-7 2-7 4 3 2 8 2 11-1-1-2-2-3-4-3zm32 0c-2 0-3 1-4 3 3 3 8 3 11 1 0-2-3-4-7-4z"/></svg>';
+function howtoStage(id) {
+  const W = 'PIZZA';
+  if (id === 'deal') return `<div class="hrow">${[0, 1, 2, 3].map((i) => i === 2
+    ? `<div class="hcard imp h-wobble" style="--i:${i}">${MASK_SM}</div>` : `<div class="hcard h-in" style="--i:${i}">${W}</div>`).join('')}</div>`;
+  if (id === 'pass') return `<div class="hseats"><span class="hseat" style="left:15%;top:85%">A</span><span class="hseat" style="left:50%;top:6%">B</span>
+    <span class="hseat" style="left:85%;top:85%">C</span><div class="hphone"><div class="hcard">${W}</div></div></div>`;
+  if (id === 'clues') return `<div class="hseats">${[['15%', '85%', 'A'], ['15%', '22%', 'B'], ['85%', '22%', 'C'], ['85%', '85%', 'D']].map(([l, t, n]) =>
+    `<span class="hseat" style="left:${l};top:${t}">${n}</span>`).join('')}
+    <span class="hbubble" style="--i:0;left:0;top:58%">Cheesy</span><span class="hbubble" style="--i:1;left:0;top:-2%">Italian</span>
+    <span class="hbubble sus shake" style="--i:2;right:0;top:-2%">Round…?</span><span class="hbubble" style="--i:3;right:0;top:58%">Slices</span></div>`;
+  if (id === 'vote') return `<div class="hvote" style="position:relative"><div class="hrow">${['A', 'B', 'C', 'D'].map((n, i) =>
+    `<div class="hcard ${i === 2 ? 'pick' : 'dim'}">${n}${i === 2 ? '<span class="hstamp">VOTED OUT</span>' : ''}</div>`).join('')}</div><span class="hpointer"></span></div>`;
+  return `<div class="hend"><div class="hflip"><div class="hcard">C</div><div class="hcard imp">${MASK_SM}</div></div>
+    <span class="hbubble" style="--i:1.4">Is it… pizza?</span>
+    <div class="hends"><span class="c">Wrong guess: crew win</span><span class="i">Vote out a crewmate: impostors win</span></div></div>`;
+}
+const howto = { i: 0, timers: [], audio: null, tok: 0 };
+const hLater = (fn, ms) => howto.timers.push(setTimeout(fn, ms));
+function howtoStop() {
+  howto.timers.forEach(clearTimeout); howto.timers = [];
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+  if (howto.audio) { howto.audio.pause(); howto.audio = null; }
+}
+function howtoVoice() {
+  try {
+    const want = { uk: 'en-GB', us: 'en-US', au: 'en-AU' }[settings.region] || 'en-GB';
+    const vs = speechSynthesis.getVoices();
+    return vs.find((v) => v.lang === want) || vs.find((v) => v.lang && v.lang.startsWith('en')) || null;
+  } catch (e) { return null; }
+}
+function howtoShow(i) {
+  const wrap = document.querySelector('.howto'); if (!wrap) return;
+  howtoStop(); howto.i = i;
+  const sc = HOWTO[i], last = i === HOWTO.length - 1, est = Math.max(4200, sc.text.length * 62 + 1600);
+  wrap.querySelector('.pips').innerHTML = HOWTO.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'now' : ''}" style="--dur:${est}ms"></i>`).join('');
+  wrap.querySelector('.howto-stage').innerHTML = howtoStage(sc.id);
+  wrap.querySelector('.howto-stage').dataset.scene = sc.id;
+  const cap = wrap.querySelector('.howto-cap'); cap.textContent = sc.text; cap.style.animation = 'none'; void cap.offsetWidth; cap.style.animation = '';
+  wrap.querySelector('[data-h="back"]').disabled = i === 0;
+  wrap.querySelector('[data-h="next"]').innerHTML = last ? `${ICON.play}Let's play` : `Next${ICON.next}`;
+  // Each scene has a token: a cancelled voice still fires its "end" event, and that must not move a later scene on.
+  const tok = ++howto.tok;
+  let moved = false;
+  const next = () => { if (moved || howto.tok !== tok) return; moved = true; if (!last) hLater(() => { if (howto.tok === tok) howtoShow(i + 1); }, 900); };
+  hLater(next, est * 1.7);                       // safety net if the voice never reports that it has finished
+  if (settings.voice === false) { hLater(next, est); return; }
+  if (sc.audio) {
+    howto.audio = new Audio(sc.audio); howto.audio.onended = next;
+    howto.audio.play().catch(() => hLater(next, est));
+    return;
+  }
+  try {
+    const u = new SpeechSynthesisUtterance(sc.text), v = howtoVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-GB';
+    u.rate = 1; u.onend = next; u.onerror = () => { if (howto.tok === tok) hLater(next, est); };
+    speechSynthesis.speak(u);
+  } catch (e) { hLater(next, est); }
+}
+function openHowto() {
+  document.querySelectorAll('.howto').forEach((n) => n.remove());
+  if (!settings.seenHowto) { settings.seenHowto = true; save(); const c = document.getElementById('howtoCta'); if (c) c.remove(); }
+  const wrap = document.createElement('div');
+  wrap.className = 'howto'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'How to play');
+  const vo = settings.voice !== false;
+  wrap.innerHTML = `<div class="howto-top"><div class="pips" aria-hidden="true"></div>
+      <button class="barbtn icon" data-h="voice" aria-pressed="${vo}" aria-label="${vo ? 'Mute the voice' : 'Turn the voice on'}">${vo ? ICON.sound : ICON.mute}</button>
+      <button class="barbtn icon" data-h="close" aria-label="Close">${ICON.x}</button></div>
+    <div class="howto-stage" aria-hidden="true"></div>
+    <p class="howto-cap" aria-live="polite"></p>
+    <div class="howto-nav"><button class="btn" data-h="back">Back</button><button class="btn primary" data-h="next"></button></div>`;
+  wrap.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-h]'); if (!b) return;
+    const h = b.dataset.h;
+    if (h === 'close') closeHowto();
+    else if (h === 'back' && howto.i > 0) howtoShow(howto.i - 1);
+    else if (h === 'next') { if (howto.i < HOWTO.length - 1) howtoShow(howto.i + 1); else closeHowto(); }
+    else if (h === 'voice') {
+      settings.voice = settings.voice === false; save();
+      const on = settings.voice; b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? 'Mute the voice' : 'Turn the voice on'); b.innerHTML = on ? ICON.sound : ICON.mute;
+      howtoShow(howto.i);
+    }
+  });
+  document.body.appendChild(wrap);
+  howtoShow(0);
+}
+function closeHowto() {
+  howtoStop();
+  const wrap = document.querySelector('.howto'); if (!wrap) return;
+  wrap.classList.add('closing'); setTimeout(() => wrap.remove(), REDUCED ? 0 : 200);
+}
+
 /* ---------- events ---------- */
 const ACTIONS = {
+  howto() { openHowto(); },
+  howtoDismiss() { settings.seenHowto = true; save(); const c = $('#howtoCta'); if (c) { c.style.transition = 'opacity .2s, transform .2s'; c.style.opacity = '0'; c.style.transform = 'translateY(-6px)'; setTimeout(() => c.remove(), 200); } },
   start() { if (words.categories.length) startRound(); },
   cat(t) {
     const c = t.dataset.cat;

@@ -9,7 +9,11 @@ A pass-the-phone social deduction game. Pick players, categories, the most impos
 
 ## How to play, in the app
 
-New players see a **"New here?"** invitation on the setup screen, and the **?** button by the trophy replays it any time: five short animated scenes (the deal, passing the phone, clues, the vote, how it ends) with captions and a spoken voiceover. It moves on by itself when each line finishes, or use Next/Back. The speaker button mutes the voice (captions stay). The voice is the phone's own for now; recorded human voices will replace it.
+New players see a **"New here?"** invitation on the setup screen, and the **?** button by the trophy replays it any time: five short animated scenes (the deal, passing the phone, clues, the vote, how it ends). Swipe left for the next tip (or tap Next); swipe right to go back. It never moves on by itself.
+
+## Saved groups
+
+The **👥 group button** on the setup screen keeps separate save slots, for example "D&D crew" and "Work lot". Each group has its own players, house rules, word history and scores. "Start fresh" makes a new group with default rules; tap a group to switch to it; rename the current one or delete others (it asks first). Region and the word list link are shared across groups.
 
 ## How a round works
 
@@ -30,10 +34,11 @@ New players see a **"New here?"** invitation on the setup screen, and the **?** 
   - It isn't a house rule, so "Reset all house rules" leaves it alone, and switching never touches your word history.
 - During a round the category sits on its own centred line just below the top buttons.
 - **Get the game:** the results screen has a QR code and a Share link button so others at the table can get the game on their own phone. (For now it points at this website; it will point at the app stores later.)
+- **Results** show one table: every player's role, when they went out, the points they just won and their running total (with a 👑 for the leader).
 - **Scores** carry over between rounds. Crew win: 1 point per crewmate. Impostors win: 2 points per impostor, or 3 for a lone impostor, who beat the odds alone. A caught impostor gets nothing, unless the caught impostors' guess is what wins it. ("Nobody wins" scores nobody; "Crew still win" scores the crew.) The trophy button at the top of every screen opens the leaderboard, with a button to reset it. Scores also show on the results screen.
 - **Above Start** a one-line summary says how the game will play (for example "5 players · mostly 1 impostor · clues on · UK"). Tap it to jump to the house rules.
 - **House rules** sit on the setup screen:
-  - **Quick setups:** Beginner (one or two impostors, the count announced), Classic (the standard game) and Chaos (more impostors, half of them fooled into thinking they're crew). One tap sets the gameplay rules; change anything after and it shows as your own mix.
+  - **Quick setups:** Beginner (one or two impostors, the count announced), Classic (the standard game) and Chaos (more impostors, half of them fooled into thinking they're crew). One tap sets the gameplay rules; change anything after and it shows as your own mix. **Reset odds** puts the impostor sliders back to the odds of the setup you picked.
   - **Pace:** reveals can be **Full drama** or **Quick** (straight to the reveal, for groups playing lots of rounds). There's also an optional **clue timer** (off, 1, 2, 3 or 5 minutes) on the Game on screen: tap to start or pause, and it buzzes when time's up. It never forces the vote.
   - **Most impostors in a round:** a slider from 1 up to everyone-but-one, never more than 10. Each number up to that gets its own odds slider, plus "Everyone is an impostor", which is always available.
   - **Default odds follow the group size.** Small groups nearly always get one impostor (3 players: 93% one, 4 players: 86% one, 7% two); bigger groups lean to two, then three (10 players: 20% / 50% / 23%). "Everyone is an impostor" is always 7%. Move any slider and your own odds stick, whatever the player count, until "Reset all house rules".

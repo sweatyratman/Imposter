@@ -119,7 +119,7 @@ await h.vote(I[0]);await p.click('[data-act="verdictNext"]');await p.click('[dat
 
 // ---------- everyone an impostor ----------
 await home(p);g=await round(p,h,3,{all:100});await h.vote(0);t((await h.txt()).includes('both impostors'),'both win message');
-await p.waitForSelector('.result-head',{timeout:5500});t(await p.$$eval('.badge.win',e=>e.length)===2,'both remaining win after 4s');
+await p.waitForSelector('.result-head',{timeout:5500});t(await p.$$eval('.roster .rpts em',e=>e.filter(x=>x.textContent==='+2').length)===2,'both remaining win after 4s (+2 each in the table)');
 await home(p);g=await round(p,h,4,{all:100});await h.vote(0);s=await h.txt();
 t(!!(await p.$('.split [data-act="stop"]'))&&!!(await p.$('.split [data-act="again"]'))&&!/no crew|impostors are|impostor is/i.test(s),'all-impostor round looks exactly like any other round');
 await p.click('[data-act="stop"]');await p.waitForSelector('.unmask');t(await p.$$eval('.stack-area .c3d',e=>e.length)===3,'stopping early reveals the 3 hidden impostors');

@@ -21,13 +21,13 @@ let p,g,s;
 // crew catch the lone impostor, who misses the word
 p=await mk({weights:{1:100,2:0,3:0,all:0}});g=await G(p);await deal(p,g);await vote(p,idx(g,true)[0]);await p.click('[data-act="stop"]');await guess(p,false);
 t(same(await pts(p),want(idx(g,false),1)),'crew win: 1 point per crewmate, the impostor nothing');
-t((await p.$$eval('.srow em',e=>e.map(x=>x.textContent))).every(x=>x==='+1'),'results show +1 for each crewmate');
-t(/lone impostor/.test(await p.textContent('.scores')),'the results explain the scoring');await p.close();
+t((await p.$$eval('.roster .rpts em',e=>e.map(x=>x.textContent))).every(x=>x==='+1'),'results show +1 for each crewmate');
+t(/lone impostor/.test(await p.textContent('.scorefoot')),'the results explain the scoring');await p.close();
 
 // a lone impostor gets away
 p=await mk({weights:{1:100,2:0,3:0,all:0}});g=await G(p);await deal(p,g);await vote(p,idx(g,false)[0]);await getAway(p);
 t(same(await pts(p),want(idx(g,true),3)),'a lone impostor who wins gets 3');
-t((await p.$$eval('.srow em',e=>e.map(x=>x.textContent))).join()==='+3','results show +3');
+t((await p.$$eval('.roster .rpts em',e=>e.map(x=>x.textContent))).join()==='+3','results show +3');
 const sc=(await p.evaluate(()=>JSON.parse(localStorage.getItem('impostor-party-v1')).settings.scores));t(sc[g.players[idx(g,true)[0]]]===3,'the leaderboard total goes up by 3');
 await p.click('[data-nav="board"]');t(/lone impostor/.test(await p.textContent('.sheet.board')),'the leaderboard explains the scoring');await p.close();
 
@@ -49,7 +49,7 @@ t(same(await pts(p),want(im,2)),'caught impostors whose guess wins get 2 each');
 
 // guess rules: nobody wins / crew still win
 p=await mk({weights:{1:100,2:0,3:0,all:0},guessRule:'nobody'});g=await G(p);await deal(p,g);await vote(p,idx(g,true)[0]);await p.click('[data-act="stop"]');await guess(p,true);
-t(same(await pts(p),{}),'"Nobody wins": nobody scores');t(!(await p.$('.srow em')),'no +points shown');await p.close();
+t(same(await pts(p),{}),'"Nobody wins": nobody scores');t(!(await p.$('.roster .rpts em')),'no +points shown');await p.close();
 p=await mk({weights:{1:100,2:0,3:0,all:0},guessRule:'crew'});g=await G(p);await deal(p,g);await vote(p,idx(g,true)[0]);await p.click('[data-act="stop"]');await guess(p,true);
 t(same(await pts(p),want(idx(g,false),1)),'"Crew still win": 1 per crewmate, impostors nothing');await p.close();
 

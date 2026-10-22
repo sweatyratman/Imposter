@@ -28,15 +28,17 @@ await p.click('[data-act="quit"]');t(!!(await p.$('.sheet')),'End game uses the 
 await p.click('[data-act="ready"]');let g=await G(p);const imp=g.impostors.findIndex(v=>v);
 await p.click(`[data-act="pickvote"][data-i="${imp}"]`);await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');
 await p.click('[data-act="stop"]');await p.click('[data-act="judgeNo"]');
-t(!!(await p.$('.scores'))&&(await p.$$eval('.srow em',e=>e.length))===4,'scoreboard: +1 for each of the 4 crew');
-t(await p.$$eval('.srow b',e=>e.map(x=>+x.textContent).reduce((a,b)=>a+b,0))===4,'scores total 4');
-t(!(await p.$('.result-head + .ledger + .roster + .scores ~ .btn.small:not(.ghost)')),'Change settings is now a quiet link');
+t(!!(await p.$('.roster .rhead'))&&(await p.$$eval('.roster .rpts em',e=>e.length))===4,'one table: +1 for each of the 4 crew');
+t(await p.$$eval('.roster .rpts b',e=>e.map(x=>+x.textContent).reduce((a,b)=>a+b,0))===4,'scores total 4');
+t((await p.$$eval('.roster .rrow',e=>e.length))===5&&(await p.$$eval('.roster .badge',e=>e.length))===5,'every player in one table with their role and score');
+t(!(await p.$('.scores')),'no second scores table');
+t(await p.$eval('[data-act="settings"]',e=>e.classList.contains('ghost')),'Change settings is now a quiet link');
 await p.click('[data-act="replay"]');await deal(p,5);await p.click('[data-act="skipShuffle"]');await p.click('[data-act="ready"]');g=await G(p);
 const crew=g.impostors.findIndex(v=>!v);await p.click(`[data-act="pickvote"][data-i="${crew}"]`);await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');
 await p.mouse.click(195,300);await p.waitForSelector('[data-act="unmask"]');await p.click('[data-act="unmask"]');await p.click('[data-act="toResults"]');
 const sc=await S(p);const impName=g.players[g.impostors.findIndex(v=>v)];const won=(await G(p)).outcome.scored;t(Object.keys(won).length===1&&won[g.impostors.findIndex(v=>v)]===3,'a lone impostor who wins gets 3');
 t(Object.values(sc.scores).reduce((a,b)=>a+b,0)===7,'scores carry over between rounds (4 + 3)');
-await p.click('[data-act="resetScores"]');await p.click('[data-sheet="yes"]');t(!(await p.$('.scores')),'reset clears the scoreboard');
+await p.click('[data-act="resetScores"]');await p.click('[data-sheet="yes"]');t((await p.$$eval('.roster .rpts b',e=>e.map(x=>+x.textContent).reduce((a,b)=>a+b,0)))===0&&!(await p.$('[data-act="resetScores"]')),'reset clears the scores');
 t(!!(await p.$('.result-head')),'results screen fades in (still renders)');
 await p.close();
 

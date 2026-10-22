@@ -495,7 +495,16 @@
   .unmask.n3 .idsym .mask { width: 44px; }
 
   /* ---------- guess + results ---------- */
-  .rrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .rrow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  .rrow .rname { overflow-wrap: anywhere; }
+  .rrow.lead-player .rname::after { content: " 👑"; }
+  .rpts { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; min-width: 3.4em; }
+  .rpts b { font-family: var(--display); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .rpts em { font-style: normal; color: var(--brass); font-weight: 700; font-size: .85rem; }
+  .rhead { display: flex; justify-content: space-between; padding: 8px 14px; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.03); }
+  .scorefoot { display: flex; align-items: center; gap: 10px; }
+  .scorefoot p { flex: 1; margin: 0; }
+  @media (max-width: 360px) { .scorefoot { flex-wrap: wrap; } }
   .rrow:last-child { border-bottom: 0; }
   .roster { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
   .tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
@@ -565,6 +574,23 @@
   .subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .subhead .reset { margin-left: auto; }
   .wrow.greyed { opacity: .42; }
+  .groupchip { display: flex; align-items: center; gap: 8px; width: 100%; margin: 2px 0 6px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 14px;
+    background: var(--raised); color: var(--paper); font: inherit; text-align: left; cursor: pointer; }
+  .groupchip b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .groupchip span { color: var(--mute); font-size: .82rem; white-space: nowrap; }
+  .sheet.groups { display: grid; gap: 12px; max-height: 85vh; overflow: auto; }
+  .glist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .grow { display: flex; align-items: center; gap: 8px; }
+  .gpick { flex: 1; min-width: 0; display: grid; gap: 2px; text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px;
+    background: transparent; color: var(--paper); font: inherit; cursor: pointer; }
+  .gpick b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gpick small { color: var(--mute); }
+  .grow.on .gpick { border-color: var(--brass); background: rgba(233,185,73,.08); }
+  .gren { width: 100%; font: inherit; font-weight: 700; padding: 4px 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--table); color: var(--paper); }
+  .gnew { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .gnew input { min-width: 0; padding: 0 12px; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--table); color: var(--paper); font: inherit; }
+  .gnew .btn { width: auto; min-height: 48px; padding: 0 14px; }
+  @media (max-width: 360px) { .gnew { grid-template-columns: 1fr; } }
   .getgame { display: flex; gap: 14px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--raised); }
   .gg-qr { flex: none; width: 104px; aspect-ratio: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,.35); }
   .gg-qr svg { display: block; width: 100%; height: 100%; }
@@ -593,10 +619,21 @@
   .howto-top .pips { flex: 1; display: flex; gap: 6px; }
   .howto-top .pips i { flex: 1; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; position: relative; }
   .howto-top .pips i.done { background: var(--brass); }
-  .howto-top .pips i.now::after { content: ""; position: absolute; inset: 0; background: var(--brass); transform-origin: left; animation: pipFill var(--dur, 6s) linear forwards; }
-  @keyframes pipFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .howto-top .pips i.now { background: var(--paper); }
+  .howto { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .howto-body { flex: 1; display: flex; flex-direction: column; gap: 14px; min-height: 0; will-change: transform; }
+  .howto-body.in-next { animation: hIn .38s cubic-bezier(.2,.8,.3,1) both; --from: 60px; }
+  .howto-body.in-back { animation: hIn .38s cubic-bezier(.2,.8,.3,1) both; --from: -60px; }
+  @keyframes hIn { from { opacity: 0; transform: translateX(var(--from)); } to { opacity: 1; transform: none; } }
+  .howto-swipe { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0; color: var(--brass); font-weight: 700; font-size: 1rem; transition: opacity .3s; }
+  .howto-swipe.gone { opacity: 0; }
+  .howto-swipe .hand { display: inline-block; font-size: 1.4rem; animation: hSwipe 1.6s cubic-bezier(.45,0,.25,1) infinite; }
+  .howto-swipe .chev { letter-spacing: -.1em; animation: hChev 1.6s ease-in-out infinite; }
+  @keyframes hSwipe { 0% { transform: translateX(26px) rotate(-12deg); opacity: 0; } 20% { opacity: 1; } 60% { transform: translateX(-26px) rotate(-12deg); opacity: 1; } 80%, 100% { transform: translateX(-26px) rotate(-12deg); opacity: 0; } }
+  @keyframes hChev { 0%, 100% { opacity: .35; transform: translateX(0); } 50% { opacity: 1; transform: translateX(4px); } }
+  .howto-count { flex: none; }
   .howto-stage { position: relative; flex: 1; min-height: 210px; max-height: 340px; display: grid; place-items: center; }
-  .howto-cap { min-height: 4.6em; margin: 0; text-align: center; font-size: 1.15rem; line-height: 1.35; color: var(--paper); animation: fadeUp .35s ease-out both; }
+  .howto-cap { min-height: 4.6em; margin: 0; text-align: center; font-size: 1.15rem; line-height: 1.35; color: var(--paper); }
   .howto-nav { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
   .howto-nav .btn { min-height: 56px; }
   /* scene pieces: everything moves with transform and opacity only */
@@ -727,6 +764,7 @@
 /* ---------- constants ---------- */
 const KEY = 'impostor-party-v1';
 const WORDS_CACHE_KEY = 'impostor-party-words-v1';
+const GROUPS_KEY = 'impostor-groups-v1';   // saved groups: each keeps its own players, rules, word history and scores
 const DEFAULT_WORDS_URL = 'words.json';
 const MIN_PLAYERS = 3, MAX_PLAYERS = 20;
 const SEG_COLOURS = { '1': '#e9b949', '2': '#f2836b', '3': '#e0453a', 'all': '#9c8cf0' };
@@ -742,8 +780,6 @@ const PEACE = () => `<svg class="peace" viewBox="0 0 28 36" aria-hidden="true"><
 const svg = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const ICON = {
   share: svg('<path d="M12 15V3.5"/><path d="M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/>'),
-  sound: svg('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>'),
-  mute: svg('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>'),
   play: svg('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>'),
   gavel: svg('<path d="M13.5 3.5l7 7"/><path d="M10 7l7 7"/><path d="M11.8 5.2l7 7-3.3 3.3-7-7z"/><path d="M10.5 12.5L4 19"/><path d="M3 21h9"/>'),
   check: svg('<path d="M4 12.5l5 5L20 6.5"/>'),
@@ -839,8 +875,8 @@ const defaultSettings = () => ({
   drama: 'full',           // the reveals: 'full' build-up, or 'quick' for groups playing lots of rounds
   timer: 0,                // optional clue timer on the Game on screen, in seconds (0 = off)
   wordsUrl: '',
+  preset: '',              // the quick setup last chosen ('' = none/Classic): Reset odds goes back to its odds
   seenHowto: false,        // the "How to play" invitation has been watched or dismissed
-  voice: true,             // the How to play narration speaks (captions always show)
   region: guessRegion()    // where the group plays: 'uk' | 'us' | 'au' | 'all' (only words known everywhere)
 });
 // Where you play picks local names (torch → flashlight) and drops words only another region would know.
@@ -1339,7 +1375,7 @@ const REGION_NOTES = {
 };
 const regionNote = () => REGION_NOTES[settings.region] || '';
 const presetNote = () => presetOn() ? PRESETS[presetOn()].note : 'Your own mix of rules. Tap one to load a ready-made setup.';
-const dramaNote = () => settings.drama === 'quick' ? 'Quick: straight to the reveal, for groups playing lots of rounds.' : 'Full drama: the build-up, the held breath, the tape ripping off.';
+const dramaNote = () => settings.drama === 'quick' ? 'Reveals: Quick goes straight to the reveal, for groups playing lots of rounds.' : 'Reveals: Full drama has the build-up, the held breath and the tape ripping off.';
 const DRAMA = [['full', 'Full drama'], ['quick', 'Quick']];
 const TIMERS = [[0, 'Off'], [60, '1 min'], [120, '2 min'], [180, '3 min'], [300, '5 min']];
 // Quick setups: each sets the gameplay rules in one tap (word list, history and region are left alone).
@@ -1365,6 +1401,7 @@ function renderSetup() {
       <button class="barbtn icon trophy" data-act="board" aria-label="Leaderboard" title="Leaderboard">${ICON.trophy}</button>
     </header>
 
+    <button class="groupchip" data-act="groups" id="groupChip" aria-label="Saved groups">👥 <b>${esc(groupName())}</b><span>Switch ›</span></button>
     ${settings.seenHowto ? '' : `<div class="howto-cta" id="howtoCta"><p><b>New here?</b> <small>See how to play in under a minute.</small></p>
       <button class="btn primary" data-act="howto">${ICON.play}Watch</button><button class="x" data-act="howtoDismiss" aria-label="No thanks">${ICON.x}</button></div>`}
     <section class="block">
@@ -1424,15 +1461,14 @@ function renderSetup() {
 
     <section class="sub">
       <h3>Pace</h3>
-      <p class="muted small">How long the reveals take:</p>
       <div class="seg" id="drama" role="group" aria-label="Reveals">
         ${DRAMA.map(([v, l]) => `<button data-act="drama" data-v="${v}" class="${settings.drama === v ? 'sel' : ''}" aria-pressed="${settings.drama === v}">${l}</button>`).join('')}
       </div>
       <p class="muted small" id="dramaNote">${dramaNote()}</p>
-      <p class="muted small">A clue timer on the Game on screen (it never forces the vote):</p>
       <div class="seg" id="timer" role="group" aria-label="Clue timer">
         ${TIMERS.map(([v, l]) => `<button data-act="timerset" data-v="${v}" class="${+settings.timer === v ? 'sel' : ''}" aria-pressed="${+settings.timer === v}">${l}</button>`).join('')}
       </div>
+      <p class="muted small">Clue timer: shown on the Game on screen, tap to start. It never forces the vote.</p>
     </section>
 
     <section class="sub">
@@ -1473,8 +1509,14 @@ function rulesAreDefault() {
     : (settings[k] ?? d[k]) === d[k]);
 }
 // The odds box (most impostors + each count's chance) has its own reset.
-const oddsAreDefault = () => (settings.maxImpostors || 3) === defaultSettings().maxImpostors
-  && validOptions(settings.playerCount).every((o) => weightOf(o.key) === autoWeights(settings.playerCount)[o.key]);
+// Reset odds goes back to the odds of the quick setup you last chose (Classic = the defaults for this many players).
+const oddsBase = () => { const p = PRESETS[settings.preset]; return p ? { weights: p.s.weights, max: p.s.maxImpostors } : { weights: {}, max: defaultSettings().maxImpostors }; };
+const oddsAreDefault = () => {
+  const b = oddsBase(), n = settings.playerCount;
+  if ((settings.maxImpostors || 3) !== b.max) return false;
+  if (!Object.keys(b.weights).length) return validOptions(n).every((o) => weightOf(o.key) === autoWeights(n)[o.key]);
+  return validOptions(n).every((o) => weightOf(o.key) === (b.weights[o.key] ?? 0));
+};
 function syncResetRules() {
   const b = $('[data-act="resetRules"]'); if (b) b.disabled = rulesAreDefault();
   const o = $('#resetOdds'); if (o) o.disabled = oddsAreDefault();
@@ -1771,7 +1813,6 @@ const SCREENS = {
   result: () => {
     const o = game.outcome;
     const noCrew = crewCount() === 0;
-    const winners = o.winners || [];
     let title, cls;
     if (o.winner === 'impostors') { title = 'Impostors win!'; cls = 'win-imp'; }
     else if (o.winner === 'nobody') { title = 'Nobody wins'; cls = 'win-none'; }
@@ -1779,11 +1820,6 @@ const SCREENS = {
     else { title = 'Crew wins!'; cls = 'win-crew'; }
     const reason = (o.winner === 'crew' && noCrew)
       ? 'There was no crew this round, so nobody really wins. Nice bluffing.' : o.reason;
-    const rows = game.players.map((nm, i) => {
-      const pos = game.out.indexOf(i);
-      const won = winners.includes(i) ? '<span class="badge win">Winner</span>' : '';
-      return `<div class="rrow"><span>${esc(nm)}</span><span class="tags">${pos >= 0 ? `<span class="out">voted out #${pos + 1}</span>` : ''}${won}<span class="badge ${game.impostors[i] ? 'imp' : 'crew'}">${game.impostors[i] ? 'Impostor' : 'Crew'}</span></span></div>`;
-    }).join('');
     return `<div class="screen fadein">
       <header class="result-head"><h1 class="${cls}">${title}</h1>${o.quip ? `<p class="quip">${esc(o.quip)}</p>` : ''}<p>${esc(reason)}</p></header>
       <div class="ledger">
@@ -1791,8 +1827,7 @@ const SCREENS = {
         <div class="row"><span>Secret word</span><b class="secretword">${esc(game.word)}</b></div>
         ${ledgerClues()}
       </div>
-      <div class="roster">${rows}</div>
-      ${scoreHTML(o.scored || {})}
+      ${rosterHTML(o.scored || {})}
       ${getGameHTML()}
       <div class="dock"><button class="btn primary big" data-act="replay">${ICON.play}Play again</button></div>
       <button class="btn ghost small" data-act="settings">Change players or settings</button>
@@ -1814,16 +1849,20 @@ function ledgerClues() {
     `<span><b>${esc(altOf(i))}</b> <small>${esc(game.players[i])}</small></span>`).join('')}</span></div>`;
   return out;
 }
-function scoreHTML(scored) {
+// One table for the round and the scores: each player's role, when they went out, what they just won and their total.
+function rosterHTML(scored) {
   const sc = settings.scores || {};
   const gain = (i) => Array.isArray(scored) ? (scored.includes(i) ? 1 : 0) : scored[i] || 0;   // older saves kept a list of +1s
-  const names = game.players.slice().sort((a, b) => (sc[b] || 0) - (sc[a] || 0) || game.players.indexOf(a) - game.players.indexOf(b));
-  if (!names.some((n) => sc[n])) return '';
-  const top = sc[names[0]] || 0;
-  return `<section class="scores"><div class="row"><h3>Scores</h3><button class="btn reset wipe" data-act="resetScores">${ICON.x}Reset scores</button></div>
-    ${names.map((n) => { const i = game.players.indexOf(n); return `<div class="srow${(sc[n] || 0) === top && top > 0 ? ' lead-player' : ''}">
-      <span>${esc(n)}</span><span>${gain(i) ? `<em>+${gain(i)}</em>` : ''}<b>${sc[n] || 0}</b></span></div>`; }).join('')}
-    <p class="muted small">${SCORING_NOTE}</p></section>`;
+  const order = game.players.map((_, i) => i).sort((a, b) => (sc[game.players[b]] || 0) - (sc[game.players[a]] || 0) || a - b);
+  const top = Math.max(0, ...order.map((i) => sc[game.players[i]] || 0));
+  const rows = order.map((i) => {
+    const nm = game.players[i], pos = game.out.indexOf(i), total = sc[nm] || 0;
+    return `<div class="rrow${total === top && top > 0 ? ' lead-player' : ''}"><span class="rname">${esc(nm)}</span>
+      <span class="tags">${pos >= 0 ? `<span class="out">out #${pos + 1}</span>` : ''}<span class="badge ${game.impostors[i] ? 'imp' : 'crew'}">${game.impostors[i] ? 'Impostor' : 'Crew'}</span></span>
+      <span class="rpts">${gain(i) ? `<em>+${gain(i)}</em>` : ''}<b>${total}</b></span></div>`;
+  }).join('');
+  return `<section class="roster"><div class="rhead"><span>Players</span><span>Score</span></div>${rows}</section>
+    <div class="scorefoot"><p class="muted small">${SCORING_NOTE}</p>${top > 0 ? `<button class="btn reset wipe" data-act="resetScores">${ICON.x}Reset scores</button>` : ''}</div>`;
 }
 const clock = (ms) => { const t = Math.ceil(ms / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
 // The optional clue timer: tap to start or pause. When it runs out it buzzes and nudges the vote, nothing more.
@@ -2213,15 +2252,13 @@ function getGameHTML() {
     <button class="btn reset scope" data-act="shareGame" id="shareGame">${ICON.share}Share link</button></div></section>`;
 }
 
-/* ---------- How to play: short animated scenes with narration ---------- */
-// The narration is the browser's own voice for now. To use recorded human voices later, give a scene an `audio` file
-// (e.g. 'audio/howto-1.mp3'); it plays instead of the synthetic voice, and the captions stay the same.
+/* ---------- How to play: short animated scenes, swiped through at your own pace ---------- */
 const HOWTO = [
-  { id: 'deal', text: 'Everyone gets the same secret word, except the impostor, who doesn\'t.', audio: null },
-  { id: 'pass', text: 'Pass the phone round. Tap your card to look, then tap it again to hide it.', audio: null },
-  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Impostor, blend in.', audio: null },
-  { id: 'vote', text: 'When everyone has had a go, agree on who to vote out.', audio: null },
-  { id: 'end', text: 'Catch every impostor and the crew win, unless they guess the word. Vote out a crewmate, and the impostors win.', audio: null }
+  { id: 'deal', text: 'Everyone gets the same secret word, except the impostor, who doesn\'t.' },
+  { id: 'pass', text: 'Pass the phone round. Tap your card to look, then tap it again to hide it.' },
+  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Impostor, blend in.' },
+  { id: 'vote', text: 'When everyone has had a go, agree on who to vote out.' },
+  { id: 'end', text: 'Catch every impostor and the crew win, unless they guess the word. Vote out a crewmate, and the impostors win.' }
 ];
 const MASK_SM = '<svg viewBox="0 0 64 32" aria-hidden="true"><path fill="currentColor" d="M2 8c10-6 20-6 30 2 10-8 20-8 30-2-1 14-9 22-19 20-5-1-8-5-11-9-3 4-6 8-11 9C11 30 3 22 2 8zm14 6c-4 0-7 2-7 4 3 2 8 2 11-1-1-2-2-3-4-3zm32 0c-2 0-3 1-4 3 3 3 8 3 11 1 0-2-3-4-7-4z"/></svg>';
 function howtoStage(id) {
@@ -2240,83 +2277,74 @@ function howtoStage(id) {
     <span class="hbubble" style="--i:1.4">Is it… pizza?</span>
     <div class="hends"><span class="c">Wrong guess: crew win</span><span class="i">Vote out a crewmate: impostors win</span></div></div>`;
 }
-const howto = { i: 0, timers: [], audio: null, tok: 0 };
-const hLater = (fn, ms) => howto.timers.push(setTimeout(fn, ms));
-function howtoStop() {
-  howto.timers.forEach(clearTimeout); howto.timers = [];
-  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
-  if (howto.audio) { howto.audio.pause(); howto.audio = null; }
-}
-function howtoVoice() {
-  try {
-    const want = { uk: 'en-GB', us: 'en-US', au: 'en-AU' }[settings.region] || 'en-GB';
-    const vs = speechSynthesis.getVoices();
-    return vs.find((v) => v.lang === want) || vs.find((v) => v.lang && v.lang.startsWith('en')) || null;
-  } catch (e) { return null; }
-}
-function howtoShow(i) {
+const howto = { i: 0 };
+// Show a scene. dir: 1 = came from a swipe left (next), -1 = back, 0 = first open.
+function howtoShow(i, dir = 0) {
   const wrap = document.querySelector('.howto'); if (!wrap) return;
-  howtoStop(); howto.i = i;
-  const sc = HOWTO[i], last = i === HOWTO.length - 1, est = Math.max(4200, sc.text.length * 62 + 1600);
-  wrap.querySelector('.pips').innerHTML = HOWTO.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'now' : ''}" style="--dur:${est}ms"></i>`).join('');
-  wrap.querySelector('.howto-stage').innerHTML = howtoStage(sc.id);
-  wrap.querySelector('.howto-stage').dataset.scene = sc.id;
-  const cap = wrap.querySelector('.howto-cap'); cap.textContent = sc.text; cap.style.animation = 'none'; void cap.offsetWidth; cap.style.animation = '';
+  howto.i = i;
+  const sc = HOWTO[i], last = i === HOWTO.length - 1;
+  wrap.querySelector('.pips').innerHTML = HOWTO.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'now' : ''}"></i>`).join('');
+  const body = wrap.querySelector('.howto-body');
+  body.querySelector('.howto-stage').innerHTML = howtoStage(sc.id);
+  body.querySelector('.howto-cap').textContent = sc.text;
+  body.style.transition = 'none'; body.style.transform = ''; body.style.opacity = '';
+  body.classList.remove('in-next', 'in-back'); void body.offsetWidth;
+  if (dir) body.classList.add(dir > 0 ? 'in-next' : 'in-back');
   wrap.querySelector('[data-h="back"]').disabled = i === 0;
   wrap.querySelector('[data-h="next"]').innerHTML = last ? `${ICON.play}Let's play` : `Next${ICON.next}`;
-  // Each scene has a token: a cancelled voice still fires its "end" event, and that must not move a later scene on.
-  const tok = ++howto.tok;
-  let moved = false;
-  const next = () => { if (moved || howto.tok !== tok) return; moved = true; if (!last) hLater(() => { if (howto.tok === tok) howtoShow(i + 1); }, 900); };
-  hLater(next, est * 1.7);                       // safety net if the voice never reports that it has finished
-  if (settings.voice === false) { hLater(next, est); return; }
-  if (sc.audio) {
-    howto.audio = new Audio(sc.audio); howto.audio.onended = next;
-    howto.audio.play().catch(() => hLater(next, est));
-    return;
-  }
-  try {
-    const u = new SpeechSynthesisUtterance(sc.text), v = howtoVoice();
-    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-GB';
-    u.rate = 1; u.onend = next; u.onerror = () => { if (howto.tok === tok) hLater(next, est); };
-    speechSynthesis.speak(u);
-  } catch (e) { hLater(next, est); }
+  wrap.querySelector('.howto-swipe').classList.toggle('gone', last);
+  wrap.querySelector('.howto-count').textContent = `${i + 1} of ${HOWTO.length}`;
+}
+function howtoGo(step) {
+  const to = howto.i + step;
+  if (to < 0) { howtoShow(0); return; }
+  if (to >= HOWTO.length) { closeHowto(); return; }
+  howtoShow(to, step);
 }
 function openHowto() {
   document.querySelectorAll('.howto').forEach((n) => n.remove());
   if (!settings.seenHowto) { settings.seenHowto = true; save(); const c = document.getElementById('howtoCta'); if (c) c.remove(); }
   const wrap = document.createElement('div');
   wrap.className = 'howto'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'How to play');
-  const vo = settings.voice !== false;
-  wrap.innerHTML = `<div class="howto-top"><div class="pips" aria-hidden="true"></div>
-      <button class="barbtn icon" data-h="voice" aria-pressed="${vo}" aria-label="${vo ? 'Mute the voice' : 'Turn the voice on'}">${vo ? ICON.sound : ICON.mute}</button>
+  wrap.innerHTML = `<div class="howto-top"><div class="pips" aria-hidden="true"></div><span class="howto-count muted small"></span>
       <button class="barbtn icon" data-h="close" aria-label="Close">${ICON.x}</button></div>
-    <div class="howto-stage" aria-hidden="true"></div>
-    <p class="howto-cap" aria-live="polite"></p>
+    <div class="howto-body"><div class="howto-stage" aria-hidden="true"></div><p class="howto-cap" aria-live="polite"></p></div>
+    <p class="howto-swipe" aria-hidden="true"><span class="hand">👆</span>Swipe for the next tip<span class="chev">›››</span></p>
     <div class="howto-nav"><button class="btn" data-h="back">Back</button><button class="btn primary" data-h="next"></button></div>`;
   wrap.addEventListener('click', (e) => {
     const b = e.target.closest('[data-h]'); if (!b) return;
-    const h = b.dataset.h;
-    if (h === 'close') closeHowto();
-    else if (h === 'back' && howto.i > 0) howtoShow(howto.i - 1);
-    else if (h === 'next') { if (howto.i < HOWTO.length - 1) howtoShow(howto.i + 1); else closeHowto(); }
-    else if (h === 'voice') {
-      settings.voice = settings.voice === false; save();
-      const on = settings.voice; b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? 'Mute the voice' : 'Turn the voice on'); b.innerHTML = on ? ICON.sound : ICON.mute;
-      howtoShow(howto.i);
-    }
+    if (b.dataset.h === 'close') closeHowto(); else howtoGo(b.dataset.h === 'next' ? 1 : -1);
   });
+  // Swipe: the scene follows your finger, then glides on to the next tip (or springs back).
+  const body = wrap.querySelector('.howto-body');
+  let sx = null, sy = 0, dx = 0, sideways = false;
+  wrap.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; sx = e.clientX; sy = e.clientY; dx = 0; sideways = false; });
+  wrap.addEventListener('pointermove', (e) => {
+    if (sx == null) return;
+    dx = e.clientX - sx;
+    if (!sideways && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(e.clientY - sy)) sideways = true;
+    if (sideways && !REDUCED) { body.style.transition = 'none'; body.style.transform = `translateX(${dx * .6}px)`; body.style.opacity = String(1 - Math.min(.5, Math.abs(dx) / 500)); }
+  });
+  const end = () => {
+    if (sx == null) return;
+    const moved = sideways && Math.abs(dx) > 50; sx = null;
+    if (moved && !(dx > 0 && howto.i === 0)) { howtoGo(dx < 0 ? 1 : -1); return; }
+    body.style.transition = 'transform .25s cubic-bezier(.3,.8,.3,1), opacity .25s'; body.style.transform = ''; body.style.opacity = '';
+  };
+  wrap.addEventListener('pointerup', end); wrap.addEventListener('pointercancel', end);
+  wrap.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') howtoGo(1); else if (e.key === 'ArrowLeft') howtoGo(-1); else if (e.key === 'Escape') closeHowto(); });
   document.body.appendChild(wrap);
   howtoShow(0);
+  wrap.querySelector('[data-h="next"]').focus({ preventScroll: true });
 }
 function closeHowto() {
-  howtoStop();
   const wrap = document.querySelector('.howto'); if (!wrap) return;
   wrap.classList.add('closing'); setTimeout(() => wrap.remove(), REDUCED ? 0 : 200);
 }
 
 /* ---------- events ---------- */
 const ACTIONS = {
+  groups() { showGroups(); },
   async shareGame() {
     const b = $('#shareGame'), done = (msg) => { if (b) { b.innerHTML = `${ICON.check}${msg}`; setTimeout(() => { if (b.isConnected) b.innerHTML = `${ICON.share}Share link`; }, 2200); } };
     try { if (navigator.share) { await navigator.share({ title: 'Impostor', text: 'Pass the phone. Find the faker.', url: GET_GAME_URL }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
@@ -2335,6 +2363,7 @@ const ACTIONS = {
   preset(t) {
     const p = PRESETS[t.dataset.v]; if (!p) return;
     Object.entries(p.s).forEach(([k, v]) => { settings[k] = JSON.parse(JSON.stringify(v)); });
+    settings.preset = t.dataset.v;
     save(); const y = window.scrollY; render(); window.scrollTo(0, y);
   },
   drama(t) {
@@ -2473,11 +2502,12 @@ const ACTIONS = {
   resetScores() { ask('Reset everyone\'s score to zero?', 'Reset scores', () => { settings.scores = {}; save(); render(); }, 'Cancel'); },
   board() { showBoard(); },
   resetHistory() { ask('Forget which words you have played? Every word will count as new again.', 'Reset history', () => { history = { w: {}, h: {} }; save(); seenNote(); }, 'Cancel'); },
-  resetOdds() { settings.weights = {}; settings.maxImpostors = defaultSettings().maxImpostors; save(); renderWeights(); syncResetRules(); },
+  resetOdds() { const b = oddsBase(); settings.weights = JSON.parse(JSON.stringify(b.weights)); settings.maxImpostors = b.max; save(); renderWeights(); syncResetRules(); },
   resetRules() {
     ask('Put every house rule back to its default?', 'Reset rules', () => {
       const d = defaultSettings(), urlChanged = (settings.wordsUrl || '') !== d.wordsUrl;
       RULE_KEYS.forEach((k) => { settings[k] = k === 'weights' ? {} : d[k]; });
+      settings.preset = '';
       save(); const y = window.scrollY; render(); window.scrollTo(0, y);
       if (urlChanged) loadWords();
     }, 'Cancel');
@@ -2504,6 +2534,82 @@ function ask(text, yesLabel, onYes, noLabel = 'Keep playing') {
   document.body.appendChild(wrap);
   wrap.querySelector('[data-sheet="no"]').focus({ preventScroll: true });
 }
+/* ---------- Saved groups ("D&D crew", "Work lot") ---------- */
+// The live game state stays in KEY. A group's snapshot ({settings, history}) is stored when you switch away from it,
+// and loaded (through load(), so old data is cleaned the same way) when you switch to it.
+function groupsGet() {
+  let g = null;
+  try { g = JSON.parse(localStorage.getItem(GROUPS_KEY)); } catch (e) {}
+  if (!g || !Array.isArray(g.list) || !g.list.length) g = { active: 'g1', list: [{ id: 'g1', name: 'My group' }] };
+  if (!g.list.some((x) => x.id === g.active)) g.active = g.list[0].id;
+  return g;
+}
+function groupsPut(g) { try { localStorage.setItem(GROUPS_KEY, JSON.stringify(g)); } catch (e) {} }
+const groupName = () => { const g = groupsGet(); return (g.list.find((x) => x.id === g.active) || {}).name || 'My group'; };
+function groupSwitch(id) {
+  if (game) return;
+  const g = groupsGet(), cur = g.list.find((x) => x.id === g.active);
+  if (cur) { cur.settings = JSON.parse(JSON.stringify(settings)); cur.history = JSON.parse(JSON.stringify(history)); }
+  const to = g.list.find((x) => x.id === id); if (!to) return;
+  const keep = { seenHowto: settings.seenHowto, region: settings.region, wordsUrl: settings.wordsUrl };   // device-wide, not per group
+  const next = to.settings ? Object.assign({}, to.settings, { seenHowto: keep.seenHowto, wordsUrl: keep.wordsUrl }) : Object.assign(defaultSettings(), keep, { names: [], scores: {} });
+  g.active = id; groupsPut(g);
+  try { localStorage.setItem(KEY, JSON.stringify({ settings: next, game: null, recent: [], history: to.history || { w: {}, h: {} } })); } catch (e) {}
+  settings = defaultSettings(); history = { w: {}, h: {} };
+  load(); pruneCategories(); save(); render();
+}
+function groupCreate(name) {
+  const g = groupsGet(), id = 'g' + Date.now().toString(36);
+  g.list.push({ id, name }); groupsPut(g);
+  groupSwitch(id);
+}
+function showGroups() {
+  document.querySelectorAll('.sheet-wrap').forEach((n) => n.remove());
+  const g = groupsGet();
+  const rows = g.list.map((x) => {
+    const on = x.id === g.active, st = on ? settings : (x.settings || {}), n = st.playerCount || 5;
+    const pts = Object.values(st.scores || {}).reduce((a, b) => a + b, 0);
+    return `<li class="grow${on ? ' on' : ''}"><button class="gpick" data-g="${x.id}" ${on ? 'aria-current="true"' : ''}><b>${esc(x.name)}</b>
+      <small>${on ? 'Playing now · ' : ''}${n} players${pts ? ` · ${pts} points` : ''}</small></button>
+      ${on ? `<button class="btn reset scope" data-gren="${x.id}">Rename</button>` : `<button class="btn reset wipe" data-gdel="${x.id}" aria-label="Delete ${esc(x.name)}">${ICON.x}</button>`}</li>`;
+  }).join('');
+  const wrap = document.createElement('div');
+  wrap.className = 'sheet-wrap';
+  wrap.innerHTML = `<div class="sheet groups" role="dialog" aria-modal="true" aria-label="Saved groups">
+    <div class="row"><h2>Saved groups</h2><button class="barbtn icon" data-sheet="close" aria-label="Close">${ICON.x}</button></div>
+    <p class="muted small">Each group keeps its own players, house rules, word history and scores.</p>
+    <ul class="glist">${rows}</ul>
+    <form class="gnew"><input type="text" maxlength="24" placeholder="New group name, e.g. Work lot" aria-label="New group name" autocomplete="off">
+      <button class="btn primary" type="submit">${ICON.play}Start fresh</button></form></div>`;
+  const close = () => { wrap.classList.add('closing'); setTimeout(() => wrap.remove(), REDUCED ? 0 : 200); };
+  wrap.addEventListener('click', (e) => {
+    const t = e.target.closest('button'); if (e.target === wrap) { close(); return; } if (!t) return;
+    if (t.dataset.sheet === 'close') close();
+    else if (t.dataset.g) { if (t.dataset.g !== groupsGet().active) groupSwitch(t.dataset.g); close(); }
+    else if (t.dataset.gdel) {
+      const victim = groupsGet().list.find((x) => x.id === t.dataset.gdel);
+      ask(`Delete "${victim ? victim.name : 'this group'}"? Its players, rules, word history and scores will be gone.`, 'Delete group', () => {
+        const gg = groupsGet(); gg.list = gg.list.filter((x) => x.id !== t.dataset.gdel); groupsPut(gg); showGroups();
+      }, 'Keep it');
+    } else if (t.dataset.gren) {
+      const li = t.closest('.grow'), b = li.querySelector('.gpick b');
+      const inp = document.createElement('input'); inp.type = 'text'; inp.maxLength = 24; inp.value = b.textContent; inp.className = 'gren'; inp.setAttribute('aria-label', 'Group name');
+      b.replaceWith(inp); inp.focus(); inp.select();
+      let saved = false;   // Enter saves and redraws the sheet, and the input's blur then fires too: only save once
+      const done = () => { if (saved) return; saved = true; const v = inp.value.trim(); if (v) { const gg = groupsGet(); const it = gg.list.find((x) => x.id === gg.active); if (it) it.name = v; groupsPut(gg); } showGroups(); refreshGroupChip(); };
+      inp.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') done(); });
+      inp.addEventListener('blur', done);
+    }
+  });
+  wrap.querySelector('.gnew').addEventListener('submit', (e) => {
+    e.preventDefault(); const v = wrap.querySelector('.gnew input').value.trim();
+    if (!v) { wrap.querySelector('.gnew input').focus(); return; }
+    wrap.remove(); groupCreate(v);
+  });
+  document.body.appendChild(wrap);
+}
+function refreshGroupChip() { const c = document.getElementById('groupChip'); if (c) c.querySelector('b').textContent = groupName(); }
+
 /* The leaderboard: every score so far, from the trophy button on any screen. */
 function showBoard() {
   document.querySelectorAll('.sheet-wrap').forEach((n) => n.remove());

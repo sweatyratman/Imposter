@@ -22,6 +22,13 @@ t(s.announce===true&&s.maxImpostors===2&&s.unaware===false,'Beginner: count anno
 t(await p.$eval('#preset button.sel',e=>e.dataset.v)==='beginner'&&/first games/.test(await p.textContent('#presetNote')),'Beginner is selected and explained');
 await p.click('#preset [data-v="chaos"]');s=await S(p);
 t(s.unaware===true&&s.unawareChance===50&&s.weights.all===10,'Chaos: fooled impostors at 50%, more impostors');
+t(await p.$eval('#resetOdds',e=>e.disabled),'Chaos: Reset odds is off (the odds are Chaos\'s own)');
+await p.$eval('[data-weight="2"]',e=>{e.value=80;e.dispatchEvent(new Event('input',{bubbles:true}))});t(!(await p.$eval('#resetOdds',e=>e.disabled)),'nudging an odds slider turns Reset odds on');
+await p.click('#resetOdds');s=await S(p);t(JSON.stringify(s.weights)===JSON.stringify({1:45,2:35,3:10,all:10})&&s.maxImpostors===3&&await p.$eval('#preset button.sel',e=>e.dataset.v)==='chaos','Reset odds goes back to Chaos\'s odds, not the Classic ones');
+await p.click('#preset [data-v="beginner"]');t(await p.$eval('#resetOdds',e=>e.disabled),'Beginner: Reset odds is off');
+await p.$eval('#maxImp',e=>{e.value=3;e.dispatchEvent(new Event('input',{bubbles:true}))});await p.click('#resetOdds');s=await S(p);
+t(s.maxImpostors===2&&Object.keys(s.weights).length===0&&await p.$eval('#preset button.sel',e=>e.dataset.v)==='beginner','Reset odds goes back to Beginner\'s odds');
+await p.click('#preset [data-v="chaos"]');
 await p.click('#announce');t(!(await p.$('#preset button.sel'))&&/Your own mix/.test(await p.textContent('#presetNote')),'changing a rule shows it as your own mix');
 await p.click('[data-act="resetRules"]');await yes(p);t(await p.$eval('#preset button.sel',e=>e.dataset.v)==='classic','Reset all house rules lands back on Classic');
 

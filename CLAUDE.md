@@ -126,6 +126,25 @@ These are the "established comprehensive playtester rules":
 - **No country with its own city.** A country and its famous city blur (France/Paris), so the category never holds both (21 Oct: 17 swaps, e.g. France→Belgium, England→Finland, USA→Cuba, Australia→Fiji).
 - **Quip tone:** cheeky, roasty, British, meme-literate, one short line ("Cooked. Absolutely cooked.", "{name} folded like a deckchair.").
 
+## Long-term plan (user, 22 Oct)
+- Goal: a great free game that earns through a few small in-app purchases ("if a free game is great, people are more likely to drop a couple of quid on it").
+- **Keep free forever:** the full core game, all current categories, scores, regions, secret ballot (when built). Never paywall mid-game. No ads, no timers or energy limits.
+- **Sell:** word packs (£0.99–1.99: Pub Night, Kids & Family, Internet Culture, Seasonal, 18+), custom categories (£1.99), extra modes bundle (£1.99), cosmetics (£0.99: card backs, tape, felts, reveal stings), an "everything" bundle (£4.99).
+- **Implications now:** store purchases need app-store builds (Apple/Google take 15% at small-business rates), so the static page will be wrapped (e.g. Capacitor) once the free game is polished. Build new content as **separate add-on packs** that can be locked later, not ever more entries in one list. Polish the free experience first.
+
+## Ideas backlog (brainstormed 22 Oct; none built yet)
+Top picks: secret ballot (20), screen wake lock (17), sound with mute (38), play again with the same group (1), custom categories (32).
+- **Starting a game:** 1 play again with the same group; 2 saved groups; 3 presets (Beginner/Classic/Chaos); 4 settings summary above Start; 5 seating order (drag names); 6 first-run how-to-play cards; 7 "?" explainers on house rules; 8 tips that fit the group size.
+- **Deal:** 9 hold-to-reveal; 10 "I forgot my word" re-check (identical timing for everyone); 11 undo last pass; 12 haptic tick on flip (Android only).
+- **Discussion:** 13 optional timer; 14 speaking-order hint; 15 "another lap of clues?"; 16 rules peek sheet; 17 screen wake lock; 18 block pull-to-refresh/zoom; 19 Android back goes back a screen.
+- **Voting:** 20 secret ballot with tally reveal; 21 tie re-vote; 22 vote history in results.
+- **Results:** 23 shareable result image; 24 MVP highlight; 25 more celebration variety; 26 round recap line; 27 rematch with a different starter.
+- **Long-term pull:** 28 session vs all-time leaderboard; 29 stats (best impostor, most wrongly accused, streaks); 30 end-of-session titles; 31 word thumbs-down feedback.
+- **Content:** 32 custom categories in the app; 33 family-safe filter; 34 word difficulty; 35 seasonal spotlight; 36 new categories (Pub, School Days, Holidays, Internet Culture, British Telly Legends); 37 top up Celebrations/TV Shows for Everywhere.
+- **Feel and polish:** 38 sound design with mute (the only drama iPhones get, since they can't vibrate from the web); 39 colour-blind safety (icon/pattern, not just red/teal); 40 tablet layout; 41 name avatars on vote cards; 42 results go straight to new-round choices; 43 "new players" one-pager on Game On; 44 install to home screen (overlaps the parked app idea; ask first).
+- **Modes (paid-bundle candidates):** 45 detective role; 46 blank card (no word, wins by surviving); 47 team mode; 48 speed round; 49 sudden death; 50 category roulette.
+- **Rejected:** online multiplayer and accounts, typed guesses, forced timers, ads and analytics, live AI-generated words, collapsing house rules, achievement spam, custom themes.
+
 ## Open questions (ask the user before changing)
 1. History weighting also shifts the category mix (heavily played categories come up less). Probably fine; unconfirmed.
 2. Celebrations has 52 and TV Shows 55 words in Everywhere mode (most locals are UK). Add more global ones?

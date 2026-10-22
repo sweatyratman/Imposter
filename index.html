@@ -56,7 +56,7 @@
     padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: transparent;
     font-weight: 700; font-size: .95rem; cursor: pointer; }
   .barbtn svg { width: 18px; height: 18px; }
-  .barbtn[data-nav="new"] { margin-left: auto; border-color: var(--brass); color: var(--brass); }
+  .barbtn[data-nav="new"] { margin-left: auto; }   /* quiet like the other bar buttons: brass is kept for the next move */
   .barbtn:active { transform: translateY(1px); }
   body.on-setup #bar { display: none; }
   .barbtn.icon { width: 44px; padding: 0; flex: none; }
@@ -183,7 +183,8 @@
   .seg button.sel { background: var(--paper); color: var(--ink); font-weight: 700; box-shadow: 0 2px 0 #b9ad97; }
 
   .bar { display: flex; height: 10px; border-radius: 99px; overflow: hidden; background: var(--raised); }
-  .bar span { display: block; height: 100%; transition: flex-basis .15s; }
+  .bar { position: relative; }
+  .bar span { position: absolute; inset: 0; transform-origin: left center; transition: transform .22s cubic-bezier(.3,.8,.3,1); }
   [hidden] { display: none !important; }
   .check.greyed { opacity: .42; cursor: not-allowed; }
   .check.greyed input { cursor: not-allowed; }
@@ -351,7 +352,7 @@
   .c3d.revealed .corner { animation: cornerStamp .5s .3s cubic-bezier(.2,1.5,.4,1) both; }
   @keyframes cornerStamp { from { scale: 2.6; rotate: -18deg; opacity: 0; } to { scale: 1; rotate: 0deg; opacity: 1; } }
   .c3d.revealed .rtext { display: inline-block; animation: rolePop .6s .45s cubic-bezier(.2,1.4,.4,1) both; }   /* the text only: the tape is a sibling and must stay put */
-  @keyframes rolePop { from { scale: 1.5; opacity: 0; letter-spacing: .25em; } to { scale: 1; opacity: 1; letter-spacing: 0; } }
+  @keyframes rolePop { from { scale: 1.5; opacity: 0; } to { scale: 1; opacity: 1; } }
 
   /* Lights down: a dark vignette closes in on the card, a single flash lands as the tape goes, and a faint
      wash of the winning colour (the real palette) rolls out once the role is known. */
@@ -384,6 +385,7 @@
 
   /* ---------- shuffle ---------- */
   .shuffle-screen { --cw: min(54vw, 210px, 27vh); text-align: center; padding-top: 14px; }
+  @media (max-height: 700px) { .shuffle-screen { --cw: min(44vw, 170px, 21vh); padding-top: 6px; } .shuffle-screen.timed { --cw: min(36vw, 140px, 17vh); } .shuffle-screen .gameon-stack, .shuffle-screen .after { gap: 10px; } }
   .shufnote { min-height: 1.45em; }
   .after-slot { min-height: 40px; }
   .gameon-stack { gap: 14px; }
@@ -563,6 +565,22 @@
   .subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .subhead .reset { margin-left: auto; }
   .wrow.greyed { opacity: .42; }
+  .summary { display: block; width: fit-content; max-width: 100%; margin: 0 auto 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 99px;
+    background: var(--raised); color: var(--mute); font: inherit; font-size: .8rem; text-align: center; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  #preset { grid-template-columns: repeat(auto-fit, minmax(min(100%, 5em), 1fr)); }
+  #timer { grid-template-columns: repeat(auto-fit, minmax(min(100%, 3em), 1fr)); }
+  #timer button { padding: 6px 2px; }
+  .cluetimer { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px; margin-bottom: 8px;
+    padding: 6px 12px 9px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--raised); color: var(--paper); font: inherit; cursor: pointer; overflow: hidden; }
+  .cluetimer b { font-family: var(--display); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+  .cluetimer span { font-size: .85rem; color: var(--mute); }
+  .cluetimer .tbar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,.06); }
+  .cluetimer .tbar i { position: absolute; inset: 0; background: var(--brass); transform-origin: left center; transition: transform .25s linear; }
+  .cluetimer.running { border-color: rgba(240,196,87,.6); }
+  .cluetimer.done { border-color: var(--coral); animation: timesUp .9s ease-in-out 2; }
+  .cluetimer.done span { color: var(--coral); }
+  @keyframes timesUp { 50% { transform: scale(1.03); } }
   .sub > .reset { align-self: flex-start; }
   @media (max-width: 380px) { .reset.all { font-size: .74rem; padding: 0 8px; gap: 4px; } .reset.all svg { width: 14px; height: 14px; } }
   .ledger .cluelist b { color: var(--ink); }
@@ -730,6 +748,8 @@ const defaultSettings = () => ({
   unaware: false,          // impostors can be fooled into thinking they're crew (they get a different word)
   unawareChance: 100,      // % chance that each impostor is fooled, when the option is on
   guessRule: 'impostors',  // caught impostors guess the word: 'impostors' win | 'nobody' wins | 'crew' still win
+  drama: 'full',           // the reveals: 'full' build-up, or 'quick' for groups playing lots of rounds
+  timer: 0,                // optional clue timer on the Game on screen, in seconds (0 = off)
   wordsUrl: '',
   region: guessRegion()    // where the group plays: 'uk' | 'us' | 'au' | 'all' (only words known everywhere)
 });
@@ -769,6 +789,23 @@ const buzz = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (
 
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify({ settings, game, recent, history })); } catch (e) {}
+  if (!game) { const el = document.getElementById('summary'); if (el) el.textContent = summaryText(); const pn = document.getElementById('presetNote'); if (pn) { pn.textContent = presetNote(); document.querySelectorAll('#preset button').forEach((b) => { const on = b.dataset.v === presetOn(); b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); }); } }
+}
+// One line above Start saying how this game will play, so nobody has to scroll through the rules to check.
+function summaryText() {
+  const n = settings.playerCount, eff = effective(n).filter((o) => o.pct > 0);
+  const counts = eff.filter((o) => o.key !== 'all').map((o) => o.count), top = eff.filter((o) => o.key !== 'all').sort((a, b) => b.pct - a.pct)[0];
+  const lo = Math.min(...counts), hi = Math.max(...counts);
+  const imps = !counts.length ? 'everyone an impostor' : top && top.pct >= 75 ? `mostly ${top.count} ${plural(top.count, 'impostor', 'impostors')}`
+    : lo === hi ? `${lo} ${plural(lo, 'impostor', 'impostors')}` : `${lo}–${hi} impostors`;
+  const bits = [`${n} players`, imps];
+  if (fooling()) bits.push('fooled impostors');
+  bits.push(allFooled() || settings.showHint === false ? 'no clues' : 'clues on');
+  if (!fooling() && settings.showCategory === false) bits.push('category hidden');
+  if (settings.drama === 'quick') bits.push('quick reveals');
+  if (+settings.timer) bits.push(`${+settings.timer / 60}-min timer`);
+  bits.push((REGIONS.find(([v]) => v === settings.region) || ['', ''])[1]);
+  return bits.join(' · ');
 }
 function load() {
   try {
@@ -787,6 +824,8 @@ function load() {
       if (d.settings.category && d.settings.category !== 'random' && !settings.categories.length) settings.categories = [d.settings.category];
       delete settings.category;
       if (!['impostors', 'nobody', 'crew'].includes(settings.guessRule)) settings.guessRule = 'impostors';
+      if (!['full', 'quick'].includes(settings.drama)) settings.drama = 'full';
+      if (!TIMERS.some(([v]) => v === +settings.timer)) settings.timer = 0;
       settings.maxImpostors = Math.max(1, Math.min(MAX_PLAYERS, Math.round(+settings.maxImpostors) || 3));
       settings.unaware = settings.unaware === true;
       settings.preferNew = settings.preferNew !== false;
@@ -1016,6 +1055,7 @@ function startRound() {
     screen: 'pass', players: getNames(), impostors, word, wkey, hints, clue, alts, altKeys, fooled,
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     outcome: null, announce: !!settings.announce, guessRule: settings.guessRule,
+    quick: settings.drama === 'quick', timer: +settings.timer || 0, timerEnd: null, timerLeft: null,
     showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
     showCategory: fooling() || settings.showCategory !== false,
     impostorCount: count, maxPossible, first: rand(n), starterShown: false
@@ -1208,6 +1248,20 @@ const REGION_NOTES = {
   all: 'Only words everyone knows, with no local names or local-only words. Best for mixed groups.'
 };
 const regionNote = () => REGION_NOTES[settings.region] || '';
+const presetNote = () => presetOn() ? PRESETS[presetOn()].note : 'Your own mix of rules. Tap one to load a ready-made setup.';
+const dramaNote = () => settings.drama === 'quick' ? 'Quick: straight to the reveal, for groups playing lots of rounds.' : 'Full drama: the build-up, the held breath, the tape ripping off.';
+const DRAMA = [['full', 'Full drama'], ['quick', 'Quick']];
+const TIMERS = [[0, 'Off'], [60, '1 min'], [120, '2 min'], [180, '3 min'], [300, '5 min']];
+// Quick setups: each sets the gameplay rules in one tap (word list, history and region are left alone).
+const PRESETS = {
+  beginner: { label: 'Beginner', note: 'One or two impostors, the count is announced, clues on. Great for first games.',
+    s: { weights: {}, maxImpostors: 2, announce: true, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0 } },
+  classic: { label: 'Classic', note: 'The standard game: usually one impostor, with more in bigger groups.',
+    s: { weights: {}, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0 } },
+  chaos: { label: 'Chaos', note: 'More impostors, and half of them think they\'re crew. Nobody is safe.',
+    s: { weights: { 1: 45, 2: 35, 3: 10, all: 10 }, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: true, unawareChance: 50, guessRule: 'impostors', drama: 'full', timer: 0 } }
+};
+const presetOn = () => Object.keys(PRESETS).find((k) => Object.entries(PRESETS[k].s).every(([key, v]) => JSON.stringify(settings[key]) === JSON.stringify(v))) || '';
 const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], ['crew', 'Crew still wins']];
 function renderSetup() {
   const n = settings.playerCount;
@@ -1241,6 +1295,14 @@ function renderSetup() {
       <div class="row"><h2>House rules</h2>
         <button class="btn small resetrules reset all" data-act="resetRules" ${rulesAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset all house rules</button></div>
     <section class="sub">
+      <h3>Quick setups</h3>
+      <div class="seg" id="preset" role="group" aria-label="Quick setups">
+        ${Object.entries(PRESETS).map(([k, p]) => `<button data-act="preset" data-v="${k}" class="${presetOn() === k ? 'sel' : ''}" aria-pressed="${presetOn() === k}">${p.label}</button>`).join('')}
+      </div>
+      <p class="muted small" id="presetNote">${presetNote()}</p>
+    </section>
+
+    <section class="sub">
       <div class="subhead"><h3>Impostors per round</h3>
         <button class="btn reset scope" data-act="resetOdds" id="resetOdds" ${oddsAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset odds</button></div>
       <div class="wrow">
@@ -1268,6 +1330,19 @@ function renderSetup() {
     </section>
 
     <section class="sub">
+      <h3>Pace</h3>
+      <p class="muted small">How long the reveals take:</p>
+      <div class="seg" id="drama" role="group" aria-label="Reveals">
+        ${DRAMA.map(([v, l]) => `<button data-act="drama" data-v="${v}" class="${settings.drama === v ? 'sel' : ''}" aria-pressed="${settings.drama === v}">${l}</button>`).join('')}
+      </div>
+      <p class="muted small" id="dramaNote">${dramaNote()}</p>
+      <p class="muted small">A clue timer on the Game on screen (it never forces the vote):</p>
+      <div class="seg" id="timer" role="group" aria-label="Clue timer">
+        ${TIMERS.map(([v, l]) => `<button data-act="timerset" data-v="${v}" class="${+settings.timer === v ? 'sel' : ''}" aria-pressed="${+settings.timer === v}">${l}</button>`).join('')}
+      </div>
+    </section>
+
+    <section class="sub">
       <h3>Caught impostors guess the word</h3>
       <p class="muted small">Once every impostor has been voted out, they get one shot at saying the secret word. If they get it right:</p>
       <div class="seg" id="guessrule" role="group" aria-label="If the caught impostors guess the word">
@@ -1289,14 +1364,15 @@ function renderSetup() {
     </section>
     </section>
 
-    <div class="dock"><button class="btn primary big" data-act="start">${ICON.play}Start game</button></div>
+    <div class="dock"><button class="summary" data-act="toRules" id="summary" aria-label="Your house rules: tap to see them">${summaryText()}</button>
+      <button class="btn primary big" data-act="start">${ICON.play}Start game</button></div>
   </div>`;
   renderNames(); renderCats(); renderWeights(); unawareNote(); fitTagline(); seenNote();
   $$('.slider input').forEach(syncSlider);
   $('#wstatus').textContent = wordsStatusText();
 }
 // The settings under House rules, and whether they're all back at their defaults.
-const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'preferNew', 'unaware', 'unawareChance', 'guessRule', 'wordsUrl'];
+const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'preferNew', 'unaware', 'unawareChance', 'guessRule', 'drama', 'timer', 'wordsUrl'];
 function rulesAreDefault() {
   const d = defaultSettings();
   return RULE_KEYS.every((k) => k === 'weights'
@@ -1434,7 +1510,10 @@ function renderWeights() {
 }
 function updateSplit() {
   const eff = effective(settings.playerCount);
-  $('#split').innerHTML = eff.map((o) => `<span style="flex-basis:${o.pct}%;flex-grow:0;flex-shrink:0;background:${segColour(o.key)}"></span>`).join('');
+  const bar = $('#split'), keys = eff.map((o) => o.key).join();
+  if (bar.dataset.keys !== keys) { bar.dataset.keys = keys; bar.innerHTML = eff.map((o) => `<span data-k="${o.key}" style="background:${segColour(o.key)}"></span>`).join(''); }
+  let at = 0;
+  eff.forEach((o) => { const sp = bar.querySelector(`[data-k="${o.key}"]`); sp.style.transform = `translateX(${at}%) scaleX(${o.pct / 100})`; at += o.pct; });
   eff.forEach((o) => { const el = $(`[data-pct="${o.key}"]`); if (el) el.textContent = Math.round(o.pct) + '%'; });
 }
 
@@ -1478,13 +1557,13 @@ const SCREENS = {
         const sx = (rand(2) ? 1 : -1) * (40 + rand(60)) + 'vw', sy = (rand(160) - 80) + 'px', sr = (rand(70) - 35) + 'deg';
         minis += `<div class="mini ${k % 2 ? 'b' : 'a'}" style="--k:${k};--sx:${sx};--sy:${sy};--sr:${sr}">${backHTML()}</div>`;
       }
-      return `<div class="screen shuffle-screen">
+      return `<div class="screen shuffle-screen${game.timer ? ' timed' : ''}">
         <p class="kicker shufnote" id="shufnote">Shuffling the cards…</p>
         <div class="table-area" data-act="skipShuffle">${minis}${drawn}</div>
         <div class="after-slot" id="afterSlot"><p class="muted small">Tap the cards to skip</p></div>
       </div>`;
     }
-    return `<div class="screen shuffle-screen">
+    return `<div class="screen shuffle-screen${game.timer ? ' timed' : ''}">
       <p class="kicker shufnote" id="shufnote">And going first is…</p>
       <div class="table-area starter landed">${drawn}</div>
       <div class="after-slot" id="afterSlot">${gameOnHTML(false)}</div>
@@ -1577,7 +1656,7 @@ const SCREENS = {
       intro = `<h1>Crew wins… almost</h1>`;
       stake = 'Say the secret word and the last impostor steals the win.';
     } else {
-      intro = `<h1>All impostors found!</h1>`;
+      intro = `<h1>${caughtImpostors() > 1 ? 'All impostors found!' : 'Impostor found!'}</h1>`;
       stake = game.guessRule === 'nobody' ? 'If they get it, nobody wins.'
         : game.guessRule === 'crew' ? 'If they get it, the crew still win. It\'s for bragging rights.'
         : `If they get it, ${who} steal${multi ? '' : 's'} the win.`;
@@ -1652,6 +1731,20 @@ function scoreHTML(scored) {
       <span>${esc(n)}</span><span>${gain(i) ? `<em>+${gain(i)}</em>` : ''}<b>${sc[n] || 0}</b></span></div>`; }).join('')}
     <p class="muted small">${SCORING_NOTE}</p></section>`;
 }
+const clock = (ms) => { const t = Math.ceil(ms / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+// The optional clue timer: tap to start or pause. When it runs out it buzzes and nudges the vote, nothing more.
+function tickTimer() {
+  const el = $('#cluetimer'); if (!el || !game) return;
+  const total = game.timer * 1000, running = !!game.timerEnd;
+  const left = running ? Math.max(0, game.timerEnd - Date.now()) : (game.timerLeft > 0 ? game.timerLeft : (game.timerLeft === 0 ? 0 : total));
+  $('#tleft').textContent = clock(left);
+  $('#tfill').style.transform = `scaleX(${left / total})`;
+  const over = left <= 0;
+  el.classList.toggle('running', running && !over); el.classList.toggle('done', over);
+  $('#tstate').textContent = over ? 'Time\'s up. Time to vote!' : running ? 'Tap to pause' : (game.timerLeft > 0 ? 'Paused. Tap to carry on' : 'Tap to start the clue timer');
+  if (over && running) { game.timerEnd = null; game.timerLeft = 0; save(); buzz([200, 100, 200]); return; }
+  if (running) later(tickTimer, 250);
+}
 function gameOnHTML(animate) {
   const c = game.impostorCount, n = game.players.length;
   const note = game.announce
@@ -1660,7 +1753,7 @@ function gameOnHTML(animate) {
     <h1 class="gameon">Game on</h1>
     <p class="lead">Take turns giving a clue. Vague enough to fool the impostor, clear enough to prove you know the word.</p>
     ${note}
-    <div class="dock"><button class="btn primary big" data-act="ready">${ICON.gavel}We're ready to vote</button></div>
+    <div class="dock">${game.timer ? `<button class="cluetimer" data-act="timer" id="cluetimer" aria-live="polite"><b id="tleft">${clock(game.timerLeft > 0 ? game.timerLeft : game.timer * 1000)}</b><span id="tstate">Tap to start the clue timer</span><i class="tbar"><i id="tfill"></i></i></button>` : ''}<button class="btn primary big" data-act="ready">${ICON.gavel}We're ready to vote</button></div>
     <button class="btn ghost small" data-act="quit">End game</button>
   </div>`;
 }
@@ -1724,7 +1817,8 @@ function render() {
   window.scrollTo(0, 0);
   fitGrid(); fitText($app);
   if (game.screen === 'playing' && !game.starterShown) runShuffle();
-  if (game.screen === 'verdict' && !game.verdict.shown) runVerdict(false);
+  if (game.screen === 'verdict' && !game.verdict.shown) runVerdict(!!game.quick);
+  if (game.screen === 'playing' && game.starterShown && game.timer) tickTimer();
   if (game.screen === 'verdict' && game.verdict.shown && autoAdvance(game.verdict)) later(() => ACTIONS.verdictNext(), AUTO_MS);
 }
 
@@ -1747,6 +1841,12 @@ function runShuffle() {
   const area = $('.table-area');
   if (REDUCED || !area) { landShuffle(); return; }
   const note = $('#shufnote');
+  if (game.quick) {   // Quick pace: straight to the draw
+    later(() => { area.classList.add('gather', 'spent', 'draw'); note.textContent = 'And going first is…'; }, 30);
+    later(() => { const d = $('.drawn'); d.classList.add('flipped', 'bounce'); buzz(40); }, 450);
+    later(landShuffle, 1500);
+    return;
+  }
   later(() => area.classList.add('gather'), 30);
   later(() => area.classList.add('split'), 950);
   later(() => area.classList.remove('split'), 1350);
@@ -1895,6 +1995,28 @@ const ACTIONS = {
     else settings.categories = settings.categories.concat(c);           // picking any category un-selects Random
     renderCats(); save();
   },
+  preset(t) {
+    const p = PRESETS[t.dataset.v]; if (!p) return;
+    Object.entries(p.s).forEach(([k, v]) => { settings[k] = JSON.parse(JSON.stringify(v)); });
+    save(); const y = window.scrollY; render(); window.scrollTo(0, y);
+  },
+  drama(t) {
+    settings.drama = t.dataset.v; save(); syncResetRules();
+    $$('#drama button').forEach((b) => { const on = b.dataset.v === settings.drama; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+    $('#dramaNote').textContent = dramaNote();
+  },
+  timerset(t) {
+    settings.timer = +t.dataset.v; save(); syncResetRules();
+    $$('#timer button').forEach((b) => { const on = +b.dataset.v === +settings.timer; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+  },
+  toRules() { const r = $('#rules'); if (r) r.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); },
+  timer() {
+    if (!game || !game.timer) return;
+    const now = Date.now();
+    if (game.timerEnd) { game.timerLeft = Math.max(0, game.timerEnd - now); game.timerEnd = null; }   // pause
+    else { const left = game.timerLeft > 0 ? game.timerLeft : game.timer * 1000; game.timerEnd = now + left; game.timerLeft = null; }
+    save(); tickTimer();
+  },
   region(t) {
     settings.region = t.dataset.v; save(); seenNote();
     $$('#region button').forEach((b) => { const on = b.dataset.v === settings.region; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
@@ -1967,7 +2089,7 @@ const ACTIONS = {
   unmask() {
     if (busy || game.unmasked) return;
     busy = true;
-    const F = 2050;   // when the flip lands
+    const quick = !!game.quick, F = quick ? 450 : 2050;   // when the flip lands
     const area = $('.stack-area'), cards = $$('.stack-area .c3d'), n = cards.length;
     const done = () => { game.unmasked = true; save(); render(); };
     if (REDUCED) { done(); return; }
@@ -1977,7 +2099,7 @@ const ACTIONS = {
     if (title) { title.innerHTML = REVEALED_TITLE; title.setAttribute('aria-label', 'The impostor was…'); }
     // Build-up: the pile shakes harder over three beats while the room closes in…
     cards.forEach((c) => c.classList.add('suspense'));
-    [0, 1, 2].forEach((k) => later(() => {
+    if (!quick) [0, 1, 2].forEach((k) => later(() => {
       cards.forEach((c) => { c.style.setProperty('--tr', (1.1 + (k + 1) / 3 * 2.6).toFixed(2)); c.style.setProperty('--trd', (.72 - (k + 1) / 3 * .34).toFixed(2) + 's'); });
       lights(.42 + (k + 1) / 3 * .48, area);
       buzz([22, 70, 34]);

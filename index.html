@@ -732,6 +732,17 @@
   .hflip .hcard.imp { opacity: 0; animation: fadeIn .5s ease-out 1s both; }
   .hflip .hcard:first-child { animation: fadeOut .5s ease-out 1s both; }
   .hend .hbubble { position: static; }
+  .hbook { display: grid; gap: 10px; width: 230px; padding: 18px 16px; border-radius: 16px; border: 1px solid rgba(233,185,73,.3);
+    background: linear-gradient(180deg, #3d1724, #26101a); box-shadow: 0 16px 34px rgba(0,0,0,.45), inset 0 0 0 5px rgba(0,0,0,.12); position: relative; }
+  .hbook::before { content: ""; position: absolute; inset: 6px; border-radius: 11px; border: 1.5px dashed rgba(233,185,73,.35); pointer-events: none; }
+  .hrule { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .85rem; color: var(--paper);
+    opacity: 0; animation: hPop .4s cubic-bezier(.2,1.2,.4,1) both; animation-delay: calc(var(--i) * .35s + .2s); }
+  .htog { position: relative; width: 34px; height: 20px; border-radius: 99px; background: rgba(255,255,255,.14); flex: none; }
+  .htog::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--paper);
+    animation: hTog .35s cubic-bezier(.3,.8,.3,1) both; animation-delay: calc(var(--i) * .35s + .7s); }
+  .hrule .htog { animation: hTogBg .35s ease both; animation-delay: calc(var(--i) * .35s + .7s); }
+  @keyframes hTog { to { transform: translateX(14px); } }
+  @keyframes hTogBg { to { background: var(--brass); } }
   .hends { display: grid; gap: 6px; text-align: center; font-weight: 700; }
   .hends span { opacity: 0; animation: fadeUp .4s ease-out both; }
   .hends .c { color: var(--teal); animation-delay: 3.2s; }
@@ -2440,11 +2451,12 @@ function getGameHTML() {
 
 /* ---------- How to play: short animated scenes, swiped through at your own pace ---------- */
 const HOWTO = [
-  { id: 'deal', text: 'Everyone gets the same secret word, except the impostor, who doesn\'t.' },
-  { id: 'pass', text: 'Pass the phone round. Tap your card to look, then tap it again to hide it.' },
-  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Impostor, blend in.' },
+  { id: 'deal', text: 'Everyone gets the same secret word, except the impostor.' },
+  { id: 'pass', text: 'Pass the phone around. Tap your card to look, then tap it again to hide it.' },
+  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Be vague, but not too vague. Impostor, try to blend in.' },
   { id: 'vote', text: 'When everyone has had a go, agree on who to vote out.' },
-  { id: 'end', text: 'Catch every impostor and the crew win, unless they guess the word. Vote out a crewmate, and the impostors win.' }
+  { id: 'end', text: 'Catch every impostor and the crew win, unless they guess the word. Vote out a crewmate, and the impostors win.' },
+  { id: 'rules', text: 'Make it your own: check out House rules for extensive rule customisation, from impostor odds and clues to timers and scoring.' }
 ];
 const MASK_SM = '<svg viewBox="0 0 64 32" aria-hidden="true"><path fill="currentColor" d="M2 8c10-6 20-6 30 2 10-8 20-8 30-2-1 14-9 22-19 20-5-1-8-5-11-9-3 4-6 8-11 9C11 30 3 22 2 8zm14 6c-4 0-7 2-7 4 3 2 8 2 11-1-1-2-2-3-4-3zm32 0c-2 0-3 1-4 3 3 3 8 3 11 1 0-2-3-4-7-4z"/></svg>';
 function howtoStage(id) {
@@ -2459,6 +2471,8 @@ function howtoStage(id) {
     <span class="hbubble sus shake" style="--i:2;right:0;top:-2%">Round…?</span><span class="hbubble" style="--i:3;right:0;top:58%">Slices</span></div>`;
   if (id === 'vote') return `<div class="hvote" style="position:relative"><div class="hrow">${['A', 'B', 'C', 'D'].map((n, i) =>
     `<div class="hcard ${i === 2 ? 'pick' : 'dim'}">${n}${i === 2 ? '<span class="hstamp">VOTED OUT</span>' : ''}</div>`).join('')}</div><span class="hpointer"></span></div>`;
+  if (id === 'rules') return `<div class="hbook">${['Impostor odds', 'Clues', 'Clue timer', 'Scoring'].map((l, i) =>
+    `<span class="hrule" style="--i:${i}"><b>${l}</b><i class="htog"></i></span>`).join('')}</div>`;
   return `<div class="hend"><div class="hflip"><div class="hcard">C</div><div class="hcard imp">${MASK_SM}</div></div>
     <span class="hbubble" style="--i:1.4">Is it… pizza?</span>
     <div class="hends"><span class="c">Wrong guess: crew win</span><span class="i">Vote out a crewmate: impostors win</span></div></div>`;

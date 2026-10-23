@@ -9,7 +9,7 @@ A pass-the-phone social deduction game. Pick players, categories, the most impos
 
 ## How to play, in the app
 
-New players see a **"New here?"** invitation on the setup screen, and the **?** button by the trophy replays it any time: five short animated scenes (the deal, passing the phone, clues, the vote, how it ends). Swipe left for the next tip (or tap Next); swipe right to go back. It never moves on by itself.
+New players see a **"New here?"** invitation on the setup screen, and the **?** button by the trophy replays it any time: six short animated scenes (the deal, passing the phone, clues, the vote, how it ends, and a pointer to House rules). Swipe left for the next tip (or tap Next); swipe right to go back. It never moves on by itself.
 
 ## Saved groups
 

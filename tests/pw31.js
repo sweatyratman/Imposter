@@ -39,7 +39,10 @@ const w=g.white;t(w!=null&&g.impostors[w]&&g.clue[w]==null&&g.impostors.filter(B
 for(let i=0;i<g.players.length;i++){await p.click('[data-act="reveal"]');if(i===w){await p.waitForTimeout(300);t(/Mr White/.test(await p.textContent('.deal-card .cface'))&&/No word, no clue/.test(await p.textContent('.deal-card .cface')),'Mr White\'s card says so')}await p.click('[data-act="hide"]')}
 await p.click('[data-act="skipShuffle"]');await p.click('[data-act="ready"]');
 const crew=g.impostors.findIndex(v=>!v);await vote(p,crew);await p.mouse.click(180,300);await p.waitForSelector('[data-act="unmask"]');await p.click('[data-act="unmask"]');await p.click('[data-act="toResults"]');await p.waitForSelector('.roster');
-t(/Mr White/.test(await p.textContent('.roster'))&&/Mr White \(no clue\)/.test(await p.textContent('.ledger')),'results name Mr White');await p.close();
+t(/Mr White/.test(await p.textContent('.roster'))&&/Mr White \(no clue\)/.test(await p.textContent('.ledger')),'results name Mr White');
+{const sc=(await G(p)).outcome.scored,other=g.impostors.findIndex((v,i)=>v&&i!==w);t(sc[w]===3&&sc[other]===2,'Mr White gets +1 on a win ('+JSON.stringify(sc)+')');}
+await home(p);let firsts=0;for(let k=0;k<30;k++){await p.click('[data-act="start"]');const h=await G(p);if(h.white!=null&&h.first===h.white)firsts++;await home(p)}
+t(firsts===0,'Mr White never goes first (30 rounds)');await p.close();
 p=await mk({weights:ONE,mrWhite:true});await p.click('[data-act="start"]');g=await G(p);t(g.white==null,'with a lone impostor there is no Mr White');await p.close();
 
 // ---- ties

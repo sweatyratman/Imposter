@@ -1275,9 +1275,9 @@ function startRound() {
   const aware = impostors.map((v, i) => (v && !fooled[i] ? i : -1)).filter((i) => i >= 0);
   const white = settings.mrWhite && aware.length >= 2 ? pick(aware) : null;
   if (white != null) clue[white] = null;
-  // Who goes first: anyone, or (optional) never an impostor while there is a crewmate to start.
+  // Who goes first: anyone but Mr White (no clue to go on), or (optional) never an impostor while there is a crewmate to start.
   const crewIdx = impostors.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0);
-  const first = settings.fairStart && crewIdx.length ? pick(crewIdx) : rand(n);
+  const first = settings.fairStart && crewIdx.length ? pick(crewIdx) : pick(names.map((_, i) => i).filter((i) => i !== white));
   game = {
     screen: 'pass', players: names, impostors, word, wkey, hints, clue, alts, altKeys, fooled, white,
     tieRule: settings.tieRule, accuserBonus: !!settings.accuserBonus, guessHalf: !!settings.guessHalf, firstTo: +settings.firstTo || 0, bonus: {},
@@ -1304,6 +1304,7 @@ const caughtImpostors = () => game.out.filter((i) => game.impostors[i]).length;
 // A caught impostor gets nothing, unless the caught impostors' guess is what won it.
 const SCORING_NOTE = 'Crew win: 1 point each. Impostors win: 2 points each, or 3 for a lone impostor. Caught impostors get nothing, unless their guess wins it.';
 const scoringNote = () => SCORING_NOTE + (settings.guessHalf ? ' A winning guess pays 1 point.' : '') + (settings.accuserBonus ? ' +1 for calling out an impostor.' : '')
+  + (settings.mrWhite ? ' Mr White gets +1 on a win.' : '')
   + (+settings.firstTo ? ` First to ${settings.firstTo} points wins the game.` : '');
 function finish(winner, reason, winners, byGuess) {
   const kind = winner === 'impostors' ? 'impWin' : winner === 'crew' ? 'crewWin' : 'draw';
@@ -1312,7 +1313,7 @@ function finish(winner, reason, winners, byGuess) {
   const pts = {};
   if (winner === 'crew') all.filter((i) => !game.impostors[i]).forEach((i) => { pts[i] = 1; });
   if (winner === 'impostors') (winners || all.filter((i) => game.impostors[i]))
-    .filter((i) => byGuess || !game.out.includes(i)).forEach((i) => { pts[i] = byGuess && game.guessHalf ? 1 : lone ? 3 : 2; });
+    .filter((i) => byGuess || !game.out.includes(i)).forEach((i) => { pts[i] = (byGuess && game.guessHalf ? 1 : lone ? 3 : 2) + (i === game.white ? 1 : 0); });   // Mr White: +1 for winning blind
   Object.entries(game.bonus || {}).forEach(([i, b]) => { pts[i] = (pts[i] || 0) + b; });   // optional accuser bonus
   game.outcome.scored = pts;
   settings.scores = settings.scores || {};
@@ -1600,7 +1601,7 @@ function renderSetup() {
       <label class="check"><input type="checkbox" id="noRepeat" ${settings.noRepeat ? 'checked' : ''}> Avoid the same impostor twice in a row</label>
       <p class="muted small">Last round's impostors are a quarter as likely to be picked again.</p>
       <label class="check"><input type="checkbox" id="mrWhite" ${settings.mrWhite ? 'checked' : ''}> Mr White</label>
-      <p class="muted small">With two or more impostors, one of them gets no clue at all.</p>
+      <p class="muted small">With two or more impostors, one of them gets no clue at all. Mr White never goes first, and gets +1 on a win.</p>
       <div class="seg" id="tierule" role="group" aria-label="If the vote is tied">
         ${TIE_RULES.map(([v, l]) => `<button data-act="tierule" data-v="${v}" class="${settings.tieRule === v ? 'sel' : ''}" aria-pressed="${settings.tieRule === v}">${l}</button>`).join('')}
       </div>

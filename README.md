@@ -51,7 +51,7 @@ The **👥 group button** on the setup screen keeps separate save slots, for exa
 - **Fair play** (all off by default; the Beginner setup turns on the first two):
   - **The impostor never goes first:** the starting player is always crew. Fairer on the impostor, though it tells everyone the starter is safe.
   - **Avoid the same impostor twice in a row:** last round's impostors are a quarter as likely to be picked again (never ruled out).
-  - **Mr White:** with two or more impostors, one of them gets a blank card: no word, no clue.
+  - **Mr White:** with two or more impostors, one of them gets a blank card: no word, no clue. Mr White never goes first and gets +1 on a win.
 - **Ties:** tap **It's a tie** on the vote screen, mark the tied players, then **Break the tie**. A house rule picks how: **Re-vote** (the tied players give one more clue each, then everyone votes between just them), **Random**, or **First player** (whoever went first decides).
 - **Scoring options:** **+1 for calling out an impostor** (tap who called it on the Correct! screen); **a stolen win pays 1 point** (instead of 2 or 3); **Play to** 5, 10, 15 or 20 points, with a champion banner and a "New game" button that puts scores back to 0.
 - **Sound:** reveals have sound effects (thumps on the countdown, the tape ripping, a hit or a sigh, the ink bleeding through). They're identical for crew and impostor until the tape comes off. Switch them off under Pace.

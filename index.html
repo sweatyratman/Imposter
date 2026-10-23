@@ -574,6 +574,36 @@
   .subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .subhead .reset { margin-left: auto; }
   .wrow.greyed { opacity: .42; }
+  /* ---------- the setup screen: a lit card table up top, the house rulebook (oxblood leather) from House rules down ---------- */
+  body.on-setup #app { padding-bottom: 0; overflow: clip; }   /* the decorations and the rulebook band never widen the page */
+  .setup { position: relative; isolation: isolate; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+  .setup::before { content: ""; position: absolute; z-index: -2; top: -12px; left: 50%; width: 100vw; height: 900px; transform: translateX(-50%); pointer-events: none;
+    background: radial-gradient(55% 380px at 50% 0%, rgba(255,226,170,.13), transparent 75%), radial-gradient(40% 300px at 85% 260px, rgba(43,179,154,.06), transparent 80%),
+      radial-gradient(45% 320px at 10% 520px, rgba(128,83,212,.07), transparent 80%); }
+  .decor { position: absolute; z-index: -1; inset: 0 0 auto; height: 820px; pointer-events: none; }
+  .dcard { position: absolute; width: 92px; aspect-ratio: 5 / 7; border-radius: 12px; border: 1px solid rgba(244,238,227,.09);
+    background: linear-gradient(160deg, rgba(244,238,227,.06), rgba(244,238,227,.015)); box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    animation: drift 22s ease-in-out infinite alternate; }
+  .dcard::after { content: ""; position: absolute; inset: 10px; border-radius: 7px; border: 1px dashed rgba(233,185,73,.10); }
+  .dcard.d1 { top: 150px; left: -46px; rotate: -18deg; }
+  .dcard.d2 { top: 330px; right: -52px; rotate: 14deg; width: 104px; animation-duration: 27s; animation-delay: -6s; }
+  .dcard.d3 { top: 560px; left: -30px; rotate: 9deg; width: 78px; animation-duration: 19s; animation-delay: -11s; }
+  .dcard.d4 { top: 690px; right: -38px; rotate: -24deg; animation-duration: 24s; animation-delay: -3s; }
+  @keyframes drift { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(10px, -26px) rotate(6deg); } }
+  #rules { position: relative; border-top: 0; margin-top: 18px; padding-top: 30px; }
+  #rules::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: -600px; left: 50%; width: 100vw; transform: translateX(-50%); pointer-events: none;
+    background:
+      radial-gradient(120% 420px at 50% 0%, rgba(255,186,150,.10), transparent 70%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"),
+      linear-gradient(#34151f, #26101a 380px, #1c0b13);
+    box-shadow: inset 0 18px 24px -14px rgba(0,0,0,.75); }
+  #rules::after { content: ""; position: absolute; top: 9px; left: 50%; width: calc(100vw - 20px); transform: translateX(-50%); border-top: 2px dashed rgba(233,185,73,.42); pointer-events: none; }
+  #rules .sub { background: linear-gradient(180deg, rgba(74,30,44,.55), rgba(46,18,28,.55)); border: 1px solid rgba(233,185,73,.18); box-shadow: 0 12px 26px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,220,200,.06); }
+  #rules .seg { background: rgba(10,4,8,.35); }
+  #rules .muted { color: #cdb2b8; }
+  #rules .btn:not(.primary):not(.reset), #rules input[type="url"] { background: rgba(10,4,8,.35); border-color: rgba(233,185,73,.16); }
+  body.on-setup .dock { background: linear-gradient(rgba(14,8,14,0), rgba(14,8,14,.9) 32%); }
+  @media (prefers-reduced-motion: reduce) { .dcard { animation: none; } }
   .stage.verdict.credited { --cw: min(52vw, 210px, 25vh); }   /* room for "Who called it?": set for the whole reveal, so nothing jumps or gives anything away */
   @media (max-height: 700px) { body .stage.verdict.credited { --cw: min(44vw, 170px, 20vh); } }
   .votefoot { display: flex; justify-content: center; align-items: center; gap: 6px 14px; flex-wrap: wrap; }
@@ -1469,7 +1499,8 @@ const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], 
 function renderSetup() {
   const n = settings.playerCount;
   $app.innerHTML = `
-  <div class="screen fadein">
+  <div class="screen fadein setup">
+    <div class="decor" aria-hidden="true"><i class="dcard d1"></i><i class="dcard d2"></i><i class="dcard d3"></i><i class="dcard d4"></i></div>
     <header class="masthead">
       <span class="logo-card" aria-hidden="true"><span class="cback"></span><span class="cframe">${MASK()}</span></span>
       <div class="logo-words"><h1 class="wordmark">Impostor</h1>

@@ -574,6 +574,30 @@
   .subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .subhead .reset { margin-left: auto; }
   .wrow.greyed { opacity: .42; }
+  .stage.verdict.credited { --cw: min(52vw, 210px, 25vh); }   /* room for "Who called it?": set for the whole reveal, so nothing jumps or gives anything away */
+  @media (max-height: 700px) { body .stage.verdict.credited { --cw: min(44vw, 170px, 20vh); } }
+  .votefoot { display: flex; justify-content: center; align-items: center; gap: 6px 14px; flex-wrap: wrap; }
+  .votefoot .btn { width: auto; }
+  .votefoot .btn.primary { padding: 0 18px; min-height: 52px; }
+  .gcard.tied { transform: translateY(-6px) scale(1.04); }
+  .gcard.tied .cface { box-shadow: 0 0 0 4px var(--brass), 0 14px 28px rgba(0,0,0,.45); }
+  .gcard { transition: transform .2s cubic-bezier(.3,.8,.3,1); }
+  .credit { display: grid; gap: 6px; }
+  .credit p { margin: 0; }
+  .credit .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+  .credit .chips button { flex: none; min-height: 40px; padding: 0 14px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--raised);
+    color: var(--paper); font: inherit; font-size: .9rem; cursor: pointer; transition: transform .15s, background .15s; }
+  .credit .chips button.sel { background: var(--brass); color: var(--ink); border-color: var(--brass); font-weight: 700; transform: scale(1.04); }
+  .champ { display: grid; justify-items: center; gap: 6px; padding: 16px; border-radius: 18px; text-align: center;
+    background: radial-gradient(120% 120% at 50% 0%, rgba(233,185,73,.28), rgba(233,185,73,.06)); border: 1.5px solid rgba(233,185,73,.6); animation: champIn .6s cubic-bezier(.2,1.2,.4,1) both; }
+  .champ-cup { font-size: 2.2rem; animation: champCup 1.4s ease-in-out .6s 2; }
+  .champ b { font-family: var(--display); font-size: 1.2rem; }
+  .champ small { color: var(--mute); }
+  @keyframes champIn { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+  @keyframes champCup { 50% { transform: translateY(-6px) rotate(-8deg) scale(1.12); } }
+  #tierule { grid-template-columns: repeat(3, 1fr); }
+  #firstto { grid-template-columns: repeat(auto-fit, minmax(min(100%, 3em), 1fr)); }
+  #firstto button { padding: 6px 2px; }
   .groupchip { display: flex; align-items: center; gap: 8px; width: 100%; margin: 2px 0 6px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 14px;
     background: var(--raised); color: var(--paper); font: inherit; text-align: left; cursor: pointer; }
   .groupchip b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -873,10 +897,19 @@ const defaultSettings = () => ({
   unawareChance: 100,      // % chance that each impostor is fooled, when the option is on
   guessRule: 'impostors',  // caught impostors guess the word: 'impostors' win | 'nobody' wins | 'crew' still win
   drama: 'full',           // the reveals: 'full' build-up, or 'quick' for groups playing lots of rounds
+  fairStart: false,        // optional: the impostor never goes first
+  noRepeat: false,         // optional: someone who was impostor last round is less likely to be again
+  mrWhite: false,          // optional: with 2+ impostors, one of them gets no clue at all
+  tieRule: 'revote',       // a tied vote: 'revote' between the tied | 'random' | 'starter' decides
+  accuserBonus: false,     // optional: +1 for whoever called out a caught impostor
+  guessHalf: false,        // optional: a caught impostor's winning guess pays 1 point, not the full win
+  firstTo: 0,              // optional: play to this many points (0 = no target)
   timer: 0,                // optional clue timer on the Game on screen, in seconds (0 = off)
   wordsUrl: '',
   preset: '',              // the quick setup last chosen ('' = none/Classic): Reset odds goes back to its odds
   seenHowto: false,        // the "How to play" invitation has been watched or dismissed
+  sound: true,             // reveal sound effects (device-wide)
+  lastImps: [],            // names of last round's impostors (used only when noRepeat is on)
   region: guessRegion()    // where the group plays: 'uk' | 'us' | 'au' | 'all' (only words known everywhere)
 });
 // Where you play picks local names (torch → flashlight) and drops words only another region would know.
@@ -930,6 +963,9 @@ function summaryText() {
   if (!fooling() && settings.showCategory === false) bits.push('category hidden');
   if (settings.drama === 'quick') bits.push('quick reveals');
   if (+settings.timer) bits.push(`${+settings.timer / 60}-min timer`);
+  if (settings.mrWhite) bits.push('Mr White');
+  if (settings.fairStart) bits.push('fair start');
+  if (+settings.firstTo) bits.push(`first to ${settings.firstTo}`);
   bits.push((REGIONS.find(([v]) => v === settings.region) || ['', ''])[1]);
   return bits.join(' · ');
 }
@@ -951,6 +987,11 @@ function load() {
       delete settings.category;
       if (!['impostors', 'nobody', 'crew'].includes(settings.guessRule)) settings.guessRule = 'impostors';
       if (!['full', 'quick'].includes(settings.drama)) settings.drama = 'full';
+      ['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf'].forEach((k) => { settings[k] = settings[k] === true; });
+      settings.sound = settings.sound !== false;
+      if (!TIE_RULES.some(([v]) => v === settings.tieRule)) settings.tieRule = 'revote';
+      if (!FIRST_TO.some(([v]) => v === +settings.firstTo)) settings.firstTo = 0;
+      if (!Array.isArray(settings.lastImps)) settings.lastImps = [];
       if (!TIMERS.some(([v]) => v === +settings.timer)) settings.timer = 0;
       settings.maxImpostors = Math.max(1, Math.min(MAX_PLAYERS, Math.round(+settings.maxImpostors) || 3));
       settings.unaware = settings.unaware === true;
@@ -1154,7 +1195,17 @@ function startRound() {
   const count = chooseOption(n).count;
   const maxPossible = Math.max(...effective(n).filter((o) => o.pct > 0).map((o) => o.count), count);   // the most impostors these odds allow
   const impostors = Array(n).fill(false);
-  shuffle([...Array(n).keys()]).slice(0, count).forEach((i) => { impostors[i] = true; });
+  const names = getNames();
+  if (settings.noRepeat && count < n && settings.lastImps.length) {
+    // Optional: last round's impostors are a quarter as likely to be picked again (never ruled out).
+    const pool = [...Array(n).keys()], w = pool.map((i) => (settings.lastImps.includes(names[i]) ? .25 : 1));
+    for (let c = 0; c < count; c++) {
+      let r = Math.random() * pool.reduce((a, i) => a + w[i], 0), at = 0;
+      for (; at < pool.length - 1; at++) { if (r < w[pool[at]]) break; r -= w[pool[at]]; }
+      impostors[pool[at]] = true; pool.splice(at, 1);
+    }
+  } else shuffle([...Array(n).keys()]).slice(0, count).forEach((i) => { impostors[i] = true; });
+  settings.lastImps = names.filter((_, i) => impostors[i]);
   // Clue 1 goes to the first impostor in deal order, clue 2 to the next, and so on, cycling 1,2,3,4,1,2…
   // "Impostors think they're crew": some impostors are dealt a crew card with a different word from the same category.
   // Every fooled impostor gets a word of their own, different from the crew's and from each other's.
@@ -1177,20 +1228,29 @@ function startRound() {
   const order = hints.map((_, i) => i);
   if (settings.preferNew !== false) order.sort((x, y) => ((seenHints[hints[x]] || 0) - (seenHints[hints[y]] || 0)) || x - y);
   impostors.forEach((imp, i) => { if (imp && !fooled[i]) clue[i] = hints[order[k++ % order.length]]; });
+  // Optional Mr White: with two or more impostors who know what they are, one of them gets no clue at all.
+  const aware = impostors.map((v, i) => (v && !fooled[i] ? i : -1)).filter((i) => i >= 0);
+  const white = settings.mrWhite && aware.length >= 2 ? pick(aware) : null;
+  if (white != null) clue[white] = null;
+  // Who goes first: anyone, or (optional) never an impostor while there is a crewmate to start.
+  const crewIdx = impostors.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0);
+  const first = settings.fairStart && crewIdx.length ? pick(crewIdx) : rand(n);
   game = {
-    screen: 'pass', players: getNames(), impostors, word, wkey, hints, clue, alts, altKeys, fooled,
+    screen: 'pass', players: names, impostors, word, wkey, hints, clue, alts, altKeys, fooled, white,
+    tieRule: settings.tieRule, accuserBonus: !!settings.accuserBonus, guessHalf: !!settings.guessHalf, firstTo: +settings.firstTo || 0, bonus: {},
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     outcome: null, announce: !!settings.announce, guessRule: settings.guessRule,
     quick: settings.drama === 'quick', timer: +settings.timer || 0, timerEnd: null, timerLeft: null,
     showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
     showCategory: fooling() || settings.showCategory !== false,
-    impostorCount: count, maxPossible, first: rand(n), starterShown: false
+    impostorCount: count, maxPossible, first, starterShown: false
   };
   save(); render();
 }
 const altOf = (i) => (game.alts ? game.alts[i] : isFooled(i) ? game.alt : null);   // the word a fooled impostor was dealt
 const isFooled = (i) => !!(game.fooled && game.fooled[i]);          // an impostor who was dealt a crew card
 const looksImpostor = (i) => !!game.impostors[i] && !isFooled(i);   // what their own card told them
+const isWhite = (i) => game.white != null && game.white === i;      // Mr White: an impostor with no clue at all
 const activeIdx = () => game.players.map((_, i) => i).filter((i) => !game.out.includes(i));
 const remainingImpostors = () => game.impostors.reduce((s, v, i) => s + (v && !game.out.includes(i) ? 1 : 0), 0);
 const hiddenImpostors = () => game.impostors.map((v, i) => (v && !game.out.includes(i) ? i : -1)).filter((i) => i >= 0);
@@ -1200,6 +1260,8 @@ const caughtImpostors = () => game.out.filter((i) => game.impostors[i]).length;
 // Scoring: crew win, 1 point per crewmate. Impostors win, 2 points each (3 for a lone impostor, who beat the odds alone).
 // A caught impostor gets nothing, unless the caught impostors' guess is what won it.
 const SCORING_NOTE = 'Crew win: 1 point each. Impostors win: 2 points each, or 3 for a lone impostor. Caught impostors get nothing, unless their guess wins it.';
+const scoringNote = () => SCORING_NOTE + (settings.guessHalf ? ' A winning guess pays 1 point.' : '') + (settings.accuserBonus ? ' +1 for calling out an impostor.' : '')
+  + (+settings.firstTo ? ` First to ${settings.firstTo} points wins the game.` : '');
 function finish(winner, reason, winners, byGuess) {
   const kind = winner === 'impostors' ? 'impWin' : winner === 'crew' ? 'crewWin' : 'draw';
   game.outcome = { winner, reason, winners: winners || null, quip: quip(kind) };
@@ -1207,10 +1269,16 @@ function finish(winner, reason, winners, byGuess) {
   const pts = {};
   if (winner === 'crew') all.filter((i) => !game.impostors[i]).forEach((i) => { pts[i] = 1; });
   if (winner === 'impostors') (winners || all.filter((i) => game.impostors[i]))
-    .filter((i) => byGuess || !game.out.includes(i)).forEach((i) => { pts[i] = lone ? 3 : 2; });
+    .filter((i) => byGuess || !game.out.includes(i)).forEach((i) => { pts[i] = byGuess && game.guessHalf ? 1 : lone ? 3 : 2; });
+  Object.entries(game.bonus || {}).forEach(([i, b]) => { pts[i] = (pts[i] || 0) + b; });   // optional accuser bonus
   game.outcome.scored = pts;
   settings.scores = settings.scores || {};
   Object.keys(pts).forEach((i) => { const nm = game.players[i]; settings.scores[nm] = (settings.scores[nm] || 0) + pts[i]; });
+  // Optional target: the first to reach it (the highest, if several cross it together) wins the whole game.
+  if (game.firstTo) {
+    const top = Math.max(...game.players.map((nm) => settings.scores[nm] || 0));
+    if (top >= game.firstTo) game.outcome.champions = game.players.filter((nm) => (settings.scores[nm] || 0) === top);
+  }
   game.screen = 'result';
   save(); render();
 }
@@ -1223,6 +1291,7 @@ function impostorsGotAway(reason) {
 function confirmVote() {
   const i = game.voteSel;
   if (i == null) return;
+  game.tie = null; game.tieRandom = false;
   game.out.push(i); game.lastOut = i; game.voteSel = null;
   // Work out what happens next, but hold it back until the reveal has played.
   let next = 'found';
@@ -1272,7 +1341,11 @@ const ROLE_TAPE = `<span class="tape tape-role"><span>[REDACTED]</span></span>`;
 const clueFor = (i) => (game.clue && game.clue[i]) || (game.hints && game.hints[0]) || game.hint || '';
 function roleFace(i) {
   const imp = looksImpostor(i);   // a fooled impostor gets exactly the crew card, with their own word
-  const body = imp
+  const body = imp && isWhite(i)
+    ? `<div class="role-title">You're Mr White</div>
+       <div class="flabel">No word, no clue</div><div class="secret">Nothing</div>
+       <p class="fnote">Listen hard and blend in. Caught? Guess the word to steal it.</p>`
+    : imp
     ? (game.showHint === false
       ? `<div class="role-title">You're the impostor</div>
          <div class="flabel">No clue this game</div><div class="secret">Wing it</div>
@@ -1377,15 +1450,19 @@ const regionNote = () => REGION_NOTES[settings.region] || '';
 const presetNote = () => presetOn() ? PRESETS[presetOn()].note : 'Your own mix of rules. Tap one to load a ready-made setup.';
 const dramaNote = () => settings.drama === 'quick' ? 'Reveals: Quick goes straight to the reveal, for groups playing lots of rounds.' : 'Reveals: Full drama has the build-up, the held breath and the tape ripping off.';
 const DRAMA = [['full', 'Full drama'], ['quick', 'Quick']];
+const TIE_RULES = [['revote', 'Re-vote'], ['random', 'Random'], ['starter', 'First player']];
+const FIRST_TO = [[0, 'Off'], [5, '5'], [10, '10'], [15, '15'], [20, '20']];
+const TIE_NOTES = { revote: 'Ties: the tied players each give one more clue, then everyone votes again between just them.',
+  random: 'Ties: the app picks one of the tied players at random.', starter: 'Ties: whoever went first this round decides between the tied players.' };
 const TIMERS = [[0, 'Off'], [60, '1 min'], [120, '2 min'], [180, '3 min'], [300, '5 min']];
 // Quick setups: each sets the gameplay rules in one tap (word list, history and region are left alone).
 const PRESETS = {
-  beginner: { label: 'Beginner', note: 'One or two impostors, the count is announced, clues on. Great for first games.',
-    s: { weights: {}, maxImpostors: 2, announce: true, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0 } },
+  beginner: { label: 'Beginner', note: 'One or two impostors, the count is announced, clues on, the impostor never goes first and rarely twice in a row. Great for first games.',
+    s: { weights: {}, maxImpostors: 2, announce: true, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: true, noRepeat: true, mrWhite: false } },
   classic: { label: 'Classic', note: 'The standard game: usually one impostor, with more in bigger groups.',
-    s: { weights: {}, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0 } },
-  chaos: { label: 'Chaos', note: 'More impostors, and half of them think they\'re crew. Nobody is safe.',
-    s: { weights: { 1: 45, 2: 35, 3: 10, all: 10 }, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: true, unawareChance: 50, guessRule: 'impostors', drama: 'full', timer: 0 } }
+    s: { weights: {}, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: false } },
+  chaos: { label: 'Chaos', note: 'More impostors, half of them think they\'re crew, and one might be Mr White. Nobody is safe.',
+    s: { weights: { 1: 45, 2: 35, 3: 10, all: 10 }, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: true, unawareChance: 50, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: true } }
 };
 const presetOn = () => Object.keys(PRESETS).find((k) => Object.entries(PRESETS[k].s).every(([key, v]) => JSON.stringify(settings[key]) === JSON.stringify(v))) || '';
 const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], ['crew', 'Crew still wins']];
@@ -1469,6 +1546,33 @@ function renderSetup() {
         ${TIMERS.map(([v, l]) => `<button data-act="timerset" data-v="${v}" class="${+settings.timer === v ? 'sel' : ''}" aria-pressed="${+settings.timer === v}">${l}</button>`).join('')}
       </div>
       <p class="muted small">Clue timer: shown on the Game on screen, tap to start. It never forces the vote.</p>
+      <label class="check"><input type="checkbox" id="sound" ${settings.sound !== false ? 'checked' : ''}> Sound effects on reveals</label>
+    </section>
+
+    <section class="sub">
+      <h3>Fair play</h3>
+      <label class="check"><input type="checkbox" id="fairStart" ${settings.fairStart ? 'checked' : ''}> The impostor never goes first</label>
+      <p class="muted small">Whoever starts is always crew, so it's fairer on the impostor (and everyone knows the starter is safe).</p>
+      <label class="check"><input type="checkbox" id="noRepeat" ${settings.noRepeat ? 'checked' : ''}> Avoid the same impostor twice in a row</label>
+      <p class="muted small">Last round's impostors are a quarter as likely to be picked again.</p>
+      <label class="check"><input type="checkbox" id="mrWhite" ${settings.mrWhite ? 'checked' : ''}> Mr White</label>
+      <p class="muted small">With two or more impostors, one of them gets no clue at all.</p>
+      <div class="seg" id="tierule" role="group" aria-label="If the vote is tied">
+        ${TIE_RULES.map(([v, l]) => `<button data-act="tierule" data-v="${v}" class="${settings.tieRule === v ? 'sel' : ''}" aria-pressed="${settings.tieRule === v}">${l}</button>`).join('')}
+      </div>
+      <p class="muted small" id="tieNote">${TIE_NOTES[settings.tieRule] || ''} Tap "It's a tie" on the vote screen.</p>
+    </section>
+
+    <section class="sub">
+      <h3>Scoring</h3>
+      <label class="check"><input type="checkbox" id="accuserBonus" ${settings.accuserBonus ? 'checked' : ''}> +1 for calling out an impostor</label>
+      <p class="muted small">When an impostor is caught, tap who called it.</p>
+      <label class="check"><input type="checkbox" id="guessHalf" ${settings.guessHalf ? 'checked' : ''}> A stolen win pays 1 point</label>
+      <p class="muted small">Caught impostors who guess the word get 1 point instead of 2 or 3.</p>
+      <div class="seg" id="firstto" role="group" aria-label="Play to">
+        ${FIRST_TO.map(([v, l]) => `<button data-act="firstto" data-v="${v}" class="${+settings.firstTo === v ? 'sel' : ''}" aria-pressed="${+settings.firstTo === v}">${l}</button>`).join('')}
+      </div>
+      <p class="muted small">Play to: the first to this many points wins the game.</p>
     </section>
 
     <section class="sub">
@@ -1501,7 +1605,8 @@ function renderSetup() {
   $('#wstatus').textContent = wordsStatusText();
 }
 // The settings under House rules, and whether they're all back at their defaults.
-const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'preferNew', 'unaware', 'unawareChance', 'guessRule', 'drama', 'timer', 'wordsUrl'];
+const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'preferNew', 'unaware', 'unawareChance', 'guessRule', 'drama', 'timer',
+  'fairStart', 'noRepeat', 'mrWhite', 'tieRule', 'accuserBonus', 'guessHalf', 'firstTo', 'wordsUrl'];
 function rulesAreDefault() {
   const d = defaultSettings();
   return RULE_KEYS.every((k) => k === 'weights'
@@ -1711,25 +1816,34 @@ const SCREENS = {
       // The chosen card, in exactly the spot the reveal will use.
       const name = game.players[sel];
       return `<div class="screen stage vote-stage">
-        <div class="stage-head"><p class="kicker">Vote this player out?</p></div>
+        <div class="stage-head"><p class="kicker">${game.tieRandom ? 'The tie is broken at random…' : 'Vote this player out?'}</p></div>
         <div class="c3d stage-card flipped" aria-label="${esc(name)}"><div class="c3d-inner">${backHTML()}${idFace(name, looksImpostor(sel), { redacted: true })}</div></div>
         <div class="stage-foot rise"><div class="split">
-          <button class="btn" data-act="unpick">${ICON.back}Pick again</button>
+          <button class="btn" data-act="unpick">${ICON.back}${game.tieRandom ? 'Back to the vote' : 'Pick again'}</button>
           <button class="btn danger" data-act="confirm">${ICON.gavel}Vote out</button>
         </div></div>
       </div>`;
     }
-    const left = activeIdx();
+    const tie = game.tie || null, picking = !!(tie && tie.picking);
+    const left = tie && tie.only ? tie.only.filter((i) => !game.out.includes(i)) : activeIdx();
     const out = game.out.map((i) => esc(game.players[i]));
     const fit = gridFit(left.length);
-    const cards = left.map((i, k) => `<div class="c3d flipped gcard${game.regrid ? ' back-in' : ''}" data-act="pickvote" data-i="${i}" role="button" tabindex="0"
-        aria-label="Choose ${esc(game.players[i])}" style="--d:${((k * 0.53) % 1.9).toFixed(2)}s">
+    const cards = left.map((i, k) => `<div class="c3d flipped gcard${game.regrid ? ' back-in' : ''}${picking && tie.sel.includes(i) ? ' tied' : ''}" data-act="${picking ? 'tiepick' : 'pickvote'}" data-i="${i}" role="button" tabindex="0"
+        aria-label="${picking ? 'Mark as tied:' : 'Choose'} ${esc(game.players[i])}"${picking ? ` aria-pressed="${tie.sel.includes(i)}"` : ''} style="--d:${((k * 0.53) % 1.9).toFixed(2)}s">
         <div class="c3d-inner">${backHTML()}${idFace(game.players[i], null, { redacted: true })}</div></div>`).join('');
+    const names = (ids) => ids.map((i) => esc(game.players[i])).join(' vs ');
+    const starter = game.players[game.first == null ? 0 : game.first];
+    const head = picking ? `<h1 class="vote-title">Who's tied?</h1><p class="muted">Tap everyone who's tied, then break the tie.</p>`
+      : tie && tie.only ? `<h1 class="vote-title">Tie-break</h1><p class="muted">${names(left)}. ${tie.rule === 'starter'
+        ? `${esc(starter)} went first, so ${esc(starter)} decides.` : 'They each give one more clue, then everyone votes again between just them.'}</p>`
+      : `<h1 class="vote-title">Who's the impostor?</h1><p class="muted">${left.length} suspects. Agree on one, then tap their card.${out.length ? ` Already out: ${out.join(', ')}.` : ''}</p>`;
+    const foot = picking
+      ? `<div class="votefoot"><button class="btn ghost small" data-act="tieCancel">Cancel</button><button class="btn primary" data-act="tieBreak" ${tie.sel.length >= 2 ? '' : 'disabled'}>${ICON.gavel}Break the tie</button></div>`
+      : `<div class="votefoot"><button class="btn ghost small" data-act="${tie ? 'tieCancel' : 'back'}">${tie ? 'Cancel tie-break' : 'Back to discussion'}</button>${tie || left.length < 3 ? '' : '<button class="btn ghost small" data-act="tie">It\'s a tie</button>'}</div>`;
     return `<div class="screen vote">
-      <header class="vote-head"><h1 class="vote-title">Who's the impostor?</h1>
-        <p class="muted">${left.length} suspects. Agree on one, then tap their card.${out.length ? ` Already out: ${out.join(', ')}.` : ''}</p></header>
+      <header class="vote-head">${head}</header>
       <div class="suspect-grid" style="--cw:${fit.w}px">${cards}</div>
-      <button class="btn ghost small" data-act="back">Back to discussion</button>
+      ${foot}
     </div>`;
   },
 
@@ -1752,7 +1866,7 @@ const SCREENS = {
         const allFound = game.maxPossible != null && caughtImpostors() >= game.maxPossible;
         const hint = game.announce
           ? `<p class="notice">${rem === 0 ? 'That was the last impostor.' : `${rem} ${plural(rem, 'impostor is', 'impostors are')} still hiding.`}</p>` : '';
-        after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p>${hint}
+        after = `<h1 class="good">Correct!</h1><p class="quip">${esc(v.quip || '')}</p>${hint}${accuserHTML()}
           <div class="split${allFound ? ' one' : ''}" role="group" aria-label="${allFound ? 'Finish the round' : 'Vote someone else out?'}">
             ${allFound ? '' : `<button class="btn danger" data-act="again" ${canVote ? '' : 'disabled'}>${ICON.gavel}Vote again</button>`}
             <button class="btn${allFound ? ' primary' : ''}" data-act="stop">${ICON.stop}We're done</button>
@@ -1765,7 +1879,7 @@ const SCREENS = {
     const card = v.shown
       ? `<div class="c3d verdict-card stage-card flipped" aria-label="${v.imp ? 'Impostor' : 'Crew'}"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp)}</div></div>`
       : `<div class="c3d verdict-card stage-card flipped" data-act="flipVerdict" role="button" tabindex="0" aria-label="Reveal ${esc(name)}'s role"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp && !v.fooled, { redacted: true })}</div></div>`;
-    return `<div class="screen stage verdict"${auto ? ' data-act="verdictNext" role="button" aria-label="Move on"' : ''}>
+    return `<div class="screen stage verdict${game.accuserBonus ? ' credited' : ''}"${auto ? ' data-act="verdictNext" role="button" aria-label="Move on"' : ''}>
       <div class="stage-head"><p class="kicker">The group has voted out…</p></div>
       ${card}
       <div class="stage-foot">${v.shown ? `<div class="after">${after}</div>` : `<div class="countdown" id="countdown" aria-live="polite"></div>`}</div>
@@ -1821,6 +1935,8 @@ const SCREENS = {
     const reason = (o.winner === 'crew' && noCrew)
       ? 'There was no crew this round, so nobody really wins. Nice bluffing.' : o.reason;
     return `<div class="screen fadein">
+      ${o.champions ? `<div class="champ" role="status"><span class="champ-cup">🏆</span><b>${o.champions.map(esc).join(' & ')} ${o.champions.length > 1 ? 'win' : 'wins'} the game!</b>
+        <small>First to ${game.firstTo} points.</small><button class="btn reset scope" data-act="newMatch">New game: scores back to 0</button></div>` : ''}
       <header class="result-head"><h1 class="${cls}">${title}</h1>${o.quip ? `<p class="quip">${esc(o.quip)}</p>` : ''}<p>${esc(reason)}</p></header>
       <div class="ledger">
         <div class="row"><span>Category</span><b>${catLabel()}</b></div>
@@ -1837,7 +1953,7 @@ const SCREENS = {
 // Which clue each impostor had. One impostor: just the clue. Several: each name with theirs.
 function ledgerClues() {
   const imps = game.players.map((_, i) => i).filter((i) => game.impostors[i]);
-  const aware = imps.filter((i) => !isFooled(i)), fooled = imps.filter(isFooled);
+  const aware = imps.filter((i) => !isFooled(i) && !isWhite(i)), fooled = imps.filter(isFooled), white = imps.filter(isWhite);
   let out = '';
   if (aware.length) {
     if (game.showHint === false) out += `<div class="row"><span>Impostor clue</span><b>None (clues off)</b></div>`;
@@ -1845,9 +1961,17 @@ function ledgerClues() {
     else out += `<div class="row clues"><span>Impostor clues</span><span class="cluelist">${aware.map((i) =>
       `<span><b>${esc(clueFor(i))}</b> <small>${esc(game.players[i])}</small></span>`).join('')}</span></div>`;
   }
+  if (white.length) out += `<div class="row"><span>Mr White (no clue)</span><b>${esc(game.players[white[0]])}</b></div>`;
   if (fooled.length) out += `<div class="row clues"><span>Thought they were crew</span><span class="cluelist">${fooled.map((i) =>
     `<span><b>${esc(altOf(i))}</b> <small>${esc(game.players[i])}</small></span>`).join('')}</span></div>`;
   return out;
+}
+// Optional accuser bonus: on the Correct! screen, tap whoever called it for +1 (one tap per catch; tap again to undo).
+function accuserHTML() {
+  if (!game.accuserBonus) return '';
+  const v = game.verdict, who = game.players.map((_, i) => i).filter((i) => i !== v.i);
+  return `<div class="credit"><p class="muted small">Who called it? +1 point</p><div class="chips">${who.map((i) =>
+    `<button data-act="credit" data-i="${i}" class="${v.creditTo === i ? 'sel' : ''}" aria-pressed="${v.creditTo === i}">${esc(game.players[i])}</button>`).join('')}</div></div>`;
 }
 // One table for the round and the scores: each player's role, when they went out, what they just won and their total.
 function rosterHTML(scored) {
@@ -1858,11 +1982,11 @@ function rosterHTML(scored) {
   const rows = order.map((i) => {
     const nm = game.players[i], pos = game.out.indexOf(i), total = sc[nm] || 0;
     return `<div class="rrow${total === top && top > 0 ? ' lead-player' : ''}"><span class="rname">${esc(nm)}</span>
-      <span class="tags">${pos >= 0 ? `<span class="out">out #${pos + 1}</span>` : ''}<span class="badge ${game.impostors[i] ? 'imp' : 'crew'}">${game.impostors[i] ? 'Impostor' : 'Crew'}</span></span>
+      <span class="tags">${pos >= 0 ? `<span class="out">out #${pos + 1}</span>` : ''}<span class="badge ${game.impostors[i] ? 'imp' : 'crew'}">${isWhite(i) ? 'Mr White' : game.impostors[i] ? 'Impostor' : 'Crew'}</span></span>
       <span class="rpts">${gain(i) ? `<em>+${gain(i)}</em>` : ''}<b>${total}</b></span></div>`;
   }).join('');
   return `<section class="roster"><div class="rhead"><span>Players</span><span>Score</span></div>${rows}</section>
-    <div class="scorefoot"><p class="muted small">${SCORING_NOTE}</p>${top > 0 ? `<button class="btn reset wipe" data-act="resetScores">${ICON.x}Reset scores</button>` : ''}</div>`;
+    <div class="scorefoot"><p class="muted small">${scoringNote()}</p>${top > 0 ? `<button class="btn reset wipe" data-act="resetScores">${ICON.x}Reset scores</button>` : ''}</div>`;
 }
 const clock = (ms) => { const t = Math.ceil(ms / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
 // The optional clue timer: tap to start or pause. When it runs out it buzzes and nudges the vote, nothing more.
@@ -2075,7 +2199,38 @@ function lightFx(kind) {   // 'flash' | 'imp' | 'crew'
   setTimeout(() => s.classList.remove(kind), 2400);
 }
 // One heartbeat of the build-up: lights drop a notch, the card shakes harder, the phone thumps.
+/* ---------- sound ----------
+   Synthesised with Web Audio, so there's nothing to download. Up to the peel every role hears exactly the same thing. */
+let actx = null, noiseBuf = null;
+function audio() {
+  if (settings.sound === false) return null;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    if (!actx) actx = new AC();
+    if (actx.state === 'suspended') actx.resume();
+    if (!noiseBuf) { noiseBuf = actx.createBuffer(1, actx.sampleRate * 2.5, actx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+  } catch (e) { return null; }
+  return actx;
+}
+function sfx(name, k = 0) {
+  try { window.dispatchEvent(new CustomEvent('impostor-sfx', { detail: name })); } catch (e) {}
+  const a = audio(); if (!a) return;
+  const t = a.currentTime + .01, out = a.destination;
+  const env = (node, peak, attack, hold, release) => { const g = a.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + attack);
+    g.gain.setValueAtTime(peak, t + attack + hold); g.gain.exponentialRampToValueAtTime(.0001, t + attack + hold + release); node.connect(g); g.connect(out); return attack + hold + release; };
+  const osc = (type, f0, f1, dur) => { const o = a.createOscillator(); o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur); o.start(t); o.stop(t + dur + .05); return o; };
+  const noise = (dur, type, f0, f1, q = 1) => { const n = a.createBufferSource(); n.buffer = noiseBuf; const f = a.createBiquadFilter(); f.type = type; f.Q.value = q;
+    f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur); n.connect(f); n.start(t); n.stop(t + dur + .05); return f; };
+  if (name === 'thump') { const v = .35 + k * .2; env(osc('sine', 95, 38, .45), v, .005, .03, .4); env(noise(.12, 'lowpass', 400, 120), v * .25, .002, .01, .1); }
+  else if (name === 'rip') { env(noise(.45, 'bandpass', 2600, 500, 1.4), .55, .01, .12, .3); env(osc('sine', 180, 60, .2), .2, .005, .02, .18); }
+  else if (name === 'hit') { env(osc('sawtooth', 58, 40, 1.3), .32, .01, .25, 1); env(osc('sawtooth', 61.5, 41, 1.3), .25, .01, .25, 1); env(osc('sine', 110, 55, 1), .4, .01, .2, .8); env(noise(.5, 'lowpass', 1200, 150), .3, .005, .05, .45); }
+  else if (name === 'sigh') { env(osc('sine', 523, 392, 1.1), .14, .06, .3, .8); env(osc('sine', 659, 494, 1.1), .1, .08, .3, .8); env(noise(.9, 'lowpass', 900, 250), .06, .2, .2, .5); }
+  else if (name === 'ink') { env(noise(2.4, 'lowpass', 250, 2200, .7), .2, 1.4, .4, .7); env(osc('sine', 70, 52, 2.4), .18, 1.2, .5, .8); }
+}
+// Browsers only allow sound after a tap: wake the audio on the first one.
+document.addEventListener('pointerdown', () => { if (!actx) audio(); }, { once: true, capture: true });
 function beat(card, k, total) {
+  sfx('thump', k);
   const f = (k + 1) / total;
   card.style.setProperty('--tr', (1.1 + f * 2.6).toFixed(2));
   card.style.setProperty('--trd', (.72 - f * .34).toFixed(2) + 's');
@@ -2111,7 +2266,7 @@ function runVerdict(skipCountdown) {
   }
   later(() => {   // tape off: flash, thump, and the symbols stamp onto the card
     card.classList.remove('suspense', 'enter', 'strobe', 'hard'); card.removeAttribute('data-act'); cd.textContent = '';
-    card.classList.add('slam');
+    card.classList.add('slam'); sfx('rip');
     lightFx('flash');
     const face = card.querySelector('.cface');
     face.classList.remove('neutral'); face.classList.add(imp ? 'imp' : 'crew');
@@ -2123,7 +2278,7 @@ function runVerdict(skipCountdown) {
   // Only now does the outcome show: an impostor takes a hit and the room flushes red, a crewmate gets a heavy sigh and teal.
   later(() => {
     card.classList.remove('slam');
-    card.classList.add(imp ? 'hit' : 'sigh');
+    card.classList.add(imp ? 'hit' : 'sigh'); sfx(imp ? 'hit' : 'sigh');
     lightFx(imp ? 'imp' : 'crew');
     buzz(imp ? [90, 50, 90, 50, 220] : [160]);
   }, t + 150 + 750);
@@ -2133,8 +2288,8 @@ function runVerdict(skipCountdown) {
     // A full second of plain crew (the tape is off by about +1.2s), then the truth bleeds through, slowly.
     const go = t + 150 + 2200, dur = 2600, name = game.players[game.verdict.i];
     later(() => lights(.55, card), go - 120);
-    later(() => { buzz([30, 150, 30, 150, 30, 150, 30]); inkRipple(card, name, dur); }, go);
-    later(() => { card.classList.remove('sigh'); card.classList.add('hit'); lightFx('imp'); buzz([90, 50, 90, 50, 220]); }, go + dur);
+    later(() => { buzz([30, 150, 30, 150, 30, 150, 30]); sfx('ink'); inkRipple(card, name, dur); }, go);
+    later(() => { sfx('hit'); card.classList.remove('sigh'); card.classList.add('hit'); lightFx('imp'); buzz([90, 50, 90, 50, 220]); }, go + dur);
     later(() => lights(0), go + dur + 450);
     end = go + dur + 1600;
   }
@@ -2375,6 +2530,15 @@ const ACTIONS = {
     settings.timer = +t.dataset.v; save(); syncResetRules();
     $$('#timer button').forEach((b) => { const on = +b.dataset.v === +settings.timer; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
   },
+  tierule(t) {
+    settings.tieRule = t.dataset.v; save(); syncResetRules();
+    $$('#tierule button').forEach((b) => { const on = b.dataset.v === settings.tieRule; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+    $('#tieNote').textContent = `${TIE_NOTES[settings.tieRule]} Tap "It's a tie" on the vote screen.`;
+  },
+  firstto(t) {
+    settings.firstTo = +t.dataset.v; save(); syncResetRules();
+    $$('#firstto button').forEach((b) => { const on = +b.dataset.v === +settings.firstTo; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+  },
   toRules() { const r = $('#rules'); if (r) r.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); },
   timer() {
     if (!game || !game.timer) return;
@@ -2434,7 +2598,7 @@ const ACTIONS = {
       c.classList.add('away');
     });
     t.classList.add('chosen'); buzz(20);
-    $$('.vote-head, .vote > .btn').forEach((e) => e.classList.add('fade'));
+    $$('.vote-head, .votefoot').forEach((e) => e.classList.add('fade'));
     later(() => {
       choose();
       const big = $('.stage-card'); if (!big) return;
@@ -2448,7 +2612,33 @@ const ACTIONS = {
       }));
     }, 360);
   },
-  unpick() { game.voteSel = null; game.regrid = true; save(); render(); },
+  unpick() { game.voteSel = null; game.tieRandom = false; game.regrid = true; save(); render(); },
+  tie() { game.tie = { picking: true, sel: [], rule: game.tieRule || settings.tieRule }; game.regrid = false; save(); render(); },
+  tiepick(t) {
+    const i = +t.dataset.i, sel = game.tie.sel;
+    game.tie.sel = sel.includes(i) ? sel.filter((x) => x !== i) : sel.concat(i);
+    t.classList.toggle('tied', game.tie.sel.includes(i)); t.setAttribute('aria-pressed', game.tie.sel.includes(i)); buzz(10);
+    const b = $('[data-act="tieBreak"]'); if (b) b.disabled = game.tie.sel.length < 2;
+    save();
+  },
+  tieBreak() {
+    const t = game.tie; if (!t || t.sel.length < 2) return;
+    if (t.rule === 'random') {   // the app picks one of the tied at random, straight to "Vote this player out?"
+      const i = pick(t.sel); game.tie = null; game.voteSel = i; game.tieRandom = true; save(); render(); return;
+    }
+    game.tie = { only: t.sel.slice(), rule: t.rule }; game.regrid = true; save(); render();
+  },
+  tieCancel() { game.tie = null; game.regrid = true; save(); render(); },
+  credit(t) {   // optional accuser bonus: who called out this impostor? (tap again to take it back)
+    const v = game.verdict, i = +t.dataset.i; if (!v) return;
+    const prev = v.creditTo; game.bonus = game.bonus || {};
+    if (prev != null) { game.bonus[prev] = (game.bonus[prev] || 1) - 1; if (!game.bonus[prev]) delete game.bonus[prev]; }
+    v.creditTo = prev === i ? null : i;
+    if (v.creditTo != null) game.bonus[i] = (game.bonus[i] || 0) + 1;
+    $$('.credit button').forEach((b) => { const on = +b.dataset.i === v.creditTo; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+    save();
+  },
+  newMatch() { ask('Start a new game? Everyone\'s score goes back to 0.', 'New game', () => { settings.scores = {}; save(); startRound(); }, 'Not yet'); },
   confirm() { confirmVote(); },
   flipVerdict() { if (game.verdict && !game.verdict.shown) { clearTimers(); runVerdict(true); } },
   verdictNext() { if (game.screen === 'verdict' && game.verdict && game.verdict.shown) resolveVerdict(); },
@@ -2467,7 +2657,7 @@ const ACTIONS = {
     cards.forEach((c) => c.classList.add('suspense'));
     if (!quick) [0, 1, 2].forEach((k) => later(() => {
       cards.forEach((c) => { c.style.setProperty('--tr', (1.1 + (k + 1) / 3 * 2.6).toFixed(2)); c.style.setProperty('--trd', (.72 - (k + 1) / 3 * .34).toFixed(2) + 's'); });
-      lights(.42 + (k + 1) / 3 * .48, area);
+      lights(.42 + (k + 1) / 3 * .48, area); sfx('thump', k);
       buzz([22, 70, 34]);
     }, k * 550));
     // …a held breath…
@@ -2475,7 +2665,7 @@ const ACTIONS = {
     // …then the flip, with a flash and a thump.
     later(() => {
       cards.forEach((c) => c.classList.add('flipped', 'slam'));
-      lightFx('flash'); buzz([60, 40, 160]);
+      lightFx('flash'); buzz([60, 40, 160]); sfx('rip');
     }, F);
     if (n > 1) later(() => { area.classList.add('fanned'); if (title) { title.classList.add('plural'); title.setAttribute('aria-label', 'The impostors were…'); } }, F + 1000);
     // Fooled impostors flip as plain crew; once the pile has settled their real faces bleed through, slowly.
@@ -2484,15 +2674,15 @@ const ACTIONS = {
     if (fooledAt.length) {
       const go = F + (n > 1 ? 2100 : 1500), dur = 2400;
       later(() => lights(.6, area), go - 120);
-      later(() => { buzz([30, 150, 30, 150, 30, 150, 30]); fooledAt.forEach((k) => inkRipple(cards[k], game.players[ids[k]], dur)); }, go);
+      later(() => { buzz([30, 150, 30, 150, 30, 150, 30]); sfx('ink'); fooledAt.forEach((k) => inkRipple(cards[k], game.players[ids[k]], dur)); }, go);
       H = go + dur;
     }
-    later(() => { cards.forEach((c) => { c.classList.remove('slam'); c.classList.add('hit'); }); lightFx('imp'); buzz([90, 50, 90, 50, 220]); }, H);
+    later(() => { cards.forEach((c) => { c.classList.remove('slam'); c.classList.add('hit'); }); lightFx('imp'); buzz([90, 50, 90, 50, 220]); sfx('hit'); }, H);
     later(() => lights(0), H + 700);
     later(done, H + (n > 1 ? 1700 : 1200));
   },
   toResults() { const p = game.pending || { winner: 'impostors', reason: '' }; finish(p.winner, p.reason); },
-  again() { game.screen = 'vote'; game.voteSel = null; game.regrid = true; save(); render(); },
+  again() { game.screen = 'vote'; game.voteSel = null; game.tie = null; game.regrid = true; save(); render(); },
   stop() { stopVoting(); },
   judgeYes() { judgeGuess(true); },
   judgeNo() { judgeGuess(false); },
@@ -2627,7 +2817,7 @@ function showBoard() {
   wrap.className = 'sheet-wrap';
   wrap.innerHTML = `<div class="sheet board" role="dialog" aria-modal="true" aria-label="Leaderboard">
     <div class="row"><h2 class="board-title">${ICON.trophy}Leaderboard</h2><button class="barbtn icon" data-sheet="close" aria-label="Close">${ICON.x}</button></div>
-    ${names.some((n) => sc[n] > 0) ? `<ol class="blist">${rows}</ol><p class="muted small">${SCORING_NOTE}</p>`
+    ${names.some((n) => sc[n] > 0) ? `<ol class="blist">${rows}</ol><p class="muted small">${scoringNote()}</p>`
       : `<p class="board-empty">No points yet.<br><span class="muted">Win a round to get on the board.</span></p>`}
     <div class="split"><button class="btn" data-sheet="close">Close</button>
       <button class="btn danger-line reset wipe" data-sheet="reset" ${names.some((n) => sc[n] > 0) ? '' : 'disabled'}>${ICON.x}Reset scores</button></div></div>`;
@@ -2677,6 +2867,8 @@ $app.addEventListener('input', (e) => {
   } else if (t.id === 'showcat') {
     if (fooling()) return;
     settings.showCategory = t.checked; infoNote(); save();
+  } else if (['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf', 'sound'].includes(t.id)) {
+    settings[t.id] = t.checked; save(); syncResetRules(); if (t.id === 'sound' && t.checked) audio();
   } else if (t.id === 'announce') {
     settings.announce = t.checked; renderWeights(); save();
   } else if (t.id === 'showhint') {

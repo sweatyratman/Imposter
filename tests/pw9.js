@@ -20,7 +20,7 @@ if(vw===390)await p.screenshot({path:'w1_role.png'});
 await p.click('[data-act="hide"]');for(let i=1;i<12;i++){await p.click('[data-act="reveal"]');await p.waitForTimeout(100);await check('role card '+i);await p.click('[data-act="hide"]')}
 await p.click('[data-act="skipShuffle"]');await p.waitForTimeout(500);await check('game on');if(vw===390)await p.screenshot({path:'w2_gameon.png'});
 await p.click('[data-act="ready"]');await p.waitForTimeout(500);await check('vote grid');
-const gb=await p.evaluate(()=>{const g=document.querySelector('.suspect-grid').getBoundingClientRect();const bk=document.querySelector('.vote > .btn').getBoundingClientRect();return {gridBottom:g.bottom,backBottom:bk.bottom,vh:innerHeight}});
+const gb=await p.evaluate(()=>{const g=document.querySelector('.suspect-grid').getBoundingClientRect();const bk=document.querySelector('.votefoot').getBoundingClientRect();return {gridBottom:g.bottom,backBottom:bk.bottom,vh:innerHeight}});
 t(gb.backBottom<=gb.vh+1,`${vw}px all 12 cards and the back link fit on screen (${Math.round(gb.backBottom)} <= ${gb.vh})`);
 if(vw===390)await p.screenshot({path:'w3_grid.png'});
 await p.click('[data-act="pickvote"][data-i="1"]');await p.waitForSelector('.stage-card');await p.waitForTimeout(700);await check('stage');if(vw===390)await p.screenshot({path:'w4_stage.png'});

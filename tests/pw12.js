@@ -53,7 +53,7 @@ for(let i=1;i<5;i++){await p.click('[data-act="reveal"]');await p.click('[data-a
 await p.waitForSelector('.starter.landed',{timeout:8000});await p.waitForTimeout(500);
 t(await inView(p,'[data-act="ready"]'),'small phone: "We\'re ready to vote" visible after the shuffle');
 await p.click('[data-act="ready"]');g=await G(p);const I=g.impostors.map((v,i)=>v?i:-1).filter(i=>i>=0),C=g.impostors.map((v,i)=>!v?i:-1).filter(i=>i>=0);
-t(await inView(p,'.vote > .btn'),'small phone: vote grid + back link fit');
+t(await inView(p,'.votefoot'),'small phone: vote grid + back link fit');
 await p.click(`[data-act="pickvote"][data-i="${I[0]}"]`);await p.waitForSelector('[data-act="confirm"]');await p.waitForTimeout(700);
 t(await inView(p,'[data-act="confirm"]'),'small phone: Vote out button visible');
 await p.click('[data-act="confirm"]');await p.click('[data-act="flipVerdict"]');await p.waitForSelector('.after');await p.waitForTimeout(400);

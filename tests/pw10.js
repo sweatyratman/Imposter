@@ -14,7 +14,7 @@ for(let n=3;n<=20;n++){
   await p.reload();await p.waitForSelector('.grow');
   const info=await p.evaluate(()=>{const rows=Array.from(document.querySelectorAll('.grow'));const vw=innerWidth;
     return {sizes:rows.map(r=>r.children.length),centred:rows.every(r=>{const c=Array.from(r.children).map(x=>x.getBoundingClientRect());const l=c[0].left,rr=vw-c[c.length-1].right;return Math.abs(l-rr)<2}),
-      back:document.querySelector('.vote > .btn').getBoundingClientRect().bottom,vh:innerHeight,w:Math.round(rows[0].children[0].getBoundingClientRect().width)}});
+      back:document.querySelector('.votefoot').getBoundingClientRect().bottom,vh:innerHeight,w:Math.round(rows[0].children[0].getBoundingClientRect().width)}});
   const spread=Math.max(...info.sizes)-Math.min(...info.sizes);
   t(spread<=1,`${vw}x${vh} n=${n}: rows ${info.sizes} are balanced`);t(info.centred,`n=${n}: rows centred`);t(info.back<=info.vh+1,`${vw}x${vh} n=${n}: fits on screen`);
   if(vw===390)out.push(`${n}: ${info.sizes.join('+')} (${info.w}px)`);

@@ -686,8 +686,10 @@
   @keyframes hSwipe { 0% { transform: translateX(26px) rotate(-12deg); opacity: 0; } 20% { opacity: 1; } 60% { transform: translateX(-26px) rotate(-12deg); opacity: 1; } 80%, 100% { transform: translateX(-26px) rotate(-12deg); opacity: 0; } }
   @keyframes hChev { 0%, 100% { opacity: .35; transform: translateX(0); } 50% { opacity: 1; transform: translateX(4px); } }
   .howto-count { flex: none; }
-  .howto-stage { position: relative; flex: 1; min-height: 210px; max-height: 340px; display: grid; place-items: center; }
-  .howto-cap { min-height: 4.6em; margin: 0; text-align: center; font-size: 1.15rem; line-height: 1.35; color: var(--paper); }
+  .howto-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; max-height: 340px; display: grid; place-items: center; }
+  .hfit { transform-origin: 50% 50%; }
+  .howto-cap { flex: none; min-height: 4.6em; margin: 0; text-align: center; font-size: 1.15rem; line-height: 1.35; color: var(--paper); }
+  .howto-cap.long { font-size: 1rem; }
   .howto-nav { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
   .howto-nav .btn { min-height: 56px; }
   /* scene pieces: everything moves with transform and opacity only */
@@ -2453,7 +2455,7 @@ function getGameHTML() {
 const HOWTO = [
   { id: 'deal', text: 'Everyone gets the same secret word, except the impostor.' },
   { id: 'pass', text: 'Pass the phone around. Tap your card to look, then tap it again to hide it.' },
-  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Be vague, but not too vague. Impostor, try to blend in.' },
+  { id: 'clues', text: 'Take turns giving one clue. Crew, prove you know the word. Be vague – you don’t want the impostor to figure the word out… but not too vague – you don’t want to seem suspicious! Impostor, try to blend in.' },
   { id: 'vote', text: 'When everyone has had a go, agree on who to vote out.' },
   { id: 'end', text: 'Catch every impostor and the crew win, unless they guess the word. Vote out a crewmate, and the impostors win.' },
   { id: 'rules', text: 'Make it your own: check out House rules for extensive rule customisation, from impostor odds and clues to timers and scoring.' }
@@ -2485,8 +2487,9 @@ function howtoShow(i, dir = 0) {
   const sc = HOWTO[i], last = i === HOWTO.length - 1;
   wrap.querySelector('.pips').innerHTML = HOWTO.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'now' : ''}"></i>`).join('');
   const body = wrap.querySelector('.howto-body');
-  body.querySelector('.howto-stage').innerHTML = howtoStage(sc.id);
-  body.querySelector('.howto-cap').textContent = sc.text;
+  body.querySelector('.howto-stage').innerHTML = `<div class="hfit">${howtoStage(sc.id)}</div>`;
+  const cap = body.querySelector('.howto-cap'); cap.textContent = sc.text; cap.classList.toggle('long', sc.text.length > 140);
+  howtoFit();
   body.style.transition = 'none'; body.style.transform = ''; body.style.opacity = '';
   body.classList.remove('in-next', 'in-back'); void body.offsetWidth;
   if (dir) body.classList.add(dir > 0 ? 'in-next' : 'in-back');
@@ -2495,6 +2498,14 @@ function howtoShow(i, dir = 0) {
   wrap.querySelector('.howto-swipe').classList.toggle('gone', last);
   wrap.querySelector('.howto-count').textContent = `${i + 1} of ${HOWTO.length}`;
 }
+// Big text makes the caption tall: the scene picture shrinks to the room left, never the words.
+function howtoFit() {
+  const st = document.querySelector('.howto-stage'), f = st && st.firstElementChild; if (!f) return;
+  f.style.transform = '';
+  const k = Math.min(1, st.clientHeight / (f.offsetHeight || 1), st.clientWidth / (f.offsetWidth || 1));
+  if (k < 1) f.style.transform = `scale(${Math.max(.4, k).toFixed(3)})`;
+}
+addEventListener('resize', howtoFit);
 function howtoGo(step) {
   const to = howto.i + step;
   if (to < 0) { howtoShow(0); return; }

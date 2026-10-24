@@ -46,6 +46,19 @@ t(firsts===0,'Mr White never goes first (30 rounds)');await p.close();
 p=await mk({weights:ONE,mrWhite:true});await p.click('[data-act="start"]');g=await G(p);t(g.white==null,'with a lone impostor there is no Mr White');await p.close();
 
 // ---- ties
+p=await mk({tieRule:'revote'});t(await p.$eval('#tieSitOut',e=>e.checked&&!e.disabled),'"Tied players sit out" is on by default with Re-vote');
+await p.click('#tierule [data-v="random"]');t(await p.$eval('#tieSitOut',e=>e.disabled)&&await p.$eval('#tieSitOutRow',e=>e.classList.contains('greyed')),'…and greyed out for the other tie rules');
+await p.click('#tierule [data-v="revote"]');await p.click('#tieSitOut');t((await S(p)).tieSitOut===false,'it can be switched off');
+await p.click('[data-act="start"]');g=await G(p);await deal(p,g);await p.click('[data-act="tie"]');await p.click('[data-act="tiepick"][data-i="0"]');await p.click('[data-act="tiepick"][data-i="1"]');await p.click('[data-act="tieBreak"]');
+t(/Then everyone votes/.test(await p.textContent('.vote-head')),'with it off, everyone votes');await p.close();
+// ---- one category picked: the category is shown, locked
+p=await mk({showCategory:false});const cats=await p.$$eval('[data-act="cat"]',e=>e.map(x=>x.dataset.cat).filter(c=>c!=='random'));
+t(await p.$eval('#showcat',e=>!e.checked&&!e.disabled)&&await p.$eval('#showcatWhy',e=>e.hidden),'Random: "Show the category" follows your choice');
+await p.click(`[data-act="cat"][data-cat="${cats[0]}"]`);
+t(await p.$eval('#showcat',e=>e.checked&&e.disabled)&&await p.$eval('#showcatRow',e=>e.classList.contains('greyed'))&&/Only 1 category picked/.test(await p.textContent('#showcatWhy'))&&await p.$eval('#showcatWhy',e=>!e.hidden),'one category: ticked, greyed, "Only 1 category picked"');
+await p.click('[data-act="start"]');g=await G(p);t(g.showCategory===true,'…and the round shows the category');await home(p);
+await p.click(`[data-act="cat"][data-cat="${cats[1]}"]`);t(await p.$eval('#showcat',e=>!e.checked&&!e.disabled)&&(await S(p)).showCategory===false,'two categories: your choice (off) comes back');
+await p.click(`[data-act="cat"][data-cat="${cats[1]}"]`);await p.click('[data-act="cat"][data-cat="random"]');t(await p.$eval('#showcat',e=>!e.checked&&!e.disabled),'Random: back to your choice');await p.close();
 p=await mk({weights:ONE,tieRule:'revote'});await p.click('[data-act="start"]');g=await G(p);await deal(p,g);
 t(!!(await p.$('[data-act="tie"]')),'the vote screen has "It\'s a tie"');
 await p.click('[data-act="tie"]');t(/Who's tied/.test(await p.textContent('.vote-title'))&&await p.$eval('[data-act="tieBreak"]',e=>e.disabled),'tie: pick the tied players (needs 2)');
@@ -53,7 +66,9 @@ await p.click('[data-act="tiepick"][data-i="1"]');await p.click('[data-act="tiep
 await p.click('[data-act="tieBreak"]');await p.waitForTimeout(300);
 t((await p.$$eval('.gcard',e=>e.length))===2&&/one more clue/.test(await p.textContent('.vote-head')),'re-vote: only the tied players are left to vote between');
 t(await p.evaluate(()=>{const f=document.querySelector('.votefoot').getBoundingClientRect();return f.bottom<=innerHeight}),'tie-break fits at 360×640');
+{const tg=(await G(p)).tie,head=await p.textContent('.vote-head'),nm=g.players[tg.first];t([1,3].includes(tg.first)&&head.includes(nm+' first')&&/everyone else votes/.test(head),'re-vote: the app picks which tied player speaks first, and the tied sit out');}
 await p.click('[data-act="tieCancel"]');t((await p.$$eval('.gcard',e=>e.length))===5,'cancel goes back to everyone');
+{let firsts=new Set();for(let k=0;k<12;k++){await p.click('[data-act="tie"]');await p.click('[data-act="tiepick"][data-i="1"]');await p.click('[data-act="tiepick"][data-i="3"]');await p.click('[data-act="tieBreak"]');firsts.add((await G(p)).tie.first);await p.click('[data-act="tieCancel"]')}t(firsts.size===2,'either tied player can be picked to start');}
 await p.close();
 p=await mk({weights:ONE,tieRule:'random'});await p.click('[data-act="start"]');g=await G(p);await deal(p,g);
 await p.click('[data-act="tie"]');await p.click('[data-act="tiepick"][data-i="0"]');await p.click('[data-act="tiepick"][data-i="2"]');await p.click('[data-act="tieBreak"]');await p.waitForTimeout(300);

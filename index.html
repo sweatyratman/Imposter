@@ -944,6 +944,7 @@ const defaultSettings = () => ({
   noRepeat: false,         // optional: someone who was impostor last round is less likely to be again
   mrWhite: false,          // optional: with 2+ impostors, one of them gets no clue at all
   tieRule: 'revote',       // a tied vote: 'revote' between the tied | 'random' | 'starter' decides
+  tieSitOut: true,         // re-vote: the tied players don't vote (the "PK" rule)
   accuserBonus: false,     // optional: +1 for whoever called out a caught impostor
   guessHalf: false,        // optional: a caught impostor's winning guess pays 1 point, not the full win
   firstTo: 0,              // optional: play to this many points (0 = no target)
@@ -1003,7 +1004,7 @@ function summaryText() {
   const bits = [`${n} players`, imps];
   if (fooling()) bits.push('fooled impostors');
   bits.push(allFooled() || settings.showHint === false ? 'no clues' : 'clues on');
-  if (!fooling() && settings.showCategory === false) bits.push('category hidden');
+  if (!fooling() && settings.categories.length !== 1 && settings.showCategory === false) bits.push('category hidden');
   if (settings.drama === 'quick') bits.push('quick reveals');
   if (+settings.timer) bits.push(`${+settings.timer / 60}-min timer`);
   if (settings.mrWhite) bits.push('Mr White');
@@ -1032,6 +1033,7 @@ function load() {
       if (!['full', 'quick'].includes(settings.drama)) settings.drama = 'full';
       ['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf'].forEach((k) => { settings[k] = settings[k] === true; });
       settings.sound = settings.sound !== false;
+      settings.tieSitOut = settings.tieSitOut !== false;
       if (!TIE_RULES.some(([v]) => v === settings.tieRule)) settings.tieRule = 'revote';
       if (!FIRST_TO.some(([v]) => v === +settings.firstTo)) settings.firstTo = 0;
       if (!Array.isArray(settings.lastImps)) settings.lastImps = [];
@@ -1280,12 +1282,12 @@ function startRound() {
   const first = settings.fairStart && crewIdx.length ? pick(crewIdx) : pick(names.map((_, i) => i).filter((i) => i !== white));
   game = {
     screen: 'pass', players: names, impostors, word, wkey, hints, clue, alts, altKeys, fooled, white,
-    tieRule: settings.tieRule, accuserBonus: !!settings.accuserBonus, guessHalf: !!settings.guessHalf, firstTo: +settings.firstTo || 0, bonus: {},
+    tieRule: settings.tieRule, tieSitOut: settings.tieSitOut !== false, accuserBonus: !!settings.accuserBonus, guessHalf: !!settings.guessHalf, firstTo: +settings.firstTo || 0, bonus: {},
     category: cat.name, emoji: cat.emoji || '', idx: 0, out: [], lastOut: null, voteSel: null,
     outcome: null, announce: !!settings.announce, guessRule: settings.guessRule,
     quick: settings.drama === 'quick', timer: +settings.timer || 0, timerEnd: null, timerLeft: null,
     showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
-    showCategory: fooling() || settings.showCategory !== false,
+    showCategory: fooling() || settings.categories.length === 1 || settings.showCategory !== false,
     impostorCount: count, maxPossible, first, starterShown: false
   };
   save(); render();
@@ -1496,7 +1498,7 @@ const dramaNote = () => settings.drama === 'quick' ? 'Reveals: Quick goes straig
 const DRAMA = [['full', 'Full drama'], ['quick', 'Quick']];
 const TIE_RULES = [['revote', 'Re-vote'], ['random', 'Random'], ['starter', 'First player']];
 const FIRST_TO = [[0, 'Off'], [5, '5'], [10, '10'], [15, '15'], [20, '20']];
-const TIE_NOTES = { revote: 'Ties: the tied players each give one more clue, then everyone votes again between just them.',
+const TIE_NOTES = { revote: 'Ties: the tied players each give one more clue (the app picks who goes first), then the table votes again between just them.',
   random: 'Ties: the app picks one of the tied players at random.', starter: 'Ties: whoever went first this round decides between the tied players.' };
 const TIMERS = [[0, 'Off'], [60, '1 min'], [120, '2 min'], [180, '3 min'], [300, '5 min']];
 // Quick setups: each sets the gameplay rules in one tap (word list, history and region are left alone).
@@ -1571,6 +1573,7 @@ function renderSetup() {
     <section class="sub">
       <h3>Impostor clues</h3>
       <label class="check" id="showcatRow"><input type="checkbox" id="showcat"> Show the category during gameplay</label>
+      <p class="muted small lockwhy" id="showcatWhy" hidden>Only 1 category picked, so everyone knows it anyway.</p>
       <label class="check" id="showhintRow"><input type="checkbox" id="showhint"> Give impostors a clue word</label>
       <p class="muted small" id="infoNote"></p>
       <label class="check"><input type="checkbox" id="unaware" ${settings.unaware ? 'checked' : ''}> Impostors think they're crew</label>
@@ -1606,6 +1609,8 @@ function renderSetup() {
         ${TIE_RULES.map(([v, l]) => `<button data-act="tierule" data-v="${v}" class="${settings.tieRule === v ? 'sel' : ''}" aria-pressed="${settings.tieRule === v}">${l}</button>`).join('')}
       </div>
       <p class="muted small" id="tieNote">${TIE_NOTES[settings.tieRule] || ''} Tap "It's a tie" on the vote screen.</p>
+      <label class="check${settings.tieRule === 'revote' ? '' : ' greyed'}" id="tieSitOutRow"><input type="checkbox" id="tieSitOut" ${settings.tieSitOut !== false ? 'checked' : ''} ${settings.tieRule === 'revote' ? '' : 'disabled'}> Tied players sit out the re-vote</label>
+      <p class="muted small">So nobody can save themselves. Only for Re-vote.</p>
     </section>
 
     <section class="sub">
@@ -1651,7 +1656,7 @@ function renderSetup() {
 }
 // The settings under House rules, and whether they're all back at their defaults.
 const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'preferNew', 'unaware', 'unawareChance', 'guessRule', 'drama', 'timer',
-  'fairStart', 'noRepeat', 'mrWhite', 'tieRule', 'accuserBonus', 'guessHalf', 'firstTo', 'wordsUrl'];
+  'fairStart', 'noRepeat', 'mrWhite', 'tieRule', 'tieSitOut', 'accuserBonus', 'guessHalf', 'firstTo', 'wordsUrl'];
 function rulesAreDefault() {
   const d = defaultSettings();
   return RULE_KEYS.every((k) => k === 'weights'
@@ -1675,8 +1680,8 @@ function syncResetRules() {
 function infoNote() {
   const el = $('#infoNote'); if (!el) return;
   const forced = fooling(), noClues = allFooled();
-  const clue = !noClues && settings.showHint !== false, cat = forced || settings.showCategory !== false;
   const one = settings.categories.length === 1;
+  const clue = !noClues && settings.showHint !== false, cat = forced || one || settings.showCategory !== false;
   const many = ' With several impostors, each gets a different clue (up to four).';
   if (noClues) { el.textContent = 'Every impostor is fooled into thinking they\'re crew, so nobody gets a clue and everyone sees the category. Your own choices for these two come back if you lower the chance or switch it off.'; return; }
   if (forced) {
@@ -1685,16 +1690,21 @@ function infoNote() {
     return;
   }
   el.textContent = clue && cat ? 'Impostors see the category and a clue.' + many
-    : clue ? `Nobody sees the category during the round, so impostors get a clue with no context${one ? ' (though with one category picked, everyone knows it anyway)' : ''}. Harder for them.` + many
+    : clue ? 'Nobody sees the category during the round, so impostors get a clue with no context. Harder for them.' + many
     : cat ? 'Impostors only see the category. They must pick the word up from everyone else, which also makes guessing it at the end much harder.'
-    : one ? 'Impostors get no clue, but with one category picked everyone knows the category, so that\'s all they have to go on.'
     : 'Impostors get nothing at all: no clue and no category. They must bluff purely from what others say. Very hard for them.';
 }
 // Reflect the two toggles: greyed out and fixed while impostors can be fooled, otherwise showing the saved choice.
+// "Tied players sit out" only means something with Re-vote.
+function syncTie() {
+  const on = settings.tieRule === 'revote', el = $('#tieSitOut'), row = $('#tieSitOutRow'); if (!el) return;
+  el.disabled = !on; row.classList.toggle('greyed', !on);
+}
 function syncClueToggles() {
-  const forced = fooling();
+  const forced = fooling(), one = settings.categories.length === 1;
   const noClues = allFooled();
-  [['showcat', 'showcatRow', forced, forced ? true : settings.showCategory !== false], ['showhint', 'showhintRow', noClues, noClues ? false : settings.showHint !== false]]
+  const why = $('#showcatWhy'); if (why) why.hidden = !(one && !forced);
+  [['showcat', 'showcatRow', forced || one, forced || one ? true : settings.showCategory !== false], ['showhint', 'showhintRow', noClues, noClues ? false : settings.showHint !== false]]
     .forEach(([id, row, lock, val]) => { const el = $('#' + id), r = $('#' + row); if (!el) return; el.checked = val; el.disabled = lock; r.classList.toggle('greyed', lock); });
   infoNote();
 }
@@ -1880,7 +1890,8 @@ const SCREENS = {
     const starter = game.players[game.first == null ? 0 : game.first];
     const head = picking ? `<h1 class="vote-title">Who's tied?</h1><p class="muted">Tap everyone who's tied, then break the tie.</p>`
       : tie && tie.only ? `<h1 class="vote-title">Tie-break</h1><p class="muted">${names(left)}. ${tie.rule === 'starter'
-        ? `${esc(starter)} went first, so ${esc(starter)} decides.` : 'They each give one more clue, then everyone votes again between just them.'}</p>`
+        ? `${esc(starter)} went first, so ${esc(starter)} decides.`
+        : `They each give one more clue, <b>${esc(game.players[tie.first ?? left[0]])}</b> first. Then ${game.tieSitOut === false ? 'everyone votes' : 'everyone else votes'} between just them.`}</p>`
       : `<h1 class="vote-title">Who's the impostor?</h1><p class="muted">${left.length} suspects. Agree on one, then tap their card.${out.length ? ` Already out: ${out.join(', ')}.` : ''}</p>`;
     const foot = picking
       ? `<div class="votefoot"><button class="btn ghost small" data-act="tieCancel">Cancel</button><button class="btn primary" data-act="tieBreak" ${tie.sel.length >= 2 ? '' : 'disabled'}>${ICON.gavel}Break the tie</button></div>`
@@ -2570,7 +2581,7 @@ const ACTIONS = {
     if (c === 'random') settings.categories = [];                       // Random clears every other category
     else if (settings.categories.includes(c)) settings.categories = settings.categories.filter((x) => x !== c);
     else settings.categories = settings.categories.concat(c);           // picking any category un-selects Random
-    renderCats(); save();
+    renderCats(); syncClueToggles(); save();
   },
   preset(t) {
     const p = PRESETS[t.dataset.v]; if (!p) return;
@@ -2591,6 +2602,7 @@ const ACTIONS = {
     settings.tieRule = t.dataset.v; save(); syncResetRules();
     $$('#tierule button').forEach((b) => { const on = b.dataset.v === settings.tieRule; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
     $('#tieNote').textContent = `${TIE_NOTES[settings.tieRule]} Tap "It's a tie" on the vote screen.`;
+    syncTie();
   },
   firstto(t) {
     settings.firstTo = +t.dataset.v; save(); syncResetRules();
@@ -2683,7 +2695,7 @@ const ACTIONS = {
     if (t.rule === 'random') {   // the app picks one of the tied at random, straight to "Vote this player out?"
       const i = pick(t.sel); game.tie = null; game.voteSel = i; game.tieRandom = true; save(); render(); return;
     }
-    game.tie = { only: t.sel.slice(), rule: t.rule }; game.regrid = true; save(); render();
+    game.tie = { only: t.sel.slice(), rule: t.rule, first: t.rule === 'revote' ? pick(t.sel) : null }; game.regrid = true; save(); render();   // speaking second is an edge, so the app picks who starts
   },
   tieCancel() { game.tie = null; game.regrid = true; save(); render(); },
   credit(t) {   // optional accuser bonus: who called out this impostor? (tap again to take it back)
@@ -2924,8 +2936,8 @@ $app.addEventListener('input', (e) => {
   } else if (t.id === 'showcat') {
     if (fooling()) return;
     settings.showCategory = t.checked; infoNote(); save();
-  } else if (['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf', 'sound'].includes(t.id)) {
-    settings[t.id] = t.checked; save(); syncResetRules(); if (t.id === 'sound' && t.checked) audio();
+  } else if (['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf', 'sound', 'tieSitOut'].includes(t.id)) {
+    settings[t.id] = t.checked; save(); syncResetRules(); if (t.id === 'tieSitOut') syncTie(); if (t.id === 'sound' && t.checked) audio();
   } else if (t.id === 'announce') {
     settings.announce = t.checked; renderWeights(); save();
   } else if (t.id === 'showhint') {

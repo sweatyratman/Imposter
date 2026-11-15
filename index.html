@@ -282,6 +282,8 @@
   .fvalue { font-weight: 700; }
   .secret { font-family: var(--display); font-weight: 800; font-size: clamp(1.4rem, 7.5vw, 1.9rem); line-height: 1.1; max-width: 100%; }
   .fnote { color: var(--ink-soft); font-size: .82rem; margin-top: 12px; max-width: 22ch; }
+  .fellows { color: var(--ink-soft); font-size: .82rem; line-height: 1.3; margin: 10px 0 0; max-width: 100%; overflow-wrap: anywhere; }
+  .fellows b { color: var(--red); }
   .idbody { justify-content: flex-start; gap: 0; padding: 2.1em 1em 0; }
   .idkick { font-size: .62em; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
   .idnamebox { flex: 1; width: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
@@ -943,6 +945,7 @@ const defaultSettings = () => ({
   fairStart: false,        // optional: the impostor never goes first
   noRepeat: false,         // optional: someone who was impostor last round is less likely to be again
   mrWhite: false,          // optional: with 2+ impostors, one of them gets no clue at all
+  tellImps: false,         // optional: impostors are told who the other impostors are (off while impostors can be fooled)
   tieRule: 'revote',       // a tied vote: 'revote' between the tied | 'random' | 'starter' decides
   tieSitOut: true,         // re-vote: the tied players don't vote (the "PK" rule)
   accuserBonus: false,     // optional: +1 for whoever called out a caught impostor
@@ -1031,7 +1034,7 @@ function load() {
       delete settings.category;
       if (!['impostors', 'nobody', 'crew'].includes(settings.guessRule)) settings.guessRule = 'impostors';
       if (!['full', 'quick'].includes(settings.drama)) settings.drama = 'full';
-      ['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf'].forEach((k) => { settings[k] = settings[k] === true; });
+      ['fairStart', 'noRepeat', 'mrWhite', 'tellImps', 'accuserBonus', 'guessHalf'].forEach((k) => { settings[k] = settings[k] === true; });
       settings.sound = settings.sound !== false;
       settings.tieSitOut = settings.tieSitOut !== false;
       if (!TIE_RULES.some(([v]) => v === settings.tieRule)) settings.tieRule = 'revote';
@@ -1145,6 +1148,7 @@ const IMPOSTOR_CEILING = 10;
 // While impostors can be fooled the category is shown to everyone; if every impostor is fooled there are no clues at all.
 const fooling = () => !!settings.unaware && settings.unawareChance > 0;
 const allFooled = () => !!settings.unaware && settings.unawareChance >= 100;   // then nobody is left to get a clue
+const telling = () => !!settings.tellImps && !fooling();   // impostors see each other, unless some can be fooled
 const impostorCap = (n) => Math.max(1, Math.min(n - 1, IMPOSTOR_CEILING));
 const maxImpostors = (n) => Math.min(settings.maxImpostors || 3, impostorCap(n));
 // Default odds (%) for 1, 2 and 3 impostors by player count. Small groups are nearly always one impostor;
@@ -1288,6 +1292,7 @@ function startRound() {
     quick: settings.drama === 'quick', timer: +settings.timer || 0, timerEnd: null, timerLeft: null,
     showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
     showCategory: fooling() || settings.categories.length === 1 || settings.showCategory !== false,
+    tellImps: telling(),
     impostorCount: count, maxPossible, first, starterShown: false
   };
   save(); render();
@@ -1383,6 +1388,11 @@ const symbol = (imp) => imp ? MASK() : PEACE();
 const corners = (inner) => `<span class="corner tl">${inner}</span><span class="corner br">${inner}</span>`;
 const TAPES = `<span class="tape tape-corner tl"></span><span class="tape tape-corner br"></span>`;
 const ROLE_TAPE = `<span class="tape tape-role"><span>[REDACTED]</span></span>`;
+// Optional: impostors are told who else is on their team. A lone impostor, or a round where everyone is one, sees nothing,
+// so an all-impostor round still can't be told apart.
+const fellowsOf = (i) => !game.tellImps || game.impostors.every(Boolean) ? [] : game.impostors.map((v, j) => (v && j !== i ? j : -1)).filter((j) => j >= 0);
+const fellowsHTML = (i) => { const f = fellowsOf(i);
+  return f.length ? `<p class="fellows">Your fellow ${f.length === 1 ? 'impostor' : 'impostors'}: ${f.map((j) => `<b>${esc(game.players[j])}</b>`).join(', ')}</p>` : ''; };
 // The card dealt to each player: their role, the category and the word or hint.
 const clueFor = (i) => (game.clue && game.clue[i]) || (game.hints && game.hints[0]) || game.hint || '';
 function roleFace(i) {
@@ -1390,15 +1400,15 @@ function roleFace(i) {
   const body = imp && isWhite(i)
     ? `<div class="role-title">You're Mr White</div>
        <div class="flabel">No word, no clue</div><div class="secret">Nothing</div>
-       <p class="fnote">Listen hard and blend in. Caught? Guess the word to steal it.</p>`
+       <p class="fnote">Listen hard and blend in. Caught? Guess the word to steal it.</p>${fellowsHTML(i)}`
     : imp
     ? (game.showHint === false
       ? `<div class="role-title">You're the impostor</div>
          <div class="flabel">No clue this game</div><div class="secret">Wing it</div>
-         <p class="fnote">Listen to the others, work out the word, and blend in.</p>`
+         <p class="fnote">Listen to the others, work out the word, and blend in.</p>${fellowsHTML(i)}`
       : `<div class="role-title">You're the impostor</div>
          <div class="flabel">Your clue</div><div class="secret">${esc(clueFor(i))}</div>
-         <p class="fnote">Blend in. Don't give yourself away.</p>`)
+         <p class="fnote">Blend in. Don't give yourself away.</p>${fellowsHTML(i)}`)
     : `<div class="role-title">You're crew</div>
        <div class="flabel">The secret word</div><div class="secret">${esc(isFooled(i) ? altOf(i) : game.word)}</div>
        <p class="fnote">Prove you know it, without making it too easy.</p>`;
@@ -1504,11 +1514,11 @@ const TIMERS = [[0, 'Off'], [60, '1 min'], [120, '2 min'], [180, '3 min'], [300,
 // Quick setups: each sets the gameplay rules in one tap (word list, history and region are left alone).
 const PRESETS = {
   beginner: { label: 'Beginner', note: 'One or two impostors, the count is announced, clues on, the impostor never goes first and rarely twice in a row. Great for first games.',
-    s: { weights: {}, maxImpostors: 2, announce: true, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: true, noRepeat: true, mrWhite: false } },
+    s: { weights: {}, maxImpostors: 2, announce: true, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: true, noRepeat: true, mrWhite: false, tellImps: false } },
   classic: { label: 'Classic', note: 'The standard game: usually one impostor, with more in bigger groups.',
-    s: { weights: {}, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: false } },
+    s: { weights: {}, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: false, tellImps: false } },
   chaos: { label: 'Chaos', note: 'More impostors, half of them think they\'re crew, and one might be Mr White. Nobody is safe.',
-    s: { weights: { 1: 45, 2: 35, 3: 10, all: 10 }, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: true, unawareChance: 50, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: true } }
+    s: { weights: { 1: 45, 2: 35, 3: 10, all: 10 }, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: true, unawareChance: 50, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: true, tellImps: false } }
 };
 const presetOn = () => Object.keys(PRESETS).find((k) => Object.entries(PRESETS[k].s).every(([key, v]) => JSON.stringify(settings[key]) === JSON.stringify(v))) || '';
 const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], ['crew', 'Crew still wins']];
@@ -1582,6 +1592,8 @@ function renderSetup() {
         ${slider(`<input type="range" id="unawareChance" min="0" max="100" step="5" value="${settings.unawareChance}" aria-label="Chance each impostor is fooled">`)}
       </div>
       <p class="muted small" id="unawareNote"></p>
+      <label class="check" id="tellRow"><input type="checkbox" id="tellImps"> Impostors know each other</label>
+      <p class="muted small" id="tellNote"></p>
     </section>
 
     <section class="sub">
@@ -1656,7 +1668,7 @@ function renderSetup() {
 }
 // The settings under House rules, and whether they're all back at their defaults.
 const RULE_KEYS = ['weights', 'maxImpostors', 'announce', 'showHint', 'showCategory', 'preferNew', 'unaware', 'unawareChance', 'guessRule', 'drama', 'timer',
-  'fairStart', 'noRepeat', 'mrWhite', 'tieRule', 'tieSitOut', 'accuserBonus', 'guessHalf', 'firstTo', 'wordsUrl'];
+  'fairStart', 'noRepeat', 'mrWhite', 'tellImps', 'tieRule', 'tieSitOut', 'accuserBonus', 'guessHalf', 'firstTo', 'wordsUrl'];
 function rulesAreDefault() {
   const d = defaultSettings();
   return RULE_KEYS.every((k) => k === 'weights'
@@ -1706,7 +1718,16 @@ function syncClueToggles() {
   const why = $('#showcatWhy'); if (why) why.hidden = !(one && !forced);
   [['showcat', 'showcatRow', forced || one, forced || one ? true : settings.showCategory !== false], ['showhint', 'showhintRow', noClues, noClues ? false : settings.showHint !== false]]
     .forEach(([id, row, lock, val]) => { const el = $('#' + id), r = $('#' + row); if (!el) return; el.checked = val; el.disabled = lock; r.classList.toggle('greyed', lock); });
-  infoNote();
+  infoNote(); syncTell();
+}
+// "Impostors know each other": greyed out and off while impostors can be fooled (they'd think they were crew); your choice returns after.
+function syncTell() {
+  const el = $('#tellImps'), row = $('#tellRow'), note = $('#tellNote'); if (!el) return;
+  const lock = fooling();
+  el.checked = lock ? false : !!settings.tellImps; el.disabled = lock; row.classList.toggle('greyed', lock);
+  note.textContent = lock ? 'Off while impostors can be fooled, since a fooled impostor thinks they\'re crew.'
+    : settings.tellImps ? 'Each impostor sees who the others are on their card. A lone impostor, or a round where everyone is one, sees nothing.'
+    : 'Off: impostors don\'t know who their teammates are.';
 }
 // Keep the tagline on one line when it fits; when it doesn't (bigger system text, narrower phones) let it wrap.
 function fitTagline() {
@@ -2084,6 +2105,16 @@ function fitText(root) {
     for (let guard = 0; guard < 40 && tooBig() && size > min; guard++) {
       size *= 0.93; el.style.fontSize = size.toFixed(1) + 'px';
     }
+  });
+  // A long list of fellow impostors must sit clear of the corner marks: shrink the names, then drop the generic advice line.
+  (root || document).querySelectorAll('.fellows').forEach((el) => {
+    const body = el.closest('.cbody'), note = body && body.querySelector('.fnote'); if (!body) return;
+    el.style.fontSize = ''; if (note) note.style.display = '';
+    const kids = Array.from(body.children), m = parseFloat(getComputedStyle(body).fontSize) * 1.95,   // the corner marks scale with the text
+      clear = () => kids[0].offsetTop >= m && el.offsetTop + el.offsetHeight <= body.clientHeight - m;
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    for (let guard = 0; guard < 25 && !clear() && size > 9; guard++) { size *= 0.93; el.style.fontSize = size.toFixed(1) + 'px'; }
+    if (!clear() && note) note.style.display = 'none';
   });
 }
 // Size the vote cards to the space actually left on screen, in balanced, centred rows.
@@ -2936,8 +2967,8 @@ $app.addEventListener('input', (e) => {
   } else if (t.id === 'showcat') {
     if (fooling()) return;
     settings.showCategory = t.checked; infoNote(); save();
-  } else if (['fairStart', 'noRepeat', 'mrWhite', 'accuserBonus', 'guessHalf', 'sound', 'tieSitOut'].includes(t.id)) {
-    settings[t.id] = t.checked; save(); syncResetRules(); if (t.id === 'tieSitOut') syncTie(); if (t.id === 'sound' && t.checked) audio();
+  } else if (['fairStart', 'noRepeat', 'mrWhite', 'tellImps', 'accuserBonus', 'guessHalf', 'sound', 'tieSitOut'].includes(t.id)) {
+    settings[t.id] = t.checked; save(); syncResetRules(); if (t.id === 'tieSitOut') syncTie(); if (t.id === 'tellImps') syncTell(); if (t.id === 'sound' && t.checked) audio();
   } else if (t.id === 'announce') {
     settings.announce = t.checked; renderWeights(); save();
   } else if (t.id === 'showhint') {

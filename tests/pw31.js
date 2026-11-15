@@ -45,6 +45,30 @@ await home(p);let firsts=0;for(let k=0;k<30;k++){await p.click('[data-act="start
 t(firsts===0,'Mr White never goes first (30 rounds)');await p.close();
 p=await mk({weights:ONE,mrWhite:true});await p.click('[data-act="start"]');g=await G(p);t(g.white==null,'with a lone impostor there is no Mr White');await p.close();
 
+// ---- impostors know each other
+const card=async(p,i)=>{await p.click('[data-act="reveal"]');await p.waitForTimeout(250);const x=await p.textContent('.deal-card .cface');await p.click('[data-act="hide"]');return x};
+p=await mk();t((await S(p)).tellImps===false&&await p.$eval('#tellImps',e=>!e.checked&&!e.disabled),'"Impostors know each other" is off by default');await p.close();
+p=await mk({tellImps:true,unaware:true,unawareChance:100});
+t(await p.$eval('#tellImps',e=>!e.checked&&e.disabled)&&await p.$eval('#tellRow',e=>e.classList.contains('greyed'))&&(await S(p)).tellImps===true,'while impostors can be fooled it is greyed and off, and your choice is kept');
+await p.click('[data-act="start"]');g=await G(p);t(g.tellImps===false,'…and the round does not use it');await home(p);
+await p.click('#unaware');t(await p.$eval('#tellImps',e=>e.checked&&!e.disabled),'switching "think they\'re crew" off brings your choice back');
+await p.click('[data-act="start"]');g=await G(p);t(g.tellImps===true,'…and the round uses it');await p.close();
+p=await mk({weights:TWO,tellImps:true});await p.click('[data-act="start"]');g=await G(p);
+{const imps=g.impostors.map((v,i)=>v?i:-1).filter(i=>i>=0);let good=0,leak=0;
+ for(let i=0;i<g.players.length;i++){const x=await card(p,i);if(g.impostors[i]){const o=imps.find(j=>j!==i);if(/Your fellow impostor:/.test(x)&&x.includes(g.players[o]))good++}else if(/fellow/.test(x))leak++}
+ t(good===2&&leak===0,'with 2 impostors each is told who the other is, and crew are told nothing');}
+await p.close();
+p=await mk({weights:ONE,tellImps:true});await p.click('[data-act="start"]');g=await G(p);{let any=0;for(let i=0;i<g.players.length;i++){if(/fellow/.test(await card(p,i)))any++}t(any===0,'a lone impostor is told nothing');}await p.close();
+p=await mk({weights:{1:0,2:0,3:0,all:100},tellImps:true});await p.click('[data-act="start"]');g=await G(p);{let any=0;for(let i=0;i<g.players.length;i++){if(/fellow/.test(await card(p,i)))any++}t(g.impostors.every(Boolean)&&any===0,'when everyone is an impostor nobody is told (it must stay a secret)');}await p.close();
+{const names=Array.from({length:10},(_,i)=>'Longnamed Person '+(i+1)).map(x=>x.slice(0,20));
+ for(const [vp,k] of [[{width:360,height:640},1],[{width:360,height:640},1.5]]){
+  p=await mk({playerCount:10,maxImpostors:9,weights:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:100,all:0},names,tellImps:true},vp);await p.click('[data-act="start"]');g=await G(p);
+  let fit=true;for(let i=0;i<g.players.length;i++){await p.click('[data-act="reveal"]');await p.waitForTimeout(250);
+   if(k>1)await p.evaluate((k)=>{document.documentElement.style.fontSize=(16*k)+'px'},k);
+   await p.evaluate(()=>window.dispatchEvent(new Event('resize')));await p.waitForTimeout(400);
+   const ok=await p.evaluate(()=>{const b=document.querySelector('.deal-card .cbody'),f=b.querySelector('.fellows'),k=[...b.children];const m=parseFloat(getComputedStyle(b).fontSize)*1.95;return k[0].offsetTop>=m&&f.offsetTop+f.offsetHeight<=b.clientHeight-m});if(!ok)fit=false;await p.click('[data-act="hide"]')}
+  t(fit,`a card with 8 fellow impostors still fits at 360×640${k>1?' with text ×'+k:''}`);await p.close()}}
+
 // ---- ties
 p=await mk({tieRule:'revote'});t(await p.$eval('#tieSitOut',e=>e.checked&&!e.disabled),'"Tied players sit out" is on by default with Re-vote');
 await p.click('#tierule [data-v="random"]');t(await p.$eval('#tieSitOut',e=>e.disabled)&&await p.$eval('#tieSitOutRow',e=>e.classList.contains('greyed')),'…and greyed out for the other tie rules');

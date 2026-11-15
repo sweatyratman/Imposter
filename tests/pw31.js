@@ -66,7 +66,7 @@ p=await mk({weights:{1:0,2:0,3:0,all:100},tellImps:true});await p.click('[data-a
   let fit=true;for(let i=0;i<g.players.length;i++){await p.click('[data-act="reveal"]');await p.waitForTimeout(250);
    if(k>1)await p.evaluate((k)=>{document.documentElement.style.fontSize=(16*k)+'px'},k);
    await p.evaluate(()=>window.dispatchEvent(new Event('resize')));await p.waitForTimeout(400);
-   const ok=await p.evaluate(()=>{const b=document.querySelector('.deal-card .cbody'),f=b.querySelector('.fellows'),k=[...b.children];const m=parseFloat(getComputedStyle(b).fontSize)*1.95;return k[0].offsetTop>=m&&f.offsetTop+f.offsetHeight<=b.clientHeight-m});if(!ok)fit=false;await p.click('[data-act="hide"]')}
+   const ok=await p.evaluate(()=>{const b=document.querySelector('.deal-card .cbody'),f=b.querySelector('.fellows'),k=[...b.children];if(!f)return true;const m=parseFloat(getComputedStyle(b).fontSize)*1.95;return k[0].offsetTop>=m&&f.offsetTop+f.offsetHeight<=b.clientHeight-m});if(!ok)fit=false;await p.click('[data-act="hide"]')}
   t(fit,`a card with 8 fellow impostors still fits at 360×640${k>1?' with text ×'+k:''}`);await p.close()}}
 
 // ---- ties

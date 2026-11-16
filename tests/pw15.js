@@ -61,7 +61,6 @@ await p.click('.masthead [data-act="board"]');await p.click('[data-sheet="reset"
 await p.click('[data-sheet="no"]');await p.waitForTimeout(300);t(Object.keys((await S()).scores).length===2,'cancel keeps the scores');
 await p.click('.masthead [data-act="board"]');await p.click('[data-sheet="reset"]');await p.click('[data-sheet="yes"]');
 await p.waitForTimeout(400);t(!(await p.$('.sheet-wrap')),'after reset the board closes instead of showing an empty one');t(Object.keys((await S()).scores).length===0,'scores cleared');
-await p.click('[data-sheet="close"]');await p.waitForTimeout(300);
 
 // ---- show category rule ----
 t(await p.$eval('#showcat',e=>e.checked),'show category on by default');

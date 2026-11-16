@@ -10,7 +10,7 @@ const name=()=>p.textContent('#groupChip b');
 const open=async()=>{await p.click('#groupChip');await p.waitForSelector('.sheet.groups')};
 t((await name())==='My group','starts as "My group"');
 // set up the first group: names, a rule, scores and some history
-await p.fill('[data-name="0"]','Alice');await p.fill('[data-name="1"]','Bob');await p.click('#announce');
+await p.click('[data-act="names"]');await p.fill('[data-name="0"]','Alice');await p.fill('[data-name="1"]','Bob');await p.click('#announce');
 await p.evaluate(()=>{const s=JSON.parse(localStorage.getItem('impostor-party-v1'));s.settings.scores={Alice:5};s.history={w:{'Animals::cat':2},h:{}};localStorage.setItem('impostor-party-v1',JSON.stringify(s))});
 await p.reload();await p.waitForSelector('#count');
 await open();t((await p.$$eval('.grow',e=>e.length))===1&&/Playing now/.test(await p.textContent('.grow.on')),'the sheet lists the current group as playing now');

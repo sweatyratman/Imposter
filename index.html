@@ -44,6 +44,10 @@
   button { font: inherit; color: inherit; }
   :focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
   .muted { color: var(--mute); }
+  /* During play the instructions have to be read, so they are brighter, heavier and a touch bigger than the fine print. */
+  body:not(.on-setup) .muted, body:not(.on-setup) .tapnote, body:not(.on-setup) .kicker { color: #eef1fc; font-weight: 600; }
+  body:not(.on-setup) .tapnote, body:not(.on-setup) .vote-head p, body:not(.on-setup) .stage-foot p.muted { font-size: 1.02rem; line-height: 1.4; }
+  body:not(.on-setup) .muted.small { color: #dde3f6; }
   .small { font-size: .9rem; }
   .lead { font-size: 1.08rem; color: #d9def0; max-width: 34ch; margin-inline: auto; }
 
@@ -75,12 +79,12 @@
   .barcat:empty { display: none; }
   /* Hidden category: a paper tag with the same black [REDACTED] tape as the cards */
   .barcat .redcat { position: relative; overflow: visible; border: 0; border-radius: 6px; background: var(--paper); color: var(--ink-soft);
-    padding: 4px 18px 4px 11px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+    padding: 10px 20px 10px 13px; display: inline-flex; align-items: center; gap: 9px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
   .barcat .redcat.shown { overflow: hidden; padding-right: 12px; }
   .redcat .catval { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink);
-    font-family: var(--display); font-weight: 700; font-size: .8rem; line-height: 1.3; }
-  .redcat i { flex: none; font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
-  .redcat .tape { position: relative; z-index: 1; --rot: -2deg; padding: 3px 11px 3px 10px; margin-right: -8px; font-family: var(--display);
+    font-family: var(--display); font-weight: 700; font-size: .88rem; line-height: 1.3; }
+  .redcat i { flex: none; font-style: normal; font-size: .64rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+  .redcat .tape { position: relative; z-index: 1; --rot: -2deg; padding: 5px 12px 5px 11px; margin-right: -8px; font-family: var(--display);
     font-weight: 700; font-size: .72rem; letter-spacing: .07em; line-height: 1.2; white-space: nowrap; }
   .redcat .tape::after { animation: twitch 2.1s ease-in-out infinite; }
   .barcat span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -138,9 +142,54 @@
     color: var(--paper); border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 1rem; }
   input::placeholder { color: #7480a3; }
   input[type=text]:focus, input[type=url]:focus { outline: 2px solid var(--brass); outline-offset: 0; border-color: transparent; }
-  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 2px 2px; }
   @media (max-width: 300px) { .names { grid-template-columns: 1fr; } }
 
+  /* Players: a big thumb-friendly stepper, with the names folded away until you want them. */
+  .stepper { position: relative; display: grid; grid-template-columns: 76px 1fr 76px; gap: 12px; align-items: stretch; }
+  .step { appearance: none; border: 0; border-radius: 22px; min-height: 76px; background: var(--raised); color: var(--brass); cursor: pointer;
+    font-family: var(--display); font-weight: 800; font-size: 2.4rem; line-height: 1; touch-action: manipulation; -webkit-user-select: none; user-select: none;
+    box-shadow: 0 5px 0 #0c1326, inset 0 1px 0 rgba(255,255,255,.08); transition: transform .07s ease-out, box-shadow .07s ease-out, opacity .2s; }
+  .step:active { transform: translateY(5px); box-shadow: 0 0 0 #0c1326; }
+  .step:disabled { opacity: .3; pointer-events: none; }
+  .stepmid { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .stepmid .count { font-size: 3.6rem; display: inline-block; }
+  .stepmid .count.bump { animation: countBump .22s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes countBump { from { transform: scale(1.22); } to { transform: none; } }
+  .stepmid span { color: var(--mute); font-size: .8rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+  @media (max-height: 700px) { .stepper { grid-template-columns: 64px 1fr 64px; } .step { min-height: 64px; font-size: 2.1rem; } .stepmid .count { font-size: 3rem; } .setup .block { padding: 16px 0; } }
+  .stepinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .nameschip { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 16px;
+    background: rgba(31,43,75,.55); color: var(--paper); font: inherit; text-align: left; cursor: pointer; }
+  .nameschip .nlist { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mute); }
+  .nameschip .nact { flex: none; color: var(--brass); font-weight: 700; }
+  .nameschip .nact::after { content: "›"; margin-left: 6px; display: inline-block; transition: transform .3s cubic-bezier(.3,.8,.3,1); }
+  .nameschip[aria-expanded="true"] .nact::after { transform: rotate(90deg); }
+  .namesdrop { display: grid; grid-template-rows: 0fr; opacity: 0; visibility: hidden;
+    transition: grid-template-rows .38s cubic-bezier(.3,.8,.3,1), opacity .25s ease, visibility 0s linear .38s; }
+  .namesdrop.open { grid-template-rows: 1fr; opacity: 1; visibility: visible; transition: grid-template-rows .38s cubic-bezier(.3,.8,.3,1), opacity .3s ease .08s, visibility 0s; }
+  .namesin { overflow: hidden; min-height: 0; }
+  /* Quick setups: three big paper cards, one tap to a whole style of game. */
+  .pcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pcard { appearance: none; border: 2px solid transparent; border-radius: 18px; padding: 14px 6px 12px; min-height: 136px; background: var(--paper); color: var(--ink); font: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; text-align: center; cursor: pointer; overflow-wrap: anywhere;
+    box-shadow: 0 5px 0 #b9ad97, 0 10px 22px rgba(5,9,22,.35); transition: transform .15s ease-out, box-shadow .15s ease-out; }
+  .pcard .pe { font-size: 2rem; line-height: 1; }
+  .pcard b { font-family: var(--display); font-weight: 800; font-size: .92rem; }
+  .pcard .pd { font-size: .8rem; line-height: 1.25; color: var(--ink-soft); }
+  .pcard:active { transform: translateY(3px); box-shadow: 0 2px 0 #b9ad97, 0 4px 10px rgba(5,9,22,.3); }
+  .pcard.sel { border-color: var(--brass); background: #fff6dd; transform: translateY(-5px); box-shadow: 0 9px 0 #a67d22, 0 18px 30px rgba(233,185,73,.3); }
+  @media (max-width: 339px) { .pcards { grid-template-columns: 1fr; } .pcard { flex-direction: row; min-height: 0; text-align: left; padding: 12px 14px; gap: 12px; } }
+  /* Same crew again? Returning groups see this first. */
+  .hero { display: flex; flex-direction: column; gap: 8px; padding: 16px; margin: 6px 0 4px; border: 1.5px solid rgba(233,185,73,.5); border-radius: 22px;
+    background: linear-gradient(160deg, #26345c, #1a2647); box-shadow: 0 12px 30px rgba(5,9,22,.45); }
+  .hero p { margin: 0; }
+  .herokick { font-family: var(--display); font-weight: 700; font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--brass); }
+  .heronames { font-size: 1.2rem; font-weight: 800; line-height: 1.25; color: var(--paper); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .herometa { color: #cfd6ee; font-size: .9rem; }
+  .herolead { color: var(--brass); font-weight: 700; }
+  .herobtns { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 6px; }
+  .herobtns .btn { margin-bottom: 4px; }
   .cathead { align-items: baseline; flex-wrap: wrap; row-gap: 4px; column-gap: 10px; }
   .catflavour { margin-left: auto; font-size: .78rem; font-style: italic; color: var(--brass); white-space: nowrap; }
   @media (max-width: 349px) { .catflavour { flex-basis: 100%; margin-left: 0; } }
@@ -370,6 +419,13 @@
   .spot.imp::after, .spot.crew::after { animation: tintRoll 2.2s ease-in-out both; }
   @keyframes tintRoll { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
   .spot.on-top { opacity: 1; }
+  /* A crewmate voted out gets a golden aura behind the card: the proof that they really are crew. It sits behind the card, not on it. */
+  .aura { position: absolute; inset: -20% -32%; z-index: -1; pointer-events: none; border-radius: 50%; opacity: 0;
+    background: radial-gradient(closest-side, #ffe58a 0 60%, rgba(255,216,96,.96) 66%, rgba(255,190,48,.62) 80%, rgba(255,168,28,.2) 92%, rgba(255,168,28,0) 100%); }
+  .aura.on { opacity: 1; animation: auraIn var(--ad, .7s) cubic-bezier(.3,.6,.3,1) both; }
+  .aura.still { opacity: 1; animation: auraBreath 3.4s ease-in-out infinite; }
+  @keyframes auraIn { from { opacity: 0; scale: .78; } to { opacity: 1; scale: 1; } }
+  @keyframes auraBreath { 0%, 100% { scale: 1; opacity: 1; } 50% { scale: 1.05; opacity: .8; } }
   /* keep the count bright above the dimming */
   .stage.verdict .countdown { position: relative; z-index: 40; }
 
@@ -383,7 +439,7 @@
   .passto { font-family: var(--body); font-weight: 400; font-size: 1.1rem; color: #d9def0; margin-top: 4px; }
   .bigname { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 11vw, 2.8rem); line-height: 1.05;
     letter-spacing: -.02em; }
-  .tapnote { color: var(--mute); font-size: .95rem; min-height: 2.9em; position: relative; z-index: 40; }   /* stays bright under the spotlight */
+  .tapnote { color: var(--paper); font-size: .95rem; min-height: 2.9em; position: relative; z-index: 40; }   /* stays bright under the spotlight */
 
   /* ---------- shuffle ---------- */
   .shuffle-screen { --cw: min(54vw, 210px, 27vh); text-align: center; padding-top: 14px; }
@@ -608,9 +664,12 @@
   @media (prefers-reduced-motion: reduce) { .dcard { animation: none; } }
   .stage.verdict.credited { --cw: min(52vw, 210px, 25vh); }   /* room for "Who called it?": set for the whole reveal, so nothing jumps or gives anything away */
   @media (max-height: 700px) { body .stage.verdict.credited { --cw: min(44vw, 170px, 20vh); } }
-  .votefoot { display: flex; justify-content: center; align-items: center; gap: 6px 14px; flex-wrap: wrap; }
-  .votefoot .btn { width: auto; }
-  .votefoot .btn.primary { padding: 0 18px; min-height: 52px; }
+  .votefoot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; align-items: stretch; }
+  .votefoot.one { grid-template-columns: 1fr; }
+  .votefoot .btn { width: 100%; min-height: 56px; padding: 0 14px; font-size: 1rem; line-height: 1.15; text-align: center; margin-bottom: 4px; }
+  .votefoot .btn svg { width: 20px; height: 20px; }
+  .btn.alt { --edge: #0c1326; background: var(--raised); color: var(--paper); border: 2px solid #4b5b8c; }   /* a clear second button: solid, outlined, never a text link */
+  .vote-head .must { color: #fff; font-weight: 800; }
   .gcard.tied { transform: translateY(-6px) scale(1.04); }
   .gcard.tied .cface { box-shadow: 0 0 0 4px var(--brass), 0 14px 28px rgba(0,0,0,.45); }
   .gcard { transition: transform .2s cubic-bezier(.3,.8,.3,1); }
@@ -759,7 +818,6 @@
   .summary { display: block; width: fit-content; max-width: 100%; margin: 0 auto 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 99px;
     background: var(--raised); color: var(--mute); font: inherit; font-size: .8rem; text-align: center; white-space: nowrap; overflow: hidden;
     text-overflow: ellipsis; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
-  #preset { grid-template-columns: repeat(auto-fit, minmax(min(100%, 5em), 1fr)); }
   #timer { grid-template-columns: repeat(auto-fit, minmax(min(100%, 3em), 1fr)); }
   #timer button { padding: 6px 2px; }
   .cluetimer { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px; margin-bottom: 8px;
@@ -805,11 +863,11 @@
 
   @media (prefers-reduced-motion: reduce) {
     .c3d.enter, .c3d.exit, .c3d.suspense, .c3d.bounce .tape::after, .tape.peel, .countdown.tick, .after,
-    .suspect .stamp, .autobar span, .redcat .tape::after, .c3d.slam, .c3d.hit, .c3d.sigh, .c3d.revealed .corner, .c3d.revealed .rtext, .countdown.tick::after, .spot.flash::before, .spot.imp::after, .spot.crew::after, .table-area.draw .drawn, .stack-area .c3d.enter, .gcard .tape::after, .gcard.back-in,
+    .suspect .stamp, .autobar span, .redcat .tape::after, .aura.on, .aura.still, .stepmid .count.bump, .c3d.slam, .c3d.hit, .c3d.sigh, .c3d.revealed .corner, .c3d.revealed .rtext, .countdown.tick::after, .spot.flash::before, .spot.imp::after, .spot.crew::after, .table-area.draw .drawn, .stack-area .c3d.enter, .gcard .tape::after, .gcard.back-in,
     .stage-foot.rise, .vote-stage .stage-head, .fadein, .sheet, .sheet-wrap,
     .c3d.strobe .cface::before { animation: none !important; }
     .unmask-title .pl, .unmask-title .sg, .spot,
-    .c3d-inner, .mini, .stack-area .c3d, .bar span, .suspect, .btn, .cface::before { transition: none !important; }
+    .c3d-inner, .mini, .stack-area .c3d, .bar span, .suspect, .btn, .cface::before, .namesdrop, .step, .pcard, .nameschip .nact::after { transition: none !important; }
   }
 </style>
 </head>
@@ -995,7 +1053,7 @@ const buzz = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (
 
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify({ settings, game, recent, history })); } catch (e) {}
-  if (!game) { const el = document.getElementById('summary'); if (el) el.textContent = summaryText(); const pn = document.getElementById('presetNote'); if (pn) { pn.textContent = presetNote(); document.querySelectorAll('#preset button').forEach((b) => { const on = b.dataset.v === presetOn(); b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); }); } }
+  if (!game) { const el = document.getElementById('summary'); if (el) el.textContent = summaryText(); const hm = document.getElementById('heroMeta'); if (hm) hm.textContent = summaryText(); const pn = document.getElementById('presetNote'); if (pn) { pn.textContent = presetNote(); document.querySelectorAll('#preset button').forEach((b) => { const on = b.dataset.v === presetOn(); b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); }); } }
 }
 // One line above Start saying how this game will play, so nobody has to scroll through the rules to check.
 function summaryText() {
@@ -1292,7 +1350,7 @@ function startRound() {
     quick: settings.drama === 'quick', timer: +settings.timer || 0, timerEnd: null, timerLeft: null,
     showHint: !allFooled() && settings.showHint !== false,   // fixed for the round, even if the setting changes mid-game
     showCategory: fooling() || settings.categories.length === 1 || settings.showCategory !== false,
-    tellImps: telling(),
+    tellImps: telling(), fooling: fooling(),   // fixed for the round: a crewmate's reveal then follows the same timeline as a fooled impostor's
     impostorCount: count, maxPossible, first, starterShown: false
   };
   save(); render();
@@ -1435,23 +1493,14 @@ function idFace(name, role, { redacted = false, nameId = '' } = {}) {
    and a tap on the track does nothing. The drag is relative: the thumb moves as far as your finger does. */
 const slider = (input, scale = '', fill = '') => `<div class="slider"${scale ? ` data-scale="${scale}"` : ''}${fill ? ` style="--fill:${fill}"` : ''}>
   ${input}<span class="strack"><span class="sfill"></span></span><span class="sthumb"></span></div>`;
-// Player count: the small numbers get wider steps (3→4 is about twice as wide as 15→16), as small games are most common.
-const COUNT_GAP = (k) => 1 + 1.3 * Math.max(0, 10 - k) / 7;
-const COUNT_POS = (() => { const pos = {}; let x = 0; for (let k = MIN_PLAYERS; k <= MAX_PLAYERS; k++) { pos[k] = x; x += COUNT_GAP(k); }
-  const total = pos[MAX_PLAYERS]; for (const k in pos) pos[k] /= total; return pos; })();
 function sliderFrac(input, v = +input.value) {
   const min = +input.min, max = +input.max;
   if (max <= min) return 0;
-  if (input.closest('[data-scale="count"]')) return COUNT_POS[Math.round(v)] ?? 0;
   return (v - min) / (max - min);
 }
 function fracToValue(input, f) {
   const min = +input.min, max = +input.max;
   f = Math.max(0, Math.min(1, f));
-  if (input.closest('[data-scale="count"]')) {   // nearest player count to that spot on the track
-    let best = min; for (let k = min; k <= max; k++) if (Math.abs(COUNT_POS[k] - f) < Math.abs(COUNT_POS[best] - f)) best = k;
-    return best;
-  }
   const step = +input.step || 1;
   return Math.min(max, Math.max(min, Math.round((min + f * (max - min)) / step) * step));
 }
@@ -1513,15 +1562,26 @@ const TIE_NOTES = { revote: 'Ties: the tied players each give one more clue (the
 const TIMERS = [[0, 'Off'], [60, '1 min'], [120, '2 min'], [180, '3 min'], [300, '5 min']];
 // Quick setups: each sets the gameplay rules in one tap (word list, history and region are left alone).
 const PRESETS = {
-  beginner: { label: 'Beginner', note: 'One or two impostors, the count is announced, clues on, the impostor never goes first and rarely twice in a row. Great for first games.',
+  beginner: { label: 'Beginner', emoji: '🌱', blurb: 'Gentle: fewer impostors', note: 'One or two impostors, the count is announced, clues on, the impostor never goes first and rarely twice in a row. Great for first games.',
     s: { weights: {}, maxImpostors: 2, announce: true, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: true, noRepeat: true, mrWhite: false, tellImps: false } },
-  classic: { label: 'Classic', note: 'The standard game: usually one impostor, with more in bigger groups.',
+  classic: { label: 'Classic', emoji: '🎭', blurb: 'The standard game', note: 'The standard game: usually one impostor, with more in bigger groups.',
     s: { weights: {}, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: false, unawareChance: 100, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: false, tellImps: false } },
-  chaos: { label: 'Chaos', note: 'More impostors, half of them think they\'re crew, and one might be Mr White. Nobody is safe.',
+  chaos: { label: 'Chaos', emoji: '🌀', blurb: 'Wild: some are fooled', note: 'More impostors, half of them think they\'re crew, and one might be Mr White. Nobody is safe.',
     s: { weights: { 1: 45, 2: 35, 3: 10, all: 10 }, maxImpostors: 3, announce: false, showHint: true, showCategory: true, unaware: true, unawareChance: 50, guessRule: 'impostors', drama: 'full', timer: 0, fairStart: false, noRepeat: false, mrWhite: true, tellImps: false } }
 };
 const presetOn = () => Object.keys(PRESETS).find((k) => Object.entries(PRESETS[k].s).every(([key, v]) => JSON.stringify(settings[key]) === JSON.stringify(v))) || '';
 const GUESS_RULES = [['impostors', 'Impostors win'], ['nobody', 'Nobody wins'], ['crew', 'Crew still wins']];
+// Anyone who has played a round in this group sees a "same crew again?" card first, with Play again one tap away.
+const hasPlayed = () => Object.keys(history.w || {}).length > 0 || Object.keys(settings.scores || {}).length > 0;
+function heroHTML() {
+  if (!hasPlayed()) return '';
+  const top = Object.entries(settings.scores || {}).sort((a, b) => b[1] - a[1])[0];
+  const lead = top && top[1] > 0 ? `<p class="herolead">👑 ${esc(top[0])} leads on ${top[1]} ${plural(top[1], 'point', 'points')}</p>` : '';
+  return `<div class="hero" id="hero"><p class="herokick">Same crew again?</p><p class="heronames" id="heroNames">${esc(getNames().join(', '))}</p>
+    <p class="herometa" id="heroMeta">${esc(summaryText())}</p>${lead}
+    <div class="herobtns"><button class="btn primary big" data-act="playagain">${ICON.play}Play again</button><button class="btn alt" data-act="toSetup">Change setup</button></div></div>`;
+}
+let namesOpen = false;   // the name boxes fold away until you ask for them
 function renderSetup() {
   const n = settings.playerCount;
   $app.innerHTML = `
@@ -1538,10 +1598,27 @@ function renderSetup() {
     <button class="groupchip" data-act="groups" id="groupChip" aria-label="Saved groups">👥 <b>${esc(groupName())}</b><span>Switch ›</span></button>
     ${settings.seenHowto ? '' : `<div class="howto-cta" id="howtoCta"><p><b>New here?</b> <small>See how to play in under a minute.</small></p>
       <button class="btn primary" data-act="howto">${ICON.play}Watch</button><button class="x" data-act="howtoDismiss" aria-label="No thanks">${ICON.x}</button></div>`}
-    <section class="block">
-      <div class="row"><h2>Players</h2><span class="count" id="countVal">${n}</span></div>
-      ${slider(`<input type="range" id="count" min="${MIN_PLAYERS}" max="${MAX_PLAYERS}" value="${n}" aria-label="Number of players">`, 'count')}
-      <div id="names" class="names"></div>
+    ${heroHTML()}
+    <section class="block" id="playersBlock">
+      <div class="row"><h2>Players</h2></div>
+      <div class="stepper" role="group" aria-label="Number of players">
+        <button class="step" data-act="step" data-d="-1" id="stepDown" aria-label="Fewer players">−</button>
+        <div class="stepmid"><b class="count" id="countVal" aria-live="polite">${n}</b><span>players</span></div>
+        <button class="step" data-act="step" data-d="1" id="stepUp" aria-label="More players">+</button>
+        <input type="range" id="count" class="stepinput" min="${MIN_PLAYERS}" max="${MAX_PLAYERS}" value="${n}" tabindex="-1" aria-hidden="true">
+      </div>
+      <div class="namesbox">
+        <button class="nameschip" data-act="names" id="namesBtn" aria-expanded="${namesOpen}" aria-controls="namesWrap"><span class="nlist" id="nameList"></span><span class="nact" id="nameAct"></span></button>
+        <div class="namesdrop${namesOpen ? ' open' : ''}" id="namesWrap"><div class="namesin"><div id="names" class="names"></div></div></div>
+      </div>
+    </section>
+
+    <section class="block" id="presetBlock">
+      <div class="row cathead"><h2>Quick setup</h2><span class="catflavour">Tweak it in House rules</span></div>
+      <div class="pcards" id="preset" role="group" aria-label="Quick setups">
+        ${Object.entries(PRESETS).map(([k, p]) => `<button class="pcard${presetOn() === k ? ' sel' : ''}" data-act="preset" data-v="${k}" aria-pressed="${presetOn() === k}"><span class="pe" aria-hidden="true">${p.emoji}</span><b>${p.label}</b><span class="pd">${p.blurb}</span></button>`).join('')}
+      </div>
+      <p class="muted small" id="presetNote">${presetNote()}</p>
     </section>
 
     <section class="block">
@@ -1558,14 +1635,6 @@ function renderSetup() {
     <section class="block rules" id="rules">
       <div class="row"><h2>House rules</h2>
         <button class="btn small resetrules reset all" data-act="resetRules" ${rulesAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset all house rules</button></div>
-    <section class="sub">
-      <h3>Quick setups</h3>
-      <div class="seg" id="preset" role="group" aria-label="Quick setups">
-        ${Object.entries(PRESETS).map(([k, p]) => `<button data-act="preset" data-v="${k}" class="${presetOn() === k ? 'sel' : ''}" aria-pressed="${presetOn() === k}">${p.label}</button>`).join('')}
-      </div>
-      <p class="muted small" id="presetNote">${presetNote()}</p>
-    </section>
-
     <section class="sub">
       <div class="subhead"><h3>Impostors per round</h3>
         <button class="btn reset scope" data-act="resetOdds" id="resetOdds" ${oddsAreDefault() ? 'disabled' : ''}>${ICON.undo}Reset odds</button></div>
@@ -1660,9 +1729,9 @@ function renderSetup() {
     </section>
 
     <div class="dock"><button class="summary" data-act="toRules" id="summary" aria-label="Your house rules: tap to see them">${summaryText()}</button>
-      <button class="btn primary big" data-act="start">${ICON.play}Start game</button></div>
+      <button class="btn primary big" data-act="start">${ICON.play}${hasPlayed() ? 'Play again' : 'Start game'}</button></div>
   </div>`;
-  renderNames(); renderCats(); renderWeights(); unawareNote(); fitTagline(); seenNote();
+  renderNames(); syncNames(); syncStepper(); renderCats(); renderWeights(); unawareNote(); fitTagline(); seenNote();
   $$('.slider input').forEach(syncSlider);
   $('#wstatus').textContent = wordsStatusText();
 }
@@ -1765,6 +1834,26 @@ function renderNames() {
   for (let i = 0; i < settings.playerCount; i++)
     html += `<input type="text" data-name="${i}" maxlength="20" placeholder="Player ${i + 1}" value="${esc(settings.names[i] || '')}" autocomplete="off" autocapitalize="words" aria-label="Player ${i + 1} name">`;
   box.innerHTML = html;
+}
+// The folded names row: who's playing at a glance, and whether the boxes are open.
+function syncNames() {
+  const w = $('#namesWrap'), b = $('#namesBtn'); if (!w) return;
+  w.classList.toggle('open', namesOpen); b.setAttribute('aria-expanded', namesOpen);
+  const custom = settings.names.slice(0, settings.playerCount).some((x) => (x || '').trim());
+  $('#nameList').textContent = getNames().join(' · ');
+  $('#nameAct').textContent = namesOpen ? 'Done' : custom ? 'Edit names' : 'Add names';
+  const hn = $('#heroNames'); if (hn) hn.textContent = getNames().join(', ');
+}
+function syncStepper() {
+  const d = $('#stepDown'), u = $('#stepUp'); if (!d) return;
+  d.disabled = settings.playerCount <= MIN_PLAYERS; u.disabled = settings.playerCount >= MAX_PLAYERS;
+}
+function stepCount(d) {
+  const el = $('#count'); if (!el) return;
+  const v = Math.max(MIN_PLAYERS, Math.min(MAX_PLAYERS, settings.playerCount + d)); if (v === settings.playerCount) return;
+  el.value = v; el.dispatchEvent(new Event('input', { bubbles: true }));
+  const c = $('#countVal'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
+  buzz(8);
 }
 // Each category's tile colours. Lists from elsewhere get a colour picked from their name.
 const CAT_COLOURS = {
@@ -1912,11 +2001,11 @@ const SCREENS = {
     const head = picking ? `<h1 class="vote-title">Who's tied?</h1><p class="muted">Tap everyone who's tied, then break the tie.</p>`
       : tie && tie.only ? `<h1 class="vote-title">Tie-break</h1><p class="muted">${names(left)}. ${tie.rule === 'starter'
         ? `${esc(starter)} went first, so ${esc(starter)} decides.`
-        : `They each give one more clue, <b>${esc(game.players[tie.first ?? left[0]])}</b> first. Then ${game.tieSitOut === false ? 'everyone votes' : 'everyone else votes'} between just them.`}</p>`
+        : `They each give one more clue, <b>${esc(game.players[tie.first ?? left[0]])}</b> first. Then ${game.tieSitOut === false ? 'everyone votes' : 'everyone else votes'} between just them. <b class="must">A majority MUST be reached!</b>`}</p>`
       : `<h1 class="vote-title">Who's the impostor?</h1><p class="muted">${left.length} suspects. Agree on one, then tap their card.${out.length ? ` Already out: ${out.join(', ')}.` : ''}</p>`;
     const foot = picking
-      ? `<div class="votefoot"><button class="btn ghost small" data-act="tieCancel">Cancel</button><button class="btn primary" data-act="tieBreak" ${tie.sel.length >= 2 ? '' : 'disabled'}>${ICON.gavel}Break the tie</button></div>`
-      : `<div class="votefoot"><button class="btn ghost small" data-act="${tie ? 'tieCancel' : 'back'}">${tie ? 'Cancel tie-break' : 'Back to discussion'}</button>${tie || left.length < 3 ? '' : '<button class="btn ghost small" data-act="tie">It\'s a tie</button>'}</div>`;
+      ? `<div class="votefoot"><button class="btn alt" data-act="tieCancel">${ICON.back}Cancel</button><button class="btn primary" data-act="tieBreak" ${tie.sel.length >= 2 ? '' : 'disabled'}>${ICON.gavel}Break the tie</button></div>`
+      : `<div class="votefoot${tie || left.length < 3 ? ' one' : ''}"><button class="btn alt" data-act="${tie ? 'tieCancel' : 'back'}">${ICON.back}${tie ? 'Cancel tie-break' : 'Back to discussion'}</button>${tie || left.length < 3 ? '' : `<button class="btn alt" data-act="tie">${ICON.gavel}It's a tie</button>`}</div>`;
     return `<div class="screen vote">
       <header class="vote-head">${head}</header>
       <div class="suspect-grid" style="--cw:${fit.w}px">${cards}</div>
@@ -1954,7 +2043,7 @@ const SCREENS = {
       }
     }
     const card = v.shown
-      ? `<div class="c3d verdict-card stage-card flipped" aria-label="${v.imp ? 'Impostor' : 'Crew'}"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp)}</div></div>`
+      ? `<div class="c3d verdict-card stage-card flipped" aria-label="${v.imp ? 'Impostor' : 'Crew'}"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp)}</div>${v.imp ? '' : '<div class="aura still" aria-hidden="true"></div>'}</div>`
       : `<div class="c3d verdict-card stage-card flipped" data-act="flipVerdict" role="button" tabindex="0" aria-label="Reveal ${esc(name)}'s role"><div class="c3d-inner">${backHTML()}${idFace(name, v.imp && !v.fooled, { redacted: true })}</div></div>`;
     return `<div class="screen stage verdict${game.accuserBonus ? ' credited' : ''}"${auto ? ' data-act="verdictNext" role="button" aria-label="Move on"' : ''}>
       <div class="stage-head"><p class="kicker">The group has voted out…</p></div>
@@ -2122,7 +2211,7 @@ function fitGrid() {
   const grid = $('.suspect-grid'); if (!grid) return;
   const cards = Array.from(grid.querySelectorAll('.gcard'));
   const top = grid.getBoundingClientRect().top;
-  const fit = gridFit(cards.length, grid.clientWidth, window.innerHeight - top - 70);
+  const fit = gridFit(cards.length, grid.clientWidth, window.innerHeight - top - 84);
   grid.style.setProperty('--cw', fit.w + 'px');
   grid.innerHTML = '';
   let k = 0;
@@ -2238,6 +2327,8 @@ function inkRipple(card, name, dur, onDone) {
   wrap.innerHTML = `<div class="ink"><div class="inkface imp">${src.innerHTML}</div></div><div class="inkring"></div>`;
   face.appendChild(wrap);
   const ink = wrap.querySelector('.ink'), ring = wrap.querySelector('.inkring'), disp = document.getElementById('inkDisp');
+  const HIDDEN = 'linear-gradient(transparent, transparent)';   // no mask would mean fully visible, so "nothing yet" is a transparent one
+  ink.style.webkitMaskImage = HIDDEN; ink.style.maskImage = HIDDEN;
   const W = card.offsetWidth || 200, H = card.offsetHeight || 280, far = Math.hypot(W, H);
   const drops = [[.5, .6, 0, .66], [.18, .2, .16, .74], [.82, .82, .3, .7]];   // x, y, start (fraction of the time), reach (of the card's diagonal)
   const F = 22, start = performance.now();
@@ -2253,7 +2344,7 @@ function inkRipple(card, name, dur, onDone) {
       rings.push(`radial-gradient(circle at ${cx}, transparent ${Math.max(0, R - 9).toFixed(1)}px, rgba(110,30,16,.3) ${Math.max(0, R - 1).toFixed(1)}px, rgba(110,30,16,.12) ${(R + 4).toFixed(1)}px, transparent ${(R + 15).toFixed(1)}px)`);
       if (R > 40) rings.push(`radial-gradient(circle at ${cx}, transparent ${(R * .8 - 7).toFixed(1)}px, rgba(110,30,16,.1) ${(R * .8).toFixed(1)}px, transparent ${(R * .8 + 7).toFixed(1)}px)`);
     });
-    const m = mask.join(',') || 'none';
+    const m = mask.join(',') || HIDDEN;
     ink.style.webkitMaskImage = m; ink.style.maskImage = m;
     ring.style.background = rings.join(',');
     ring.style.opacity = String(1 - clamp((t - .72) / .28));
@@ -2312,6 +2403,7 @@ function sfx(name, k = 0) {
   else if (name === 'rip') { env(noise(.45, 'bandpass', 2600, 500, 1.4), .55, .01, .12, .3); env(osc('sine', 180, 60, .2), .2, .005, .02, .18); }
   else if (name === 'hit') { env(osc('sawtooth', 58, 40, 1.3), .32, .01, .25, 1); env(osc('sawtooth', 61.5, 41, 1.3), .25, .01, .25, 1); env(osc('sine', 110, 55, 1), .4, .01, .2, .8); env(noise(.5, 'lowpass', 1200, 150), .3, .005, .05, .45); }
   else if (name === 'sigh') { env(osc('sine', 523, 392, 1.1), .14, .06, .3, .8); env(osc('sine', 659, 494, 1.1), .1, .08, .3, .8); env(noise(.9, 'lowpass', 900, 250), .06, .2, .2, .5); }
+  else if (name === 'chime') { env(osc('sine', 784, 784, 1.4), .13, .02, .1, 1.3); env(osc('sine', 1175, 1175, 1.4), .09, .05, .1, 1.3); env(osc('triangle', 1568, 1568, 1.2), .04, .08, .05, 1.1); }
   else if (name === 'ink') { env(noise(2.4, 'lowpass', 250, 2200, .7), .2, 1.4, .4, .7); env(osc('sine', 70, 52, 2.4), .18, 1.2, .5, .8); }
 }
 // Browsers only allow sound after a tap: wake the audio on the first one.
@@ -2325,6 +2417,12 @@ function beat(card, k, total) {
   buzz([22, 70, 34]);
 }
 
+// The golden aura behind a crewmate's card (a sibling of the card face, never an ancestor of the tape).
+function showAura(card, ms) {
+  if (card.querySelector('.aura')) return;
+  const a = document.createElement('div'); a.className = 'aura on'; a.setAttribute('aria-hidden', 'true'); a.style.setProperty('--ad', ms + 'ms');
+  card.appendChild(a); sfx('chime'); buzz([30, 60, 30]);
+}
 function runVerdict(skipCountdown) {
   const card = $('.verdict-card'), cd = $('#countdown');
   const done = () => { game.verdict.shown = true; save(); render(); };
@@ -2332,6 +2430,7 @@ function runVerdict(skipCountdown) {
   busy = true;
   // A fooled impostor plays out exactly like a crewmate (imp = how the card looks at first); the ink ripple comes after.
   const fooled = !!(game.verdict.imp && game.verdict.fooled), imp = !!game.verdict.imp && !fooled;
+  const fooledRound = game.fooling != null ? !!game.fooling : (game.fooled || []).some(Boolean);   // impostors could be fooled this round
   let t = 250;
   lights(.4, card);                                                          // the room dims as the card lands
   if (!skipCountdown) {
@@ -2379,7 +2478,16 @@ function runVerdict(skipCountdown) {
     later(() => { sfx('hit'); card.classList.remove('sigh'); card.classList.add('hit'); lightFx('imp'); buzz([90, 50, 90, 50, 220]); }, go + dur);
     later(() => lights(0), go + dur + 450);
     end = go + dur + 1600;
+  } else if (!imp && fooledRound) {
+    // A crewmate in a round with fooled impostors keeps exactly the same pace: at the moment the ink would spread, the aura blooms instead.
+    const go = t + 150 + 2200, dur = 2600;
+    later(() => lights(.55, card), go - 120);
+    later(() => showAura(card, dur), go);
+    later(() => lights(0), go + dur + 450);
+    end = go + dur + 1600;
   }
+  // Otherwise the aura comes up the moment the card has slammed flat, with no delay.
+  if (!imp && !fooledRound) later(() => showAura(card, 700), t + 150 + 550);
   later(done, end);
 }
 
@@ -2614,6 +2722,10 @@ const ACTIONS = {
     else settings.categories = settings.categories.concat(c);           // picking any category un-selects Random
     renderCats(); syncClueToggles(); save();
   },
+  step(t) { if (stepHeld) { stepHeld = false; return; } stepCount(+t.dataset.d); },   // a hold already stepped, so its click doesn't add another
+  names() { namesOpen = !namesOpen; syncNames(); if (namesOpen) { const f = $('[data-name="0"]'); if (f && !REDUCED) later(() => f.focus({ preventScroll: true }), 360); } },
+  playagain() { if (words.categories.length) startRound(); },
+  toSetup() { const b = $('#playersBlock'); if (b) b.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); },
   preset(t) {
     const p = PRESETS[t.dataset.v]; if (!p) return;
     Object.entries(p.s).forEach(([k, v]) => { settings[k] = JSON.parse(JSON.stringify(v)); });
@@ -2949,14 +3061,23 @@ document.getElementById('bar').addEventListener('click', (e) => {
     if (inProgress()) ask('Abandon this round and deal a new one?', 'New game', go); else go();
   }
 });
+// Hold + or − to keep stepping (3 to 20 in one go).
+let stepTimer = null, stepHeld = false;
+const stopStep = () => { clearTimeout(stepTimer); clearInterval(stepTimer); stepTimer = null; };
+$app.addEventListener('pointerdown', (e) => {
+  const b = e.target.closest('.step'); if (!b || game) return;
+  stepHeld = false; stopStep();
+  stepTimer = setTimeout(() => { stepHeld = true; stepCount(+b.dataset.d); stepTimer = setInterval(() => { if (b.disabled) stopStep(); else stepCount(+b.dataset.d); }, 110); }, 420);
+});
+['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => document.addEventListener(ev, stopStep, true));
 $app.addEventListener('input', (e) => {
   const t = e.target;
   if (game) return;
   if (t.id === 'count') {
     settings.playerCount = +t.value; $('#countVal').textContent = t.value;
-    renderNames(); renderWeights(); save();
+    renderNames(); syncNames(); syncStepper(); renderWeights(); save();
   } else if (t.dataset.name !== undefined) {
-    settings.names[+t.dataset.name] = t.value; save();
+    settings.names[+t.dataset.name] = t.value; syncNames(); save();
   } else if (t.dataset.weight) {
     // The first nudge freezes the odds you can see, so the others don't shift when the player count changes.
     if (!Object.keys(settings.weights).length) validOptions(settings.playerCount).forEach((o) => { settings.weights[o.key] = weightOf(o.key); });

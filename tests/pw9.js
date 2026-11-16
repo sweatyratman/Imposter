@@ -11,7 +11,7 @@ await p.goto(`http://localhost:${srv.address().port}/`);await p.waitForFunction(
 const check=async(where)=>{const bad=await p.evaluate(()=>Array.from(document.querySelectorAll('.secret,.idname,.bigname,.gameon,.vote-title,.role-title,.wordmark,.result-head h1,.after h1')).filter(e=>e.offsetParent&&e.scrollWidth>e.clientWidth+1).map(e=>e.className+':'+e.textContent.trim()));t(bad.length===0,`${vw}px ${where}: overflow ${bad.join(' | ')}`)};
 await check('setup');
 await p.$eval('#count',(e)=>{e.value=12;e.dispatchEvent(new Event('input',{bubbles:true}))});
-const names=['Christopher','Maximiliano','Bartholomew','Alexandria','Jo','Sam','Priya','Alex','Megan','Tom','Ava','Leo'];for(let i=0;i<12;i++)await p.fill(`[data-name="${i}"]`,names[i]);
+const names=['Christopher','Maximiliano','Bartholomew','Alexandria','Jo','Sam','Priya','Alex','Megan','Tom','Ava','Leo'];await p.click('[data-act="names"]');for(let i=0;i<12;i++)await p.fill(`[data-name="${i}"]`,names[i]);
 for(const [k,v] of [['1',100],['2',0],['3',0],['all',0]])await p.$eval(`[data-weight="${k}"]`,(e,v)=>{e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}))},v);
 await p.click('[data-act="start"]');
 await p.evaluate(()=>{const s=JSON.parse(localStorage.getItem('impostor-party-v1'));s.game.word='Remembrance Day';s.game.hint='Hippopotamuses';s.game.clue=s.game.clue.map(c=>c?'Hippopotamuses':c);s.game.first=0;localStorage.setItem('impostor-party-v1',JSON.stringify(s))});await p.reload();await p.waitForSelector('[data-act="reveal"]');

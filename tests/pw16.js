@@ -17,7 +17,7 @@ t(await p.$eval('#rules',e=>{const b=e.querySelector('[data-act="resetRules"]');
 t(await p.$eval('[data-act="resetRules"]',e=>e.disabled),'disabled while everything is default');
 const btn=await p.$eval('[data-act="resetRules"]',e=>{const r=e.getBoundingClientRect(),h=e.parentElement.querySelector('h2').getBoundingClientRect();return Math.abs(r.top+r.height/2-(h.top+h.height/2))<8&&r.right<=innerWidth-15});t(btn,'button sits on the heading row');
 await inp('#maxImp',4);await inp('[data-weight="2"]',60);await p.click('#showcat');await p.click('#showhint');await p.click('#announce');await p.click('[data-act="guessrule"][data-v="crew"]');
-await p.fill('[data-name="0"]','Jonny');await p.click('[data-cat="Animals"]');
+await p.click('[data-act="names"]');await p.fill('[data-name="0"]','Jonny');await p.click('[data-cat="Animals"]');
 t(!(await p.$eval('[data-act="resetRules"]',e=>e.disabled)),'enabled once a rule changes');
 await p.click('[data-act="resetRules"]');await p.click('[data-sheet="no"]');await p.waitForTimeout(300);t((await S()).maxImpostors===4,'cancel keeps rules');
 await p.click('[data-act="resetRules"]');await p.click('[data-sheet="yes"]');const s=await S();

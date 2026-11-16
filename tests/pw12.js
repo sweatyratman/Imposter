@@ -44,7 +44,7 @@ await p.close();
 
 // ----- small phone: key actions never below the fold -----
 p=await mk(360,640);await setW(p,{2:100});
-const names=['Christopher','Sam','Priya','Alex','Megan'];for(let i=0;i<5;i++)await p.fill(`[data-name="${i}"]`,names[i]);
+const names=['Christopher','Sam','Priya','Alex','Megan'];await p.click('[data-act="names"]');for(let i=0;i<5;i++)await p.fill(`[data-name="${i}"]`,names[i]);
 t(await p.$eval('#names',e=>getComputedStyle(e).gridTemplateColumns.split(' ').length)===2,'small phone: names stay in 2 columns');
 t(await inView(p,'[data-act="start"]'),'small phone: Start visible');
 await p.click('[data-act="start"]');await p.click('[data-act="reveal"]');await p.waitForTimeout(800);

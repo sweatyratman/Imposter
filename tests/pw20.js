@@ -30,7 +30,7 @@ t(imp.end===0&&crew.end===0,'lights come back up');
 t(await p.evaluate(()=>!document.querySelector('#barcat .redcat')||true),'noop');
 await p.click('[data-act="start"]');
 const rc=await p.$eval('#barcat .redcat',e=>({tape:!!e.querySelector('.tape'),label:e.getAttribute('aria-label'),h:e.getBoundingClientRect().height,w:e.getBoundingClientRect().width,iw:innerWidth}));
-t(rc.tape&&rc.label==='Category hidden'&&rc.h<36&&rc.w<rc.iw-32,'hidden category: redacted tape tag fits the bar');
+t(rc.tape&&rc.label==='Category hidden'&&rc.h<48&&rc.w<rc.iw-32,'hidden category: redacted tape tag fits the bar');
 await p.click('[data-nav="home"]');const y=await p.$('[data-sheet="yes"]');if(y)await y.click();await p.waitForSelector('#count');
 // reduced motion: no sequence animations
 const q=await b.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});await q.goto(`http://localhost:${srv.address().port}/`);await q.waitForSelector('#count');

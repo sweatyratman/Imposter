@@ -15,7 +15,7 @@ const inView=(p,sel)=>p.$eval(sel,e=>{const r=e.getBoundingClientRect();return r
 let p,g;
 
 // ---- first visit: no "same crew again?", names folded away
-p=await mk();
+p=await mk({weights:{}});
 t(!(await p.$('#hero'))&&/Start game/.test(await p.textContent('.dock .btn.primary')),'a first visit has no "same crew again?" card and says Start game');
 t(!(await p.$eval('#namesWrap',e=>e.classList.contains('open')))&&!(await p.$eval('[data-name="0"]',e=>e.offsetParent!==null&&getComputedStyle(e).visibility!=='hidden')),'the name boxes start folded away');
 t(/Player 1 · Player 2/.test(await p.textContent('#nameList'))&&/Add names/.test(await p.textContent('#nameAct')),'the folded row lists who is playing and says "Add names"');

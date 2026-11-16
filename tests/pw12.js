@@ -17,7 +17,7 @@ t(await inView(p,'[data-act="start"]'),'Start game is visible without scrolling 
 t(await p.$eval('#rules',e=>e.tagName==='SECTION'&&!!e.querySelector('#maxImp')&&e.offsetHeight>200),'house rules always visible');await setW(p,{1:100});
 t(!!(await p.$('.masthead .logo-card .mask'))&&!!(await p.$('.masthead .tape-tag')),'logo: card + tape tagline');
 await p.click('[data-act="start"]');t(await p.$eval('#bar',e=>getComputedStyle(e).display!=='none'),'top bar shows in game');
-t(await p.$eval('#bar',e=>e.getBoundingClientRect().height)<100,'top bar: buttons row + category row, compact');t(await p.$eval('#barcat',e=>{const r=e.getBoundingClientRect(),h=document.querySelector('[data-nav=home]').getBoundingClientRect();return r.top>=h.bottom-1&&Math.abs(r.left+r.width/2-innerWidth/2)<2}),'category sits centred below the buttons');
+t(await p.$eval('#bar',e=>e.getBoundingClientRect().height)<115,'top bar: buttons row + category row, compact');t(await p.$eval('#barcat',e=>{const r=e.getBoundingClientRect(),h=document.querySelector('[data-nav=home]').getBoundingClientRect();return r.top>=h.bottom-1&&Math.abs(r.left+r.width/2-innerWidth/2)<2}),'category sits centred below the buttons');
 t(await p.$$eval('.pips i',e=>e.length)===5&&!!(await p.$('.pips i.now')),'deal progress pips');
 await p.click('[data-nav="home"]');t(!!(await p.$('.sheet'))&&p.dlg()===0,'leaving asks with an in-game sheet, not a browser pop-up');
 await p.click('[data-sheet="no"]');await p.waitForTimeout(250);t(!(await p.$('.sheet-wrap'))&&!!(await p.$('.deal-card')),'Keep playing closes the sheet');

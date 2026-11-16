@@ -74,7 +74,7 @@
   #bar .barbtn { min-height: 40px; }
   #bar .barbtn.icon { width: 42px; }
   /* Short phones: the extra category row comes out of the stage card, so the buttons stay on screen. */
-  @media (max-height: 700px) { body .stage { --cw: min(60vw, 236px, 27vh); }
+  @media (max-height: 700px) { body .stage { --cw: min(60vw, 236px, 25vh); }
     body .stage .split .btn { min-height: 78px; } }   /* body: beats the base .stage rule further down */
   .barcat:empty { display: none; }
   /* Hidden category: a paper tag with the same black [REDACTED] tape as the cards */
@@ -443,7 +443,7 @@
 
   /* ---------- shuffle ---------- */
   .shuffle-screen { --cw: min(54vw, 210px, 27vh); text-align: center; padding-top: 14px; }
-  @media (max-height: 700px) { .shuffle-screen { --cw: min(44vw, 170px, 21vh); padding-top: 6px; } .shuffle-screen.timed { --cw: min(36vw, 140px, 17vh); } .shuffle-screen .gameon-stack, .shuffle-screen .after { gap: 10px; } }
+  @media (max-height: 700px) { .shuffle-screen { --cw: min(44vw, 170px, 21vh); padding-top: 6px; } .shuffle-screen.timed { --cw: min(36vw, 140px, 15vh); } .shuffle-screen .gameon-stack, .shuffle-screen .after { gap: 10px; } }
   .shufnote { min-height: 1.45em; }
   .after-slot { min-height: 40px; }
   .gameon-stack { gap: 14px; }

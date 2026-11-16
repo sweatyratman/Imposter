@@ -19,7 +19,7 @@ await p.fill('.gnew input','Work lot');await p.click('.gnew button');await p.wai
 t((await name())==='Work lot','"Start fresh" creates and switches to a new group');
 let s=await S();t(!s.settings.names.length&&!s.settings.announce&&!Object.keys(s.settings.scores||{}).length&&!Object.keys(s.history.w).length,'a new group starts clean: no names, default rules, no scores, no history');
 t(await p.$eval('[data-name="0"]',e=>e.value==='')&&!(await p.$eval('#announce',e=>e.checked)),'the setup screen shows the clean group');
-await p.fill('[data-name="0"]','Zed');await p.click('#drama [data-v="quick"]');
+if(!(await p.$eval('#namesWrap',e=>e.classList.contains('open'))))await p.click('[data-act="names"]');await p.fill('[data-name="0"]','Zed');await p.click('#drama [data-v="quick"]');
 await open();await p.click('.gpick:not([aria-current])');await p.waitForTimeout(300);
 s=await S();t((await name())==='My group'&&s.settings.names[0]==='Alice'&&s.settings.announce===true&&s.settings.scores.Alice===5&&s.history.w['Animals::cat']===2,'switching back restores players, rules, scores and word history');
 t(await p.$eval('[data-name="0"]',e=>e.value==='Alice'),'and the setup screen shows them');

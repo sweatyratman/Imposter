@@ -14,9 +14,9 @@ const yes=async(p)=>{const y=await p.$('[data-sheet="yes"]');if(y)await y.click(
 
 // ---- quick setups
 let p=await mk();
-t((await p.$$eval('#preset button',e=>e.map(x=>x.textContent))).join()==='Beginner,Classic,Chaos','three quick setups');
+t((await p.$$eval('#preset button',e=>e.map(x=>x.querySelector('b').textContent))).join()==='Beginner,Classic,Chaos','three quick setups');
 t(await p.$eval('#preset button.sel',e=>e.dataset.v)==='classic','defaults count as Classic');
-const row=await p.$$eval('#preset button',e=>e.map(x=>Math.round(x.getBoundingClientRect().top)));t(new Set(row).size===1,'the three setups sit on one row');
+const row=await p.$$eval('#preset button',e=>e.map(x=>x.offsetTop));t(new Set(row).size===1,'the three setups sit on one row');
 await p.click('#preset [data-v="beginner"]');let s=await S(p);
 t(s.announce===true&&s.maxImpostors===2&&s.unaware===false,'Beginner: count announced, at most 2 impostors');
 t(await p.$eval('#preset button.sel',e=>e.dataset.v)==='beginner'&&/first games/.test(await p.textContent('#presetNote')),'Beginner is selected and explained');

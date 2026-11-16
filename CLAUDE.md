@@ -159,7 +159,7 @@ See **`reviews.md`** (22 Oct): what players love, hate and want across the top P
 
 ## Ideas backlog (brainstormed 22 Oct; none built yet)
 Top picks: secret ballot (20), screen wake lock (17), sound with mute (38), play again with the same group (1), custom categories (32).
-- **Starting a game:** 1 play again with the same group; 2 saved groups; 3 presets (Beginner/Classic/Chaos); 4 settings summary above Start; 5 seating order (drag names); 6 first-run how-to-play cards; 7 "?" explainers on house rules; 8 tips that fit the group size.
+- **Starting a game:** 1 play again with the same group (built 16 Nov as the "Same crew again?" card); 2 saved groups; 3 presets (Beginner/Classic/Chaos); 4 settings summary above Start; 5 seating order (drag names); 6 first-run how-to-play cards; 7 "?" explainers on house rules; 8 tips that fit the group size.
 - **Deal:** 9 hold-to-reveal; 10 "I forgot my word" re-check (identical timing for everyone); 11 undo last pass; 12 haptic tick on flip (Android only).
 - **Discussion:** 13 optional timer; 14 speaking-order hint; 15 "another lap of clues?"; 16 rules peek sheet; 17 screen wake lock; 18 block pull-to-refresh/zoom; 19 Android back goes back a screen.
 - **Voting:** 20 secret ballot with tally reveal; 21 tie re-vote; 22 vote history in results.

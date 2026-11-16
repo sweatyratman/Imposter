@@ -2724,7 +2724,7 @@ const ACTIONS = {
     renderCats(); syncClueToggles(); save();
   },
   step(t) { if (stepHeld) { stepHeld = false; return; } stepCount(+t.dataset.d); },   // a hold already stepped, so its click doesn't add another
-  names() { namesOpen = !namesOpen; syncNames(); if (namesOpen) { const f = $('[data-name="0"]'); if (f && !REDUCED) later(() => f.focus({ preventScroll: true }), 360); } },
+  names() { namesOpen = !namesOpen; syncNames(); },   // just unfolds: no keyboard until you tap a box
   playagain() { if (words.categories.length) startRound(); },
   toSetup() { const b = $('#playersBlock'); if (b) b.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); },
   preset(t) {
@@ -3043,7 +3043,7 @@ function showBoard() {
   wrap.addEventListener('click', (e) => {
     const b = e.target.closest('[data-sheet]');
     if (b && b.dataset.sheet === 'reset') ask('Reset everyone\'s score to zero?', 'Reset scores', () => {
-      settings.scores = {}; save(); if (game && game.screen === 'result') render(); showBoard(); }, 'Cancel');
+      settings.scores = {}; save(); if (!game || game.screen === 'result') render(); close(); }, 'Cancel');   // nothing left to show, so the board closes
     else if (b || e.target === wrap) close();
   });
   document.body.appendChild(wrap);

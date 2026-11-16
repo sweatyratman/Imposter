@@ -60,7 +60,7 @@ await home();t(!!(await p.$('.masthead [data-act="board"]')),'trophy on the setu
 await p.click('.masthead [data-act="board"]');await p.click('[data-sheet="reset"]');t((await p.textContent('.sheet-q')).includes('Reset'),'reset asks to confirm');
 await p.click('[data-sheet="no"]');await p.waitForTimeout(300);t(Object.keys((await S()).scores).length===2,'cancel keeps the scores');
 await p.click('.masthead [data-act="board"]');await p.click('[data-sheet="reset"]');await p.click('[data-sheet="yes"]');
-t(!!(await p.$('.board-empty'))&&await p.$eval('[data-sheet="reset"]',e=>e.disabled),'after reset: empty board, reset disabled');t(Object.keys((await S()).scores).length===0,'scores cleared');
+await p.waitForTimeout(400);t(!(await p.$('.sheet-wrap')),'after reset the board closes instead of showing an empty one');t(Object.keys((await S()).scores).length===0,'scores cleared');
 await p.click('[data-sheet="close"]');await p.waitForTimeout(300);
 
 // ---- show category rule ----

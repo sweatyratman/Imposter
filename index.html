@@ -2005,7 +2005,8 @@ const SCREENS = {
       : `<h1 class="vote-title">Who's the impostor?</h1><p class="muted">${left.length} suspects. Agree on one, then tap their card.${out.length ? ` Already out: ${out.join(', ')}.` : ''}</p>`;
     const foot = picking
       ? `<div class="votefoot"><button class="btn alt" data-act="tieCancel">${ICON.back}Cancel</button><button class="btn primary" data-act="tieBreak" ${tie.sel.length >= 2 ? '' : 'disabled'}>${ICON.gavel}Break the tie</button></div>`
-      : `<div class="votefoot${tie || left.length < 3 ? ' one' : ''}"><button class="btn alt" data-act="${tie ? 'tieCancel' : 'back'}">${ICON.back}${tie ? 'Cancel tie-break' : 'Back to discussion'}</button>${tie || left.length < 3 ? '' : `<button class="btn alt" data-act="tie">${ICON.gavel}It's a tie</button>`}</div>`;
+      : `<div class="votefoot${tie ? (tie.rule === 'revote' ? '' : ' one') : left.length < 3 ? ' one' : ''}"><button class="btn alt" data-act="${tie ? 'tieCancel' : 'back'}">${ICON.back}${tie ? 'Cancel tie-break' : 'Back to discussion'}</button>${tie ? (tie.rule === 'revote' ? `<button class="btn alt" data-act="coinflip"><span aria-hidden="true">🪙</span>Can't agree? Flip a coin</button>` : '')
+        : left.length < 3 ? '' : `<button class="btn alt" data-act="tie">${ICON.gavel}It's a tie</button>`}</div>`;
     return `<div class="screen vote">
       <header class="vote-head">${head}</header>
       <div class="suspect-grid" style="--cw:${fit.w}px">${cards}</div>
@@ -2839,6 +2840,11 @@ const ACTIONS = {
       const i = pick(t.sel); game.tie = null; game.voteSel = i; game.tieRandom = true; save(); render(); return;
     }
     game.tie = { only: t.sel.slice(), rule: t.rule, first: t.rule === 'revote' ? pick(t.sel) : null }; game.regrid = true; save(); render();   // speaking second is an edge, so the app picks who starts
+  },
+  coinflip() {   // a stubborn voter can't soft-lock a tie-break: the app picks one of the tied players, as the Random rule does
+    const t = game.tie; if (!t || !t.only) return;
+    const left = t.only.filter((i) => !game.out.includes(i)); if (!left.length) return;
+    game.tie = null; game.voteSel = pick(left); game.tieRandom = true; save(); render();
   },
   tieCancel() { game.tie = null; game.regrid = true; save(); render(); },
   credit(t) {   // optional accuser bonus: who called out this impostor? (tap again to take it back)

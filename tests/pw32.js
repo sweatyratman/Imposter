@@ -63,6 +63,12 @@ t(await p.$$eval('.votefoot .btn',e=>e.every(x=>x.getBoundingClientRect().height
 await p.click('[data-act="tieBreak"]');await p.waitForTimeout(500);
 t(/A majority MUST be reached!/.test(await p.textContent('.vote-head'))&&await p.$eval('.vote-head .must',e=>+getComputedStyle(e).fontWeight>=700&&/A majority MUST be reached!/.test(e.textContent)),'the tie-break ends "A majority MUST be reached!" in bold');
 t(await p.$eval('[data-act="tieCancel"]',e=>e.classList.contains('alt')&&e.getBoundingClientRect().height>=54&&parseFloat(getComputedStyle(e).borderTopWidth)>=2),'"Cancel tie-break" is a real, outlined button');
+t(await p.$eval('[data-act="coinflip"]',e=>e.getBoundingClientRect().height>=54&&/Flip a coin/.test(e.textContent)),'a stuck tie-break has a big "Can\'t agree? Flip a coin" button');
+await p.click('[data-act="coinflip"]');await p.waitForTimeout(500);g=await G(p);
+t([1,2].includes(g.voteSel)&&/broken at random/.test(await p.textContent('.stage-head'))&&g.tie==null,'the coin picks one of the tied players, so nobody can hold it hostage');
+await p.close();
+p=await mk({tieRule:'starter'});await toVote(p);await p.click('[data-act="tie"]');await p.click('[data-act="tiepick"][data-i="1"]');await p.click('[data-act="tiepick"][data-i="2"]');await p.click('[data-act="tieBreak"]');await p.waitForTimeout(400);
+t(!(await p.$('[data-act="coinflip"]'))&&await p.$eval('.votefoot',e=>e.classList.contains('one')),'with "First player decides" there is nothing to flip');
 await p.close();
 
 // ---- golden aura: a crewmate's card, straight after the slam; never on an impostor
